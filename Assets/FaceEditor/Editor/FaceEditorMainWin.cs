@@ -90,7 +90,7 @@ namespace FaceCapEditor
           
         private const float _brawHeight = 160;
         private const float _cheekHeight = 160;
-        private const float _eyeHeight = 160;
+        private const float _eyeHeight = 260;
 
         private const float _mShapeHeight = _brawHeight + _cheekHeight + _eyeHeight;
 

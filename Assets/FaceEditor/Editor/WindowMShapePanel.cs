@@ -7,7 +7,7 @@ namespace FaceCapEditor
 {
     public class WindowMShapePanel : WindowPanel
     {
-      
+
         public WindowMShapePanel(EditorWindow window, Rect rect)
         {
             panelRect = rect;
@@ -16,25 +16,77 @@ namespace FaceCapEditor
 
         public override void OnPanelEnable()
         {
-            base.OnPanelEnable();          
+            base.OnPanelEnable();
         }
 
         public override void OnPanelDisable()
         {
-            base.OnPanelDisable();          
+            base.OnPanelDisable();
         }
 
+
+        private float defaultHeight = 66f;
         public override void OnDraw()
         {
             GUILayout.BeginArea(panelRect);
+            GUILayout.BeginVertical();
+
+            GUILayout.Space(defaultHeight/2);
+            GUILayout.BeginHorizontal();
+
+            GUILayout.FlexibleSpace();
+            GUIStyle myStyle = new GUIStyle();
+            myStyle.fontSize = 21;
+            myStyle.normal.textColor = Color.white;
+            GUILayout.Label("A", myStyle);
+            GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(panelRect.width - 45), GUILayout.Height(defaultHeight));
+            GUILayout.FlexibleSpace();
+
+            GUILayout.EndHorizontal();
+
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button(new GUIContent("MShape"), EditorStyles.toolbarButton, GUILayout.Width(panelRect.width)))
-            {
-
-            }
+            GUILayout.Label("E", myStyle);
+            GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(panelRect.width - 45), GUILayout.Height(defaultHeight));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("I", myStyle);
+            GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(panelRect.width - 45), GUILayout.Height(defaultHeight));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("O", myStyle);
+            GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(panelRect.width - 45), GUILayout.Height(defaultHeight));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("U", myStyle);
+            GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(panelRect.width - 45), GUILayout.Height(defaultHeight));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("F", myStyle);
+            GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(panelRect.width - 45), GUILayout.Height(defaultHeight));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            GUILayout.Label("M", myStyle);
+            GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(panelRect.width - 45), GUILayout.Height(defaultHeight));
+            GUILayout.FlexibleSpace();
+            GUILayout.EndHorizontal();
+
+            GUILayout.EndVertical();
             GUILayout.EndArea();
         }
     }
