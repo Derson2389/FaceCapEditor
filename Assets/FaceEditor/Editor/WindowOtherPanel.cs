@@ -27,16 +27,13 @@ namespace FaceCapEditor
         {
             GUILayout.BeginArea(panelRect);
             GUILayout.BeginHorizontal();
-
-            if (GUILayout.Button(new GUIContent("Other"), EditorStyles.toolbarButton, GUILayout.Width(45)))
-            {
-
-            }
-
-            //if (GUILayout.Button(new GUIContent("Open"), EditorStyles.toolbarButton, GUILayout.Width(45)))
+            GUILayout.FlexibleSpace();
+            //if (GUILayout.Button(new GUIContent("Other"), EditorStyles.toolbarButton, GUILayout.Width(panelRect.width)))
             //{
 
             //}
+
+            GUILayout.FlexibleSpace();
 
             GUILayout.EndHorizontal();
             GUILayout.EndArea();

@@ -25,20 +25,17 @@ namespace FaceCapEditor
 
         public override void OnDraw()
         {
-            GUILayout.BeginArea(panelRect);
+            GUILayout.BeginArea(panelRect);           
             GUILayout.BeginHorizontal();
-
-            if (GUILayout.Button(new GUIContent("Mouth"), EditorStyles.toolbarButton, GUILayout.Width(45)))
-            {
-
-            }
-
-            //if (GUILayout.Button(new GUIContent("Open"), EditorStyles.toolbarButton, GUILayout.Width(45)))
+            //GUILayout.FlexibleSpace();
+            //if (GUILayout.Button(new GUIContent("Mouth"), EditorStyles.toolbarButton, GUILayout.Width(panelRect.width)))
             //{
 
             //}
 
+            //GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
+            
             GUILayout.EndArea();
         }
     }

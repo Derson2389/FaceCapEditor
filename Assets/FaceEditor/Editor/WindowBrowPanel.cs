@@ -28,11 +28,12 @@ namespace FaceCapEditor
         {
             GUILayout.BeginArea(panelRect);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(new GUIContent("brow "), EditorStyles.toolbarButton, GUILayout.Width(145)))
-            {
+            GUILayout.FlexibleSpace();
+            //if (GUILayout.Button(new GUIContent("brow "), EditorStyles.toolbarButton, GUILayout.Width(panelRect.width)))
+            //{
 
-            }
-
+            //}
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
         }

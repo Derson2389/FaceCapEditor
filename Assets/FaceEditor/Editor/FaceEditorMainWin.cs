@@ -34,48 +34,65 @@ namespace FaceCapEditor
         private GUIStyle _resizerStyle;
 
         /// <summary>
-        /// subcut resizer
+        /// top resizer
         /// </summary>
-        private Rect _subCutResizerRect;
-        private bool _subCutIsResizing;
-        private float _subCutResizerSize = 2f;
+        private Rect _topResizerRect;
+        private bool _topIsResizing;
+        private float _topResizerSize = 2f;
 
 
         /// <summary>
-        /// groupSubcut resizer
+        /// brow resizer
         /// </summary>
-        private Rect _groupSubCutResizerRect;
-        private bool _groupSubCutIsResizing;
-        private float _groupSubCutResizerSize = 2f;
+        private Rect _browResizerRect;
+        private bool _browIsResizing;
+        private float _browResizerSize = 2f;
 
         /// <summary>
-        /// timeline resizer
+        /// eye resizer
         /// </summary>
-        private Rect _timelineResizerRect;
-        private bool _timelineIsResizing;
-        private float _timelineResizerSize = 2f;
+        private Rect _eyeResizerRect;
+        private bool _eyeIsResizing;
+        private float _eyeResizerSize = 2f;
+
+        /// <summary>
+        /// cheek cut resizer
+        /// </summary>
+        private Rect _cheekResizerRect;
+        private bool _cheekResizing;
+        private float _cheekResizerSize = 2f;
+
+        /// <summary>
+        /// Mouth resizer
+        /// </summary>
+        private Rect _mouthResizerRect;
+        private bool _mouthIsResizing;
+        private float _mouthResizerSize = 2f;
 
 
         /// <summary>
-        /// privew cut resizer
+        /// Mouth Shape resizer
         /// </summary>
-        private Rect _previewCutResizerRect;
-        private bool _previewCutResizing;
-        private float _previewCutResizerSize = 2f;
+        private Rect _mShapeResizerRect;
+        private bool _mShapeResizing;
+        private float _mShapeResizerSize = 2f;
 
         /// <summary>
-        /// resource resizer
+        /// Other resizer
         /// </summary>
-        private Rect _resourceResizerRect;
-        private bool _resourceIsResizing;
-        private float _resourceResizerSize = 2f;
+        private Rect _otherResizerRect;
+        private bool _otherResizing;
+        private float _otherResizerSize = 2f;
+
 
         private float _browWidth = minBrowWidth;
-        private float _mShapeWidth = 60;
-        private float _mShapeHeight = 350;
+        private float _mShapeWidth = 260;
+          
+        private const float _brawHeight = 160;
+        private const float _cheekHeight = 160;
+        private const float _eyeHeight = 160;
 
-        private float _brawHeight = 60;
-        private float _cheekHeight = 80;
+        private const float _mShapeHeight = _brawHeight + _cheekHeight + _eyeHeight;
 
         private float _resourceWidth = minResourceWidth;
         private float _MouthHeight = minMouthHeight;
@@ -169,14 +186,15 @@ namespace FaceCapEditor
             _resizerStyle = new GUIStyle();
             _resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
 
-            _topbarPanel.panelRect = new Rect(0, 0, position.width, topBarHeight);
-            _browPanel.panelRect = new Rect(0, topBarHeight, position.width - _mShapeWidth, _brawHeight);
-            
-            _eyePanel.panelRect = new Rect(0, topBarHeight, position.width - _mShapeWidth, topBarHeight + _browPanel.panelRect.height);
-            _cheekPanel.panelRect = new Rect(0, topBarHeight + _brawHeight, _browWidth, _cheekHeight);
-            _mouthPanel.panelRect = new Rect(0 , topBarHeight , position.width - _mShapeWidth, _MouthHeight);
-            _otherPanel.panelRect = new Rect(position.width -_mShapeWidth, topBarHeight + _timelineResizerSize, _mShapeWidth, position.height - _mShapeHeight);
-            _mShapePanel.panelRect = new Rect(position.width - _mShapeWidth + _subCutResizerSize, topBarHeight, _mShapeWidth, _mShapeHeight);
+            topbarPanel.panelRect = new Rect(0, 0, position.width, topBarHeight);
+            browPanel.panelRect = new Rect(0, topBarHeight, position.width - _mShapeWidth, _brawHeight);
+
+            eyePanel.panelRect = new Rect(0, topBarHeight + browPanel.panelRect.height, position.width - _mShapeWidth, _eyeHeight);
+            cheekPanel.panelRect = new Rect(0, topBarHeight + browPanel.panelRect.height + eyePanel.panelRect.height, position.width - _mShapeWidth, _cheekHeight);
+            mouthPanel.panelRect = new Rect(0, topBarHeight + _mShapeHeight, position.width - _mShapeWidth, _MouthHeight);
+
+            mShapePanel.panelRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight, _mShapeWidth, _mShapeHeight);
+            otherPanel.panelRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight + _mShapeHeight, _mShapeWidth, position.height - _mShapeHeight);
 
             topbarPanel.OnPanelEnable();
             browPanel.OnPanelEnable();
@@ -233,12 +251,12 @@ namespace FaceCapEditor
             topbarPanel.panelRect = new Rect(0, 0, position.width, topBarHeight);
             browPanel.panelRect = new Rect(0, topBarHeight, position.width - _mShapeWidth, _brawHeight);
 
-            eyePanel.panelRect = new Rect(0, topBarHeight, position.width - _mShapeWidth, topBarHeight + _browPanel.panelRect.height);
-            cheekPanel.panelRect = new Rect(0, topBarHeight + _brawHeight, _browWidth, _cheekHeight);
-            mouthPanel.panelRect = new Rect(0, topBarHeight, position.width - _mShapeWidth, _MouthHeight);
-            otherPanel.panelRect = new Rect(position.width - _mShapeWidth, topBarHeight + _timelineResizerSize, _mShapeWidth, position.height - _mShapeHeight);
-            mShapePanel.panelRect = new Rect(position.width - _mShapeWidth + _subCutResizerSize, topBarHeight, _mShapeWidth, _mShapeHeight);
-
+            eyePanel.panelRect = new Rect(0, topBarHeight + browPanel.panelRect.height, position.width - _mShapeWidth, _eyeHeight);
+            cheekPanel.panelRect = new Rect(0, topBarHeight + browPanel.panelRect.height + eyePanel.panelRect.height, position.width - _mShapeWidth, _cheekHeight);
+            mouthPanel.panelRect = new Rect(0, topBarHeight + _mShapeHeight, position.width - _mShapeWidth, _MouthHeight);
+           
+            mShapePanel.panelRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight, _mShapeWidth, _mShapeHeight);
+            otherPanel.panelRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight + _mShapeHeight, _mShapeWidth, position.height - _mShapeHeight);
             topbarPanel.OnDraw();
             browPanel.OnDraw();
             cheekPanel.OnDraw();
@@ -246,9 +264,11 @@ namespace FaceCapEditor
             mouthPanel.OnDraw();
             if(otherPanel != null)
                 otherPanel.OnDraw();
-            DrawResizer();
+            
             if(mShapePanel != null)
                 mShapePanel.OnDraw();
+
+            DrawResizer();
             Repaint();
 
             ProcessEvents(Event.current);
@@ -260,36 +280,46 @@ namespace FaceCapEditor
         private void DrawResizer()
         {
 
-            //    // draw subCut panel resizer
-            //_subCutResizerRect = new Rect(_subCutWidth, topBarHeight, _subCutResizerSize, position.height - topBarHeight);
-            //GUILayout.BeginArea(_subCutResizerRect, _resizerStyle);
-            //GUILayout.EndArea();
-            //EditorGUIUtility.AddCursorRect(_subCutResizerRect, MouseCursor.ResizeHorizontal);
+            // draw top panel resizer
+            _topResizerRect = new Rect(0, topBarHeight, position.width , _topResizerSize);
+            GUILayout.BeginArea(_topResizerRect, _resizerStyle);
+            GUILayout.EndArea();
+            EditorGUIUtility.AddCursorRect(_topResizerRect, MouseCursor.ResizeHorizontal);
+
+            //// draw Mouth Shape panel resizer
+            _mShapeResizerRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight, _mouthResizerSize, mShapePanel.panelRect.height);
+            GUILayout.BeginArea(_mShapeResizerRect, _resizerStyle);
+            GUILayout.EndArea();
+            EditorGUIUtility.AddCursorRect(_mShapeResizerRect, MouseCursor.ResizeHorizontal);
+
+            _mShapeResizerRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight + mShapePanel.panelRect.height,  mShapePanel.panelRect.width, _mouthResizerSize);
+            GUILayout.BeginArea(_mShapeResizerRect, _resizerStyle);
+            GUILayout.EndArea();
+            EditorGUIUtility.AddCursorRect(_mShapeResizerRect, MouseCursor.ResizeHorizontal);
 
 
-            //// draw group Cut panel resizer
-            //_groupSubCutResizerRect = new Rect(_subCutWidth + groupSubCutPanel.panelRect.width, topBarHeight, _subCutResizerSize, groupSubCutPanel.panelRect.height);
-            //GUILayout.BeginArea(_groupSubCutResizerRect, _resizerStyle);
-            //GUILayout.EndArea();
-            //EditorGUIUtility.AddCursorRect(_groupSubCutResizerRect, MouseCursor.ResizeHorizontal);
+            //// draw other resizer
+            _otherResizerRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, otherPanel.panelRect.height , _mouthResizerSize, mShapePanel.panelRect.height);
+            GUILayout.BeginArea(_otherResizerRect, _resizerStyle);
+            GUILayout.EndArea();
+            EditorGUIUtility.AddCursorRect(_otherResizerRect, MouseCursor.ResizeHorizontal);
 
-            //// draw PreivewCut panel resizer
-            //_previewCutResizerRect = new Rect(0, topBarHeight + groupSubCutPanel.panelRect.height, _subCutWidth, _previewCutResizerSize);
-            //GUILayout.BeginArea(_previewCutResizerRect, _resizerStyle);
-            //GUILayout.EndArea();
-            //EditorGUIUtility.AddCursorRect(_previewCutResizerRect, MouseCursor.ResizeVertical);
+            //// draw Mouth panel resizer
+            _mouthResizerRect = new Rect(0, topBarHeight + mShapePanel.panelRect.height, mouthPanel.panelRect.width, _mouthResizerSize);
+            GUILayout.BeginArea(_mouthResizerRect, _resizerStyle);
+            GUILayout.EndArea();
+            EditorGUIUtility.AddCursorRect(_mouthResizerRect, MouseCursor.ResizeVertical);
 
+            //// draw cheek panel resizer
+            _cheekResizerRect = new Rect(0, topBarHeight + browPanel.panelRect.height + _eyeResizerSize + eyePanel.panelRect.height, eyePanel.panelRect.width, _cheekResizerSize);
+            GUILayout.BeginArea(_cheekResizerRect, _resizerStyle);
+            GUILayout.EndArea();
+            EditorGUIUtility.AddCursorRect(_cheekResizerRect, MouseCursor.ResizeVertical);
 
-            //// draw timeline panel resizer
-            //_timelineResizerRect = new Rect(_subCutWidth, topBarHeight + groupSubCutPanel.panelRect.height, position.width - _subCutWidth - _resourceWidth, _timelineResizerSize);
-            //GUILayout.BeginArea(_timelineResizerRect, _resizerStyle);
-            //GUILayout.EndArea();
-            //EditorGUIUtility.AddCursorRect(_timelineResizerRect, MouseCursor.ResizeVertical);
-      
-            //_resourceResizerRect = new Rect(position.width - _resourceWidth - _resourceResizerSize, topBarHeight, _resourceResizerSize, position.height - topBarHeight);
-            //GUILayout.BeginArea(_resourceResizerRect, _resizerStyle);
-            //GUILayout.EndArea();
-            //EditorGUIUtility.AddCursorRect(_resourceResizerRect, MouseCursor.ResizeHorizontal);
+            _eyeResizerRect = new Rect(0, topBarHeight + browPanel.panelRect.height + _eyeResizerSize , browPanel.panelRect.width, _eyeResizerSize);
+            GUILayout.BeginArea(_eyeResizerRect, _resizerStyle);
+            GUILayout.EndArea();
+            EditorGUIUtility.AddCursorRect(_eyeResizerRect, MouseCursor.ResizeHorizontal);
         }
 
 
@@ -299,25 +329,25 @@ namespace FaceCapEditor
             {
                 case EventType.MouseDown:
                     {
-                        if (e.button == 0 && _subCutResizerRect.Contains(e.mousePosition))
-                        {
-                            _subCutIsResizing = true;
-                        }
-                        else if (e.button == 0 && _timelineResizerRect.Contains(e.mousePosition))
-                        {
-                            _timelineIsResizing = true;
-                        }
-                        else if (e.button == 0 && _resourceResizerRect.Contains(e.mousePosition))
-                        {
-                            _resourceIsResizing = true;
-                        }
+                        //if (e.button == 0 && _subCutResizerRect.Contains(e.mousePosition))
+                        //{
+                        //    _subCutIsResizing = true;
+                        //}
+                        //else if (e.button == 0 && _timelineResizerRect.Contains(e.mousePosition))
+                        //{
+                        //    _timelineIsResizing = true;
+                        //}
+                        //else if (e.button == 0 && _resourceResizerRect.Contains(e.mousePosition))
+                        //{
+                        //    _resourceIsResizing = true;
+                        //}
                     }
                     break;
 
                 case EventType.MouseUp:
-                    _subCutIsResizing = false;
-                    _timelineIsResizing = false;
-                    _resourceIsResizing = false;
+                    //_subCutIsResizing = false;
+                    //_timelineIsResizing = false;
+                    //_resourceIsResizing = false;
                     break;
             }
 
