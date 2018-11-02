@@ -28,12 +28,12 @@ namespace FaceCapEditor
         {
             GUILayout.BeginArea(panelRect, EditorStyles.toolbar);
             GUILayout.BeginHorizontal();
-
-            if (GUILayout.Button(new GUIContent("表情编辑器"), EditorStyles.toolbarButton, GUILayout.Width(45)))
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(new GUIContent("表情编辑器"), EditorStyles.toolbarButton, GUILayout.Width(145)))
             {
                 
             }
-
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
         }
