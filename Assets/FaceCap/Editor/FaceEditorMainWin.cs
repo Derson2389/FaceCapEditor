@@ -141,7 +141,7 @@ namespace FaceCapEditor
         [MenuItem("剧情工具/表情编辑", false, 1)]
         public static void OpenEditorMainWin()
         {
-            window = EditorWindow.GetWindow<FaceEditorMainWin>(false, "导演编辑器", true);
+            window = EditorWindow.GetWindow<FaceEditorMainWin>(false, "表情编辑器", true);
             window.minSize = new Vector2(760 , 680);
             window.Show();
            
