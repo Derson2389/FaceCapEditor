@@ -84,10 +84,6 @@ namespace FaceCapEditor
                 GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
                 GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
                 GUILayout.EndHorizontal();
-                //GUILayout.FlexibleSpace();
-                //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
-                //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
-                //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
             }
             GUILayout.EndArea();
 
