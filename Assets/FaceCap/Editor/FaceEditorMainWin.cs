@@ -142,8 +142,9 @@ namespace FaceCapEditor
         public static void OpenEditorMainWin()
         {
             window = EditorWindow.GetWindow<FaceEditorMainWin>(false, "导演编辑器", true);
+            window.minSize = new Vector2(760 , 680);
             window.Show();
-
+           
             // OnInit is called after OnPanelEnable
             window.Init();
         }
