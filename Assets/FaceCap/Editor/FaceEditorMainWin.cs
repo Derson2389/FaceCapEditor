@@ -13,6 +13,12 @@ namespace FaceCapEditor
     {
 
         public static FaceEditorMainWin window;
+        private FaceControllerComponent _faceCtrlComp = null;
+        public FaceControllerComponent FaceCtrlComp
+        {
+            get { return _faceCtrlComp; }
+        }
+
         public const float topBarHeight = 20f;
         /// <summary>
         /// the min subcut panel width
@@ -144,7 +150,6 @@ namespace FaceCapEditor
             window = EditorWindow.GetWindow<FaceEditorMainWin>(false, "表情编辑器", true);
             window.minSize = new Vector2(760 , 680);
             window.Show();
-           
             // OnInit is called after OnPanelEnable
             window.Init();
         }
@@ -158,6 +163,17 @@ namespace FaceCapEditor
             window.mShapePanel.OnInit();
             window.mouthPanel.OnInit();
             window.otherPanel.OnInit();           
+        }
+
+
+        public void ResetFaceCompoent(FaceControllerComponent faceCtrl)
+        {
+            if (faceCtrl == null)
+            {
+                return;
+            }
+            _faceCtrlComp = faceCtrl;
+
         }
 
         public static void StopClose()
@@ -217,6 +233,16 @@ namespace FaceCapEditor
 
         private void OnSelectionChange()
         {
+
+            if (Selection.activeGameObject != null)
+            {
+                var shapesCtrl = Selection.activeGameObject.GetComponent<FaceControllerComponent>();
+                if (shapesCtrl != null && shapesCtrl != FaceCtrlComp)
+                {
+                    ResetFaceCompoent(shapesCtrl);
+                }
+            }
+
             browPanel.OnPanelSelectionChange();
             cheekPanel.OnPanelSelectionChange();
             eyePanel.OnPanelSelectionChange();
