@@ -53,13 +53,13 @@ namespace FaceCapEditor
             leftSlider3.Init();
 
             BlendYController controllerRight1 = new BlendYController();
-            rightSlider1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft1);
+            rightSlider1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerRight1);
             rightSlider1.Init();
             BlendYController controllerRight2 = new BlendYController();
-            rightSlider2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft2);
+            rightSlider2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerRight2);
             rightSlider2.Init();
             BlendYController controllerRight3 = new BlendYController();
-            rightSlider3 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft3);
+            rightSlider3 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerRight3);
             rightSlider3.Init();
 
         }

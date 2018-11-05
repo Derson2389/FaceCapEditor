@@ -88,11 +88,12 @@ namespace FaceCapEditor
        
         public void OnUpdate(bool onfocus)
         {
-           
+             PreviewBlendController();
         }
 
         public void OnDraw(Vector2 size)
         {
+
             if (blendControllerX != null)
             {
                 HorizontalSliderValue = GUILayout.HorizontalSlider(HorizontalSliderValue, -1.00f, 1.00f, GUILayout.Width(size.x), GUILayout.Height(size.y));
@@ -103,7 +104,7 @@ namespace FaceCapEditor
                 VerticalSliderValue = GUILayout.VerticalSlider(VerticalSliderValue, 1.00f, -1.00f, GUILayout.Width(size.x), GUILayout.Height(size.y));
             }
 
-            PreviewBlendController();
+           
         }
        
         void ProcessResizeEvent()
@@ -241,16 +242,6 @@ namespace FaceCapEditor
         void PreviewBlendController()
         {
             float sliderValue = GetSliderValueFromWindow();
-            if (sliderValue != 0)
-            {
-                int i = 0;
-                i++;
-            }
-            else
-            {
-                int i = 0;
-                i++;
-            }
             CalculateBlendShapeValue(sliderValue);
 
             if (blendControllerX != null)
