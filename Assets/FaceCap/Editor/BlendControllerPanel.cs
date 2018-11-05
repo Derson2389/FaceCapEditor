@@ -5,7 +5,7 @@ namespace FaceCapEditor
 {
     public class BlendControllerPanel
     {
-        public const int panelPadding = 20;
+        public const int panelPadding = 6;
         public const int dragButtonSize = 10;
 
         public Rect centerPanel;
@@ -129,10 +129,13 @@ namespace FaceCapEditor
             //    // 编辑模板模式下
             //    PreviewBlendController();
             //}
+
+            PreviewBlendController();
         }
 
         public void OnDraw()
         {
+  
             if (_boxStyle == null)
                 _boxStyle = GUI.skin.FindStyle("box");
 

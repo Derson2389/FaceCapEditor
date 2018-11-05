@@ -13,6 +13,12 @@ namespace FaceCapEditor
     {
 
         public static FaceEditorMainWin window;
+        private FaceControllerComponent _faceCtrlComp = null;
+        public FaceControllerComponent FaceCtrlComp
+        {
+            get { return _faceCtrlComp; }
+        }
+
         public const float topBarHeight = 20f;
         /// <summary>
         /// the min subcut panel width
@@ -144,7 +150,6 @@ namespace FaceCapEditor
             window = EditorWindow.GetWindow<FaceEditorMainWin>(false, "表情编辑器", true);
             window.minSize = new Vector2(760 , 680);
             window.Show();
-           
             // OnInit is called after OnPanelEnable
             window.Init();
         }
@@ -160,20 +165,27 @@ namespace FaceCapEditor
             window.otherPanel.OnInit();           
         }
 
+
+        public void ResetFaceCompoent(FaceControllerComponent faceCtrl)
+        {
+            if (faceCtrl == null)
+            {
+                return;
+            }
+            _faceCtrlComp = faceCtrl;
+
+        }
+
         public static void StopClose()
         {
             if (window != null)
             {
-                window.Stop();
+                //window.Stop();
                 window.Close();
             }
         }
 
-        public void Stop()
-        {
-           
-        }
-
+        
         private void OnEnable()
         {
             Rect rect = new Rect();
@@ -217,8 +229,20 @@ namespace FaceCapEditor
             topbarPanel.OnPanelDisable();
         }
 
+        
+
         private void OnSelectionChange()
         {
+
+            if (Selection.activeGameObject != null)
+            {
+                var shapesCtrl = Selection.activeGameObject.GetComponent<FaceControllerComponent>();
+                if (shapesCtrl != null && shapesCtrl != FaceCtrlComp)
+                {
+                    ResetFaceCompoent(shapesCtrl);
+                }
+            }
+
             browPanel.OnPanelSelectionChange();
             cheekPanel.OnPanelSelectionChange();
             eyePanel.OnPanelSelectionChange();
@@ -277,10 +301,8 @@ namespace FaceCapEditor
                 Repaint();
         }
 
-
         private void DrawResizer()
         {
-
             // draw top panel resizer
             _topResizerRect = new Rect(0, topBarHeight, position.width , _topResizerSize);
             GUILayout.BeginArea(_topResizerRect, _resizerStyle);
@@ -386,12 +408,14 @@ namespace FaceCapEditor
             //}
         }
 
-
         public void Update()
-        {           
-           /// viewPanel.onUpdate();
+        {
+            /// viewPanel.onUpdate();
+            if (window!= null && window.browPanel != null)
+            {
+                window.browPanel.Update();
+            }               
         }
 
-        
     }
 }

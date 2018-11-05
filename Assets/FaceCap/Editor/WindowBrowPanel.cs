@@ -14,6 +14,14 @@ namespace FaceCapEditor
         private BlendControllerPanel leftController;
         private BlendControllerPanel rightController;
 
+        private BlendSlideControllerPanel leftSlider1;
+        private BlendSlideControllerPanel leftSlider2;
+        private BlendSlideControllerPanel leftSlider3;
+
+        private BlendSlideControllerPanel rightSlider1;
+        private BlendSlideControllerPanel rightSlider2;
+        private BlendSlideControllerPanel rightSlider3;
+
         public WindowBrowPanel(EditorWindow window, Rect rect)
         {
             panelRect = rect;
@@ -29,6 +37,27 @@ namespace FaceCapEditor
             controllerRight.windowSize = new Vector2(panelSize, panelSize);
             rightController = new BlendControllerPanel(this, new Rect(controllerRight.windowPosition, controllerRight.windowSize), controllerRight);
             rightController.Init();
+
+            BlendYController controllerLeft1 = new BlendYController();
+            leftSlider1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft1);
+            leftSlider1.Init();
+            BlendYController controllerLeft2 = new BlendYController();
+            leftSlider2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft2);
+            leftSlider2.Init();
+            BlendYController controllerLeft3 = new BlendYController();
+            leftSlider3 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft3);
+            leftSlider3.Init();
+
+            BlendYController controllerRight1 = new BlendYController();
+            rightSlider1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft1);
+            rightSlider1.Init();
+            BlendYController controllerRight2 = new BlendYController();
+            rightSlider2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft2);
+            rightSlider2.Init();
+            BlendYController controllerRight3 = new BlendYController();
+            rightSlider3 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft3);
+            rightSlider3.Init();
+
         }
 
         public override void OnPanelEnable()
@@ -51,10 +80,39 @@ namespace FaceCapEditor
             leftController.Reset();
             rightController.Reset();
         }
+   
+        public override void OnPanelSelectionChange()
+        {
+            base.OnPanelSelectionChange();
+
+            //leftController.OnUpdate(false);
+            //rightController.OnUpdate(false);
+
+            //leftSlider1.OnUpdate(false);
+            //leftSlider2.OnUpdate(false);
+            //leftSlider3.OnUpdate(false);
+
+            //rightSlider1.OnUpdate(false);
+            //rightSlider2.OnUpdate(false);
+            //rightSlider3.OnUpdate(false);
+        }
+
+        public void Update()
+        {
+            leftController.OnUpdate(false);
+            rightController.OnUpdate(false);
+
+            leftSlider1.OnUpdate(false);
+            leftSlider2.OnUpdate(false);
+            leftSlider3.OnUpdate(false);
+
+            rightSlider1.OnUpdate(false);
+            rightSlider2.OnUpdate(false);
+            rightSlider3.OnUpdate(false);
+        }
 
         public override void OnDraw()
-        {
-            
+        {            
             GUILayout.BeginArea(panelRect);
             GUILayout.BeginVertical();
             GUILayout.BeginHorizontal();
@@ -80,9 +138,9 @@ namespace FaceCapEditor
             GUILayout.BeginArea(newRect);         
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
-                GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
-                GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
+                leftSlider1.OnDraw(new Vector2(30, panelRect.height - 36));
+                leftSlider2.OnDraw(new Vector2(30, panelRect.height - 36));
+                leftSlider3.OnDraw(new Vector2(30, panelRect.height - 36));
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
@@ -91,9 +149,10 @@ namespace FaceCapEditor
             GUILayout.BeginArea(newRect);
             {
                 GUILayout.BeginHorizontal();
-                GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
-                GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
-                GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(panelRect.height - 36));
+                
+                rightSlider1.OnDraw(new Vector2(30, panelRect.height - 36));
+                rightSlider2.OnDraw(new Vector2(30, panelRect.height - 36));
+                rightSlider3.OnDraw(new Vector2(30, panelRect.height - 36));
                 GUILayout.EndHorizontal();
                 
             }
