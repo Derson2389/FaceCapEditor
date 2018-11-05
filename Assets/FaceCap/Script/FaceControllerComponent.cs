@@ -14,6 +14,7 @@ public class FaceControllerComponent : MonoBehaviour {
         SkinMesh = this.GetComponent<SkinnedMeshRenderer>();
         if (SkinMesh != null)
         {
+            blendShapeList.Clear();
             int blendShapesCnt = SkinMesh.sharedMesh.blendShapeCount;
             for (int idx = 0; idx < blendShapesCnt; idx++)
             {
@@ -25,7 +26,16 @@ public class FaceControllerComponent : MonoBehaviour {
             }
         }
     }
-	
+
+    public void SetFaceController(int idx, float weight)
+    {
+        SkinMesh = this.GetComponent<SkinnedMeshRenderer>();
+        if (SkinMesh != null)
+        {
+            SkinMesh.SetBlendShapeWeight(idx, weight);
+        }
+    }
+
 	// Update is called once per frame
 	void Update ()
     {

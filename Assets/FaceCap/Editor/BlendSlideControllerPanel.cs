@@ -38,7 +38,10 @@ namespace FaceCapEditor
         private float _HorizontalSliderValue = 0f;
         public float HorizontalSliderValue
         {
-            set { _HorizontalSliderValue = value; }
+            set
+            {
+                _HorizontalSliderValue = value;
+            }
             get { return _HorizontalSliderValue;  }
         }
 
@@ -50,8 +53,7 @@ namespace FaceCapEditor
         }
 
         // temp weights
-        private float[] _weights;
-
+        public float[] _weights;
         // 缩放相关
         private Rect _resizeRightRect;
         private Rect _resizeBottomRect;
@@ -76,12 +78,17 @@ namespace FaceCapEditor
         public void Init()
         {
             _resizerStyle = new GUIStyle();
-            _resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;           
+            _resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
+
+            if(_blendControllerX != null)
+                _weights = new float[_blendControllerX.blendShapeIndexs.Count];
+            if(_blendControllerY != null)
+                _weights = new float[_blendControllerY.blendShapeIndexs.Count];
         }
        
         public void OnUpdate(bool onfocus)
         {
-            PreviewBlendController();
+           
         }
 
         public void OnDraw(Vector2 size)
@@ -93,8 +100,10 @@ namespace FaceCapEditor
             
             if(blendControllerY != null)
             {              
-                VerticalSliderValue = GUILayout.VerticalSlider(VerticalSliderValue, -1.00f, 1.00f, GUILayout.Width(size.x), GUILayout.Height(size.y));
-            }        
+                VerticalSliderValue = GUILayout.VerticalSlider(VerticalSliderValue, 1.00f, -1.00f, GUILayout.Width(size.x), GUILayout.Height(size.y));
+            }
+
+            PreviewBlendController();
         }
        
         void ProcessResizeEvent()
@@ -212,17 +221,19 @@ namespace FaceCapEditor
                     _weights[(int)BlendYController.ControllerDirection.Bottom] = BlendYController.GetWeightFromPosition(BlendYController.ControllerDirection.Bottom, sliderValue);
                 }
             }           
+
+
         }
 
         public float GetSliderValueFromWindow()
         {
             if (blendControllerX != null)
             {
-                return VerticalSliderValue;
+                return HorizontalSliderValue;
             }
             if (blendControllerY != null)
             {
-                return HorizontalSliderValue;
+                return VerticalSliderValue;
             }
             return float.PositiveInfinity;
         }
@@ -230,6 +241,16 @@ namespace FaceCapEditor
         void PreviewBlendController()
         {
             float sliderValue = GetSliderValueFromWindow();
+            if (sliderValue != 0)
+            {
+                int i = 0;
+                i++;
+            }
+            else
+            {
+                int i = 0;
+                i++;
+            }
             CalculateBlendShapeValue(sliderValue);
 
             if (blendControllerX != null)
@@ -253,6 +274,9 @@ namespace FaceCapEditor
                         //}
 
                         //parent.lipSync.blendSystem.SetBlendableValue(parent.shape.blendShapes[blendShapeIndex].blendableIndex, weight);
+                        if (FaceEditorMainWin.window.FaceCtrlComp != null && weight !=0)
+                            FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(FaceEditorMainWin.window.FaceCtrlComp.blendShapeList[i].blendableIndex, weight);
+
                     }
                 }
             }
@@ -268,8 +292,8 @@ namespace FaceCapEditor
                         float weight = _weights[i];
 
                         //// 对于PositiveInfinity值，使用原始shape里面的weight
-                        //if (float.IsPositiveInfinity(_weights[i]))
-                        //    weight = parent.shape.blendShapes[blendShapeIndex].weight;
+                        if (float.IsPositiveInfinity(weight))
+                            weight = 11f;
 
                         //// 对于编辑关键帧模式， 如果是PositiveInfinity的话，还需要乘以marker的强度系数
                         //if (parent.editKey != null && float.IsPositiveInfinity(_weights[i]))
@@ -278,6 +302,8 @@ namespace FaceCapEditor
                         //}
 
                         //parent.lipSync.blendSystem.SetBlendableValue(parent.shape.blendShapes[blendShapeIndex].blendableIndex, weight);
+                        if(FaceEditorMainWin.window.FaceCtrlComp != null  && weight != 0)
+                            FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(FaceEditorMainWin.window.FaceCtrlComp.blendShapeList[i].blendableIndex, weight);
                     }
                 }
             }

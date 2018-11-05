@@ -207,13 +207,10 @@ namespace FaceCapEditor
                     {
                         GUILayout.BeginHorizontal();
 
-                        //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
-                        //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
                         mouthLeftUpPanel1.OnDraw(new Vector2(30, 80));
                         mouthLeftUpPanel2.OnDraw(new Vector2(30, 80));
                         GUILayout.FlexibleSpace();
-                        // GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
-                        // GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
+
                         mouthRightUpPanel1.OnDraw(new Vector2(30, 80));
                         mouthRightUpPanel2.OnDraw(new Vector2(30, 80));
 

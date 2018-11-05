@@ -39,6 +39,10 @@ namespace FaceCapEditor
             rightController.Init();
 
             BlendYController controllerLeft1 = new BlendYController();
+            controllerLeft1.top = 0;
+            controllerLeft1.bottom = 1;
+            controllerLeft1.controllerIndex = 0;
+            controllerLeft1.controllerName = "browControllerLeft1";
             leftSlider1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft1);
             leftSlider1.Init();
             BlendYController controllerLeft2 = new BlendYController();

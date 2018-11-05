@@ -173,7 +173,7 @@ namespace FaceCapEditor
                 return;
             }
             _faceCtrlComp = faceCtrl;
-
+          
         }
 
         public static void StopClose()
@@ -410,6 +410,15 @@ namespace FaceCapEditor
 
         public void Update()
         {
+            if (FaceCtrlComp == null && Selection.activeGameObject != null)               
+            {
+                var shapesCtrl = Selection.activeGameObject.GetComponent<FaceControllerComponent>();
+                if (shapesCtrl != null && shapesCtrl != FaceCtrlComp)
+                {
+                    ResetFaceCompoent(shapesCtrl);
+                }
+
+            }
             /// viewPanel.onUpdate();
             if (window!= null && window.browPanel != null)
             {

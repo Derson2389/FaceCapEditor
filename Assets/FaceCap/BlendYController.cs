@@ -37,8 +37,6 @@ public class BlendYController
     [SerializeField]
     public Vector2 windowSize = new Vector2(220, 220);
 
-    private float sliderWidth = 0f;
-    private float sliderHeight = 0f;
     /// <summary>
 	/// The blendSharps indeces in Sharps. 
     /// the index is top, left.
@@ -76,14 +74,14 @@ public class BlendYController
         switch (dir)
         {
             case ControllerDirection.Top:
-                if (sliderValue > 0f)
+                if (sliderValue < 0)
                     value = float.PositiveInfinity;
                 else
                     value = Mathf.Abs(sliderValue) * 100;
                 break;
 
             case ControllerDirection.Bottom:
-                if (sliderValue < 0f)
+                if (sliderValue > 0)
                     value = float.PositiveInfinity;
                 else
                     value = Mathf.Abs(sliderValue) * 100;
