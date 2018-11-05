@@ -29,21 +29,20 @@ namespace FaceCapEditor
         {
             get { return _blendControllerX; }
         }
-
         private BlendYController _blendControllerY;
         public BlendYController blendControllerY
         {
             get { return _blendControllerY; }
         }
 
-        private float _HorizontalSliderValue = float.PositiveInfinity;
+        private float _HorizontalSliderValue = 0f;
         public float HorizontalSliderValue
         {
             set { _HorizontalSliderValue = value; }
             get { return _HorizontalSliderValue;  }
         }
 
-        private float _VerticalSliderValue = float.PositiveInfinity;
+        private float _VerticalSliderValue = 0f;
         public float VerticalSliderValue
         {
             set { _VerticalSliderValue = value; }
@@ -66,13 +65,6 @@ namespace FaceCapEditor
             get { return _resizeHorPressed || _resizeVerPressed; }
         }
 
-        // 是否在拖动控制点
-        private bool _dragButtonPressed = false;
-        public bool dragButtonPressed
-        {
-            get { return _dragButtonPressed; }
-        }
-
         public BlendSlideControllerPanel(WindowPanel parent, Rect rect, BlendXController blendControllerX = null, BlendYController blendControllerY = null)
         {
             this.parent = parent;
@@ -84,56 +76,27 @@ namespace FaceCapEditor
         public void Init()
         {
             _resizerStyle = new GUIStyle();
-            _resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
-
-            
+            _resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;           
         }
-
-        
-
+       
         public void OnUpdate(bool onfocus)
         {
-            if (onfocus == false)
-            {
-                _dragButtonPressed = false;
-                _resizeHorPressed = false;
-                _resizeVerPressed = false;
-            }
-           
+            PreviewBlendController();
         }
 
         public void OnDraw(Vector2 size)
         {
             if (blendControllerX != null)
             {
-
-                HorizontalSliderValue = GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(size.x), GUILayout.Height(size.y));
+                HorizontalSliderValue = GUILayout.HorizontalSlider(HorizontalSliderValue, -1.00f, 1.00f, GUILayout.Width(size.x), GUILayout.Height(size.y));
             }     
             
             if(blendControllerY != null)
-            {
-               
-                VerticalSliderValue = GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(size.x), GUILayout.Height(size.y));
-            }
-           
+            {              
+                VerticalSliderValue = GUILayout.VerticalSlider(VerticalSliderValue, -1.00f, 1.00f, GUILayout.Width(size.x), GUILayout.Height(size.y));
+            }        
         }
-
-        void DrawResizer()
-        {
-            // draw story panel resizer
-            _resizeBottomRect = new Rect(0, centerPanel.height - 2, centerPanel.width, 4);
-            GUILayout.BeginArea(_resizeBottomRect, _resizerStyle);
-            GUILayout.EndArea();
-            EditorGUIUtility.AddCursorRect(_resizeBottomRect, MouseCursor.ResizeVertical);
-
-            _resizeRightRect = new Rect(centerPanel.width - 2, 0, 4, centerPanel.height);
-            GUILayout.BeginArea(_resizeRightRect, _resizerStyle);
-            GUILayout.EndArea();
-            EditorGUIUtility.AddCursorRect(_resizeRightRect, MouseCursor.ResizeHorizontal);
-
-            ProcessResizeEvent();
-        }
-
+       
         void ProcessResizeEvent()
         {
             switch (Event.current.type)
@@ -147,7 +110,7 @@ namespace FaceCapEditor
                         //Debug.Log("_resize BottomRect MouseDown");
                         _resizeVerPressed = true;
                         _resizeHorPressed = false;
-                        _dragButtonPressed = false;
+                       
                         //Event.current.Use();
                     }
                     else if (Event.current.button == 0 && _resizeRightRect.Contains(Event.current.mousePosition))
@@ -155,7 +118,7 @@ namespace FaceCapEditor
                         //Debug.Log("_resize RightRect MouseDown");
                         _resizeHorPressed = true;
                         _resizeVerPressed = false;
-                        _dragButtonPressed = false;
+                        
                         // Event.current.Use();
                     }
                     break;
@@ -164,7 +127,7 @@ namespace FaceCapEditor
                     //Debug.Log("_resize MouseUp");
                     _resizeHorPressed = false;
                     _resizeVerPressed = false;
-                    _dragButtonPressed = false;
+                    
                     break;
 
                 case EventType.MouseDrag:
@@ -188,16 +151,6 @@ namespace FaceCapEditor
             }
         }
 
-        void DrawDragButton()
-        {
-            GUILayout.BeginArea(_centerPanelRect, _boxStyle);
-
-            ProcessDragEvents();
-            GUI.Button(_dragButtonRect, "");
-
-            GUILayout.EndArea();
-        }
-
         void ProcessDragEvents()
         {
             switch (Event.current.type)
@@ -206,7 +159,7 @@ namespace FaceCapEditor
                     if (Event.current.button == 0 && _dragButtonRect.Contains(Event.current.mousePosition))
                     {
                         //Debug.Log("mousue down: " + Event.current.mousePosition);
-                        _dragButtonPressed = true;
+                        //_dragButtonPressed = true;
                         _resizeHorPressed = false;
                         _resizeVerPressed = false;
                         //Event.current.Use();
@@ -214,138 +167,17 @@ namespace FaceCapEditor
                     break;
 
                 case EventType.MouseUp:
-                    _dragButtonPressed = false;
+                    //_dragButtonPressed = false;
                     _resizeHorPressed = false;
                     _resizeVerPressed = false;
                     break;
 
                 case EventType.MouseDrag:
                     {
-                        if (_dragButtonPressed)
-                        {
-                            // because the GUI's orignal position is Upper-Left Corner, so we use center pos
-                            Vector2 centerDragPos = _dragButtonRect.center;
-
-                            // do drag opertaion and set drag value for button
-                            if (Event.current.mousePosition.x >= _validDragRect.x && Event.current.mousePosition.x <= _validDragRect.x + _validDragRect.width)
-                                centerDragPos.x = Event.current.mousePosition.x;
-                            else
-                            {
-                                if (Event.current.mousePosition.x < _validDragRect.x)
-                                    centerDragPos.x = _validDragRect.x;
-
-                                if (Event.current.mousePosition.x > _validDragRect.x + _validDragRect.width)
-                                    centerDragPos.x = _validDragRect.x + _validDragRect.width;
-                            }
-
-                            if (Event.current.mousePosition.y >= _validDragRect.y && Event.current.mousePosition.y <= _validDragRect.y + _validDragRect.height)
-                                centerDragPos.y = Event.current.mousePosition.y;
-                            else
-                            {
-                                if (Event.current.mousePosition.y < _validDragRect.y)
-                                    centerDragPos.y = _validDragRect.y;
-
-                                if (Event.current.mousePosition.y > _validDragRect.y + _validDragRect.height)
-                                    centerDragPos.y = _validDragRect.y + _validDragRect.height;
-                            }
-
-                            _dragButtonRect.center = centerDragPos;
-                            //Event.current.Use();
-                        }
+                        
                     }
                     break;
             }
-        }
-
-        public void UpdateDragButton(Vector2 delta)
-        {
-            Vector2 centerDragPos = _dragButtonRect.center;
-            centerDragPos += delta;
-
-            // do drag opertaion and set drag value for button
-            if (centerDragPos.x + delta.x >= _validDragRect.x && centerDragPos.x + delta.x <= _validDragRect.x + _validDragRect.width)
-                centerDragPos.x = centerDragPos.x + delta.x;
-            else
-            {
-                if (centerDragPos.x + delta.x < _validDragRect.x)
-                    centerDragPos.x = _validDragRect.x;
-
-                if (centerDragPos.x + delta.x > _validDragRect.x + _validDragRect.width)
-                    centerDragPos.x = _validDragRect.x + _validDragRect.width;
-            }
-
-            if (centerDragPos.y + delta.y >= _validDragRect.y && centerDragPos.y + delta.y <= _validDragRect.y + _validDragRect.height)
-                centerDragPos.y = centerDragPos.y + delta.y;
-            else
-            {
-                if (centerDragPos.y + delta.y < _validDragRect.y)
-                    centerDragPos.y = _validDragRect.y;
-
-                if (centerDragPos.y + delta.y > _validDragRect.y + _validDragRect.height)
-                    centerDragPos.y = _validDragRect.y + _validDragRect.height;
-            }
-
-            _dragButtonRect.center = centerDragPos;
-        }
-
-        void DrawSelectionBtns()
-        {
-            //for (int i = (int)BlendGridController.ControllerDirection.Top; i <= (int)BlendGridController.ControllerDirection.Right; i++)
-            //{
-            //    GUIStyle btnStyle = parent.unsetStyle;
-            //    string btnName = "";
-
-            //    if (blendController.blendShapeIndexs[i] != -1)
-            //    {
-            //        btnStyle = parent.setStyle;
-            //        btnName = blendController.blendShapeIndexs[i].ToString();
-            //    }
-
-            //    if (GUI.Button(_controlBtnRect[i], btnName, btnStyle))
-            //    {
-            //        GenericMenu markerMenu = new GenericMenu();
-
-            //        for (int b = 0; b < parent.shape.blendShapes.Count; b++)
-            //        {
-            //            // 如果当前是编辑模板模式，才能绑定blendshape
-            //            if (parent.editKey == null)
-            //            {
-            //                // i是blendshape在BlendController里面的index, b是blendshape在shape里面的index 
-            //                if (blendController.blendShapeIndexs[i] == b)
-            //                    markerMenu.AddItem(new GUIContent(parent.shape.blendShapes[b].blendableName), true, OnBindBlendShapeMenu, new List<int> { i, b });
-            //                else
-            //                    markerMenu.AddItem(new GUIContent(parent.shape.blendShapes[b].blendableName), false, OnBindBlendShapeMenu, new List<int> { i, b });
-            //            }
-            //            else
-            //            {
-            //                markerMenu.AddDisabledItem(new GUIContent(parent.shape.blendShapes[b].blendableName));
-            //            }
-            //        }
-
-            //        markerMenu.ShowAsContext();
-            //    }
-            //}
-        }
-
-        /// <summary>
-        /// callback for GenericMenu selection
-        /// </summary>
-        /// <param name="userData">the userData is ControllerOption instance</param>
-        void OnBindBlendShapeMenu(object userData)
-        {
-            //List<int> menuOption = (List<int>)userData;
-            //int index = menuOption[0];
-            //int value = menuOption[1];
-
-            //Undo.RecordObject(parent.lipSync, "Change LipSync");
-
-            //if (blendController.blendShapeIndexs[index] == value)
-            //    blendController.blendShapeIndexs[index] = -1;
-            //else
-            //    blendController.blendShapeIndexs[index] = value;
-
-            //// 保存模板
-            //EditorUtility.SetDirty(parent.lipSync);
         }
 
         void CalculateBlendShapeValue(float sliderValue)
@@ -380,20 +212,6 @@ namespace FaceCapEditor
                     _weights[(int)BlendYController.ControllerDirection.Bottom] = BlendYController.GetWeightFromPosition(BlendYController.ControllerDirection.Bottom, sliderValue);
                 }
             }           
-        }
-
-        Vector2 GetWindowPosFromNormalizedPos(Vector2 normalizedPos)
-        {
-            float x = _validDragRect.center.x + ((normalizedPos.x * _validDragRect.width) / 2);
-            float y = _validDragRect.center.y + ((normalizedPos.y * _validDragRect.height) / 2);
-            return new Vector2(x, y);
-        }
-
-        Vector2 GetNormalizedPosFromWindowPos(Rect dragRect)
-        {
-            float x = (dragRect.center.x - _validDragRect.center.x) / (_validDragRect.width / 2);
-            float y = (dragRect.center.y - _validDragRect.center.y) / (_validDragRect.height / 2);
-            return new Vector2(x, y);
         }
 
         public float GetSliderValueFromWindow()
@@ -466,8 +284,7 @@ namespace FaceCapEditor
         }
 
         public void Reset()
-        {
-            _dragButtonRect.center = GetWindowPosFromNormalizedPos(Vector2.zero);
+        {            
             PreviewBlendController();
         }
     }

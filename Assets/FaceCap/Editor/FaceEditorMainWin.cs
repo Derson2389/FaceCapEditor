@@ -164,16 +164,12 @@ namespace FaceCapEditor
         {
             if (window != null)
             {
-                window.Stop();
+                //window.Stop();
                 window.Close();
             }
         }
 
-        public void Stop()
-        {
-           
-        }
-
+        
         private void OnEnable()
         {
             Rect rect = new Rect();
@@ -216,6 +212,8 @@ namespace FaceCapEditor
             mShapePanel.OnPanelDisable();
             topbarPanel.OnPanelDisable();
         }
+
+        
 
         private void OnSelectionChange()
         {
@@ -277,10 +275,8 @@ namespace FaceCapEditor
                 Repaint();
         }
 
-
         private void DrawResizer()
         {
-
             // draw top panel resizer
             _topResizerRect = new Rect(0, topBarHeight, position.width , _topResizerSize);
             GUILayout.BeginArea(_topResizerRect, _resizerStyle);
@@ -386,12 +382,14 @@ namespace FaceCapEditor
             //}
         }
 
-
         public void Update()
-        {           
-           /// viewPanel.onUpdate();
+        {
+            /// viewPanel.onUpdate();
+            if (window!= null && window.browPanel != null)
+            {
+                window.browPanel.Update();
+            }               
         }
 
-        
     }
 }

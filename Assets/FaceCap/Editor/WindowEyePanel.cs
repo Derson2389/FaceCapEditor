@@ -13,12 +13,20 @@ namespace FaceCapEditor
         private BlendControllerPanel eyeLidLeftDownController;
         private BlendControllerPanel eyeLidRightDownController;
 
+        private BlendSlideControllerPanel eyeLidSliedLeftCtrl;
+        private BlendSlideControllerPanel eyeLidSliedRightCtrl;
+
         //Eye
         private BlendControllerPanel eyeLeftUpController;
         private BlendControllerPanel eyeRightUpController;
         private BlendControllerPanel eyeLeftDownController;
         private BlendControllerPanel eyeRightDownController;
 
+        private BlendSlideControllerPanel eyeLeftCtrl1;
+        private BlendSlideControllerPanel eyeLeftCtrl2;
+        private BlendSlideControllerPanel eyeRightCtrl1;
+        private BlendSlideControllerPanel eyeRightCtrl2;
+        
         public const int panelSizeMax = 100;
         public const int panelSizeMin = 70;
 
@@ -51,6 +59,14 @@ namespace FaceCapEditor
             eyeLidRightDownController = new BlendControllerPanel(this, new Rect(controllerRightDown.windowPosition, controllerRightDown.windowSize), controllerRightDown);
             eyeLidRightDownController.Init();
 
+            BlendYController controllerEyeLidLeft1 = new BlendYController();
+            eyeLidSliedLeftCtrl = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeLidLeft1);
+            eyeLidSliedLeftCtrl.Init();
+            BlendYController controllerEyeLidLeft2 = new BlendYController();
+            eyeLidSliedRightCtrl = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeLidLeft2);
+            eyeLidSliedRightCtrl.Init();
+
+
             //Eye
             BlendGridController eyecontrollerLeft = new BlendGridController();
             eyecontrollerLeft.windowPosition = new Vector2(10, 10);
@@ -76,6 +92,23 @@ namespace FaceCapEditor
             eyeRightDownController = new BlendControllerPanel(this, new Rect(eyecontrollerRightDown.windowPosition, eyecontrollerRightDown.windowSize), eyecontrollerRightDown);
             eyeRightDownController.Init();
 
+            BlendYController controllerEyeLeft1 = new BlendYController();
+            eyeLeftCtrl1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeLeft1);
+            eyeLeftCtrl1.Init();
+
+            BlendYController controllerEyeLeft2 = new BlendYController();
+            eyeLeftCtrl2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeLeft2);
+            eyeLeftCtrl2.Init();
+
+
+            BlendYController controllerEyeRightCtrl1 = new BlendYController();
+            eyeRightCtrl1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeRightCtrl1);
+            eyeRightCtrl1.Init();
+
+            BlendYController controllerEyeRightCtrl2 = new BlendYController();
+            eyeRightCtrl2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeRightCtrl2);
+            eyeRightCtrl2.Init();
+
         }
 
         public override void OnPanelEnable()
@@ -100,8 +133,10 @@ namespace FaceCapEditor
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(180));
-                    GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(180));
+                    //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(180));
+                    eyeLidSliedLeftCtrl.OnDraw(new Vector2(30,180));
+                    //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(180));
+                    eyeLidSliedRightCtrl.OnDraw(new Vector2(30, 180));
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
@@ -154,8 +189,10 @@ namespace FaceCapEditor
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
-                    GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
+                    //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
+                    //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
+                    eyeLeftCtrl1.OnDraw(new Vector2(15, 80));
+                    eyeLeftCtrl2.OnDraw(new Vector2(15, 80));
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                     GUILayout.EndArea();
@@ -166,8 +203,10 @@ namespace FaceCapEditor
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
-                    GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
+                    // GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
+                    // GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
+                    eyeRightCtrl1.OnDraw(new Vector2(15, 80));
+                    eyeRightCtrl2.OnDraw(new Vector2(15, 80));
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                     GUILayout.EndArea();

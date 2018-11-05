@@ -11,6 +11,13 @@ namespace FaceCapEditor
         //Others
         private BlendControllerPanel teethControllerUp;
         private BlendControllerPanel teethControllerDown;
+
+        private BlendSlideControllerPanel controllerPanelAdd1;
+        private BlendSlideControllerPanel controllerPanelAdd2;
+        private BlendSlideControllerPanel controllerPanelAdd3;
+        private BlendSlideControllerPanel controllerPanelAdd4;
+
+
         public const int panelSize = 100;
 
         public WindowOtherPanel(EditorWindow window, Rect rect)
@@ -29,6 +36,23 @@ namespace FaceCapEditor
             controllerTeethDown.windowSize = new Vector2(panelSize, panelSize);
             teethControllerDown = new BlendControllerPanel(this, new Rect(controllerTeethDown.windowPosition, controllerTeethDown.windowSize), controllerTeethDown);
             teethControllerDown.Init();
+
+            BlendXController controllerAdd1 = new BlendXController();
+            controllerPanelAdd1 = new BlendSlideControllerPanel(this, Rect.zero, controllerAdd1, null);
+            controllerPanelAdd1.Init();
+
+            BlendXController controllerAdd2 = new BlendXController();
+            controllerPanelAdd2 = new BlendSlideControllerPanel(this, Rect.zero, controllerAdd2, null);
+            controllerPanelAdd2.Init();
+
+            BlendXController controllerAdd3 = new BlendXController();
+            controllerPanelAdd3 = new BlendSlideControllerPanel(this, Rect.zero, controllerAdd3, null);
+            controllerPanelAdd3.Init();
+
+            BlendXController controllerAdd4 = new BlendXController();
+            controllerPanelAdd4 = new BlendSlideControllerPanel(this, Rect.zero, controllerAdd4, null);
+            controllerPanelAdd4.Init();
+
 
         }
 
@@ -79,25 +103,29 @@ namespace FaceCapEditor
 
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
+                ///GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
+                controllerPanelAdd1.OnDraw(new Vector2(120, 20));
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
+                ///GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
+                controllerPanelAdd2.OnDraw(new Vector2(120, 20));
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
+                ///GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
+                controllerPanelAdd3.OnDraw(new Vector2(120, 20));
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
-                GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
+                //GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
+                controllerPanelAdd4.OnDraw(new Vector2(120, 20));
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 

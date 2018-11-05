@@ -129,6 +129,8 @@ namespace FaceCapEditor
             //    // 编辑模板模式下
             //    PreviewBlendController();
             //}
+
+            PreviewBlendController();
         }
 
         public void OnDraw()

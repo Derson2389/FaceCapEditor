@@ -39,7 +39,7 @@ public class BlendXController
 
     /// <summary>
 	/// The blendSharps indeces in Sharps. 
-    /// the index is top, left, bottom, right.
+    /// the index is left, right.
 	/// </summary>
 	[SerializeField]
     public List<int> blendShapeIndexs = new List<int>();

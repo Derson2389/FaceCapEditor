@@ -22,6 +22,20 @@ namespace FaceCapEditor
         private BlendControllerPanel mouthDownController;
         private BlendControllerPanel mouthCenterController;
 
+        //slide left up
+        private BlendSlideControllerPanel mouthLeftUpPanel1;
+        private BlendSlideControllerPanel mouthLeftUpPanel2;
+        //slide right up
+        private BlendSlideControllerPanel mouthRightUpPanel1;
+        private BlendSlideControllerPanel mouthRightUpPanel2;
+        //slide left down
+        private BlendSlideControllerPanel mouthLeftDownPanel1;
+        private BlendSlideControllerPanel mouthLeftDownPanel2;
+        //slide right down
+        private BlendSlideControllerPanel mouthRightDownPanel1;
+        private BlendSlideControllerPanel mouthRightDownPanel2;
+        //slide center down
+        private BlendSlideControllerPanel mouthCenterDownPanel;
 
         public WindowMouthPanel(EditorWindow window, Rect rect)
         {
@@ -68,14 +82,50 @@ namespace FaceCapEditor
             mouthLeftController = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
             mouthLeftController.Init();
 
-
             BlendGridController controllerRight = new BlendGridController();
             controllerRight.windowPosition = new Vector2(300, 0);
             controllerRight.windowSize = new Vector2(panelSize, panelSize);
             mouthRightController = new BlendControllerPanel(this, new Rect(controllerRight.windowPosition, controllerRight.windowSize), controllerRight);
             mouthRightController.Init();
 
+            //slider controller
+            //up
+            BlendYController controllerMouthUpL = new BlendYController();
+            mouthLeftUpPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthUpL);
+            mouthLeftUpPanel1.Init();
+
+            BlendYController controllerMouthUpR = new BlendYController();
+            mouthLeftUpPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthUpR);
+            mouthLeftUpPanel2.Init();
+
+            BlendYController controllerMouthL = new BlendYController();
+            mouthRightUpPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthL);
+            mouthRightUpPanel1.Init();
+
+            BlendYController controllerMouthR = new BlendYController();
+            mouthRightUpPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthR);
+            mouthRightUpPanel2.Init();
+            //down
+            BlendYController controllerMouthDownL1 = new BlendYController();
+            mouthLeftDownPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownL1);
+            mouthLeftDownPanel1.Init();
+            BlendYController controllerMouthDownL2 = new BlendYController();
+            mouthLeftDownPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownL2);
+            mouthLeftDownPanel2.Init();
+
+            BlendYController controllerMouthDownR1 = new BlendYController();
+            mouthRightDownPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownR1);
+            mouthRightDownPanel1.Init();
+            BlendYController controllerMouthDownR2 = new BlendYController();
+            mouthRightDownPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownR2);
+            mouthRightDownPanel2.Init();
+
+            BlendXController controllerCenterDown = new BlendXController();
+            mouthCenterDownPanel = new BlendSlideControllerPanel(this, Rect.zero, controllerCenterDown, null);
+            mouthCenterDownPanel.Init();
+
         }
+
 
         public override void OnPanelEnable()
         {
@@ -156,11 +206,17 @@ namespace FaceCapEditor
                     GUILayout.BeginArea(newRect1);
                     {
                         GUILayout.BeginHorizontal();
-                        GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
-                        GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
+
+                        //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
+                        //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
+                        mouthLeftUpPanel1.OnDraw(new Vector2(30, 80));
+                        mouthLeftUpPanel2.OnDraw(new Vector2(30, 80));
                         GUILayout.FlexibleSpace();
-                        GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
-                        GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
+                        // GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
+                        // GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
+                        mouthRightUpPanel1.OnDraw(new Vector2(30, 80));
+                        mouthRightUpPanel2.OnDraw(new Vector2(30, 80));
+
                         GUILayout.EndHorizontal();
 
                         mouthUpController.OnDraw();
@@ -187,17 +243,20 @@ namespace FaceCapEditor
                     {
                         GUILayout.BeginVertical();
                         GUILayout.BeginHorizontal();
-                        GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
-                        GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
+                       
+                        mouthLeftDownPanel1.OnDraw(new Vector2(30, 80));
+                        mouthLeftDownPanel2.OnDraw(new Vector2(30, 80));
+
                         GUILayout.FlexibleSpace();
-                        GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
-                        GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(80));
+                        mouthRightDownPanel1.OnDraw(new Vector2(30, 80));
+                        mouthRightDownPanel2.OnDraw(new Vector2(30, 80));
                         GUILayout.EndHorizontal();
                         GUILayout.FlexibleSpace();
                         GUILayout.Space(10);
                         GUILayout.BeginHorizontal();
                         GUILayout.FlexibleSpace();
-                        GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(80), GUILayout.Height(30));
+                        ///GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(80), GUILayout.Height(30));
+                        mouthCenterDownPanel.OnDraw(new Vector2(80, 30));
                         GUILayout.Space(20);
                         GUILayout.FlexibleSpace();
                         GUILayout.EndHorizontal();

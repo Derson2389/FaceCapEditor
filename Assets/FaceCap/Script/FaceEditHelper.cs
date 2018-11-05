@@ -179,7 +179,10 @@ namespace Assets.FaceEditor.Script
             public SyncType controllerType = SyncType.SyncType_X;
         }
 
+        
 
+
+      
 
 
     }
