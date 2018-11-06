@@ -40,6 +40,21 @@ public class FaceControllerComponent : MonoBehaviour {
         }
     }
 
+    public BlendShape GetBlendShapeIdxByName(string name)
+    {
+        BlendShape shape = null;
+        for(int i = 0; i< blendShapeList.Count; i++)
+        {
+            var bs = blendShapeList[i];
+            if (bs.blendableName.Contains(name))
+            {
+                shape = bs;
+            }
+        }
+        return shape;
+    }
+
+
 	// Update is called once per frame
 	void Update ()
     {

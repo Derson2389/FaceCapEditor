@@ -50,6 +50,22 @@ public static class BlenderShapesManager  {
                     if (type == "Y")
                     {
                         intType = 1;
+
+                        BlenderShapeCtrl addDummy = new BlenderShapeCtrl();
+                        addDummy.ctrlName = ctrName;
+                        addDummy.ctrlType = intType;
+                        string[] bs1 = parseStr[2].Split('|');
+                        addDummy.upValue = int.Parse(bs1[1]);
+                        BlendShape newBs1 = new BlendShape();
+                        newBs1.blendableName = bs1[0];
+                        string[] bs2 = parseStr[3].Split('|');
+                        addDummy.downValue = int.Parse(bs2[1]);
+                        BlendShape newBs2 = new BlendShape();
+                        newBs2.blendableName = bs2[0];
+                        newBs2.blendableIndex = 
+
+                        addDummy.ctrlBlendShapes.Add();
+
                     }
                     else if (type == "X")
                     {
