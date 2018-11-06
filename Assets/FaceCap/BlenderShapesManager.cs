@@ -21,8 +21,8 @@ public static class BlenderShapesManager  {
         {
             top,
             down,
-            left,
-            right
+            right,
+            left
         }
 
         public List<BlendShape> ctrlBlendShapes = new List<BlendShape>();
