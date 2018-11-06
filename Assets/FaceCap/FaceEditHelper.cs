@@ -78,9 +78,9 @@ public static class FaceEditHelper
 		//E
 		M_facialControl,
 	}
+    
 
-
-	public static string[] FaceControllerNames =
+    public static string[] FaceControllerNames =
 	{
 		//brow list
 		"r_out_brow_facialControl",
@@ -164,22 +164,12 @@ public static class FaceEditHelper
 		"kouxing_list"
 	};
 
-	public enum SyncType          
+	public enum ControllerType          
    {
 		SyncType_X ,
 		SyncType_Y ,
 		SyncType_XY,
 	}
-
-	public class FaceControllerMod
-	{
-		public string controllerName = string.Empty;
-		public List<string> blenderShaps = new List<string>();
-		public SyncType controllerType = SyncType.SyncType_X;
-	}
-
-
-
 
 }
 

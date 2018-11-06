@@ -7,7 +7,6 @@ namespace FaceCapEditor
 {
     public class WindowBrowPanel : WindowPanel
     {
-
         public GUIStyle unsetStyle = null;
         public GUIStyle setStyle = null;
         public const int panelSize = 100;
@@ -31,7 +30,7 @@ namespace FaceCapEditor
             controllerLeft.windowSize = new Vector2(panelSize, panelSize);
             leftController  = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
             leftController.Init();
-
+            
             BlendGridController controllerRight = new BlendGridController();
             controllerRight.windowPosition = new Vector2(20, 10);
             controllerRight.windowSize = new Vector2(panelSize, panelSize);

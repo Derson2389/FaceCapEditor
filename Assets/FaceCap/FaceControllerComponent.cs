@@ -9,6 +9,10 @@ public class FaceControllerComponent : MonoBehaviour {
     private SkinnedMeshRenderer SkinMesh = null;
     public List<BlendShape> blendShapeList = new List<BlendShape>();
 
+    private string configPath = string.Empty;
+    [SerializeField]
+    public List<string> controllerList = new List<string>();
+
 	// Use this for initialization
 	void Start () {
         SkinMesh = this.GetComponent<SkinnedMeshRenderer>();
