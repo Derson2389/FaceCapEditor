@@ -329,6 +329,22 @@ Prefab:
       propertyPath: m_BlendShapeWeights.Array.data[3]
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
+      propertyPath: m_BlendShapeWeights.Array.data[16]
+      value: 5.1282053
+      objectReference: {fileID: 0}
+    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
+      propertyPath: m_BlendShapeWeights.Array.data[17]
+      value: 2.5641026
+      objectReference: {fileID: 0}
+    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
+      propertyPath: m_BlendShapeWeights.Array.data[19]
+      value: 5.1282053
+      objectReference: {fileID: 0}
+    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
+      propertyPath: m_BlendShapeWeights.Array.data[18]
+      value: 15.384616
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
   m_IsPrefabParent: 0
