@@ -4,3 +4,5 @@ r_in_brow_facialControl,Y,r_in_brow_up|1,r_in_brow_dn|-1
 l_out_brow_facialControl,Y,l_out_brow_up|1,l_out_brow_dn|-1
 l_mid_brow_facialControl,Y,l_mid_brow_up|1,l_mid_brow_dn|-1
 l_in_brow_facialControl,Y,l_in_brow_up|1,l_in_brow_dn|-1
+r_brow_move_facialControl,XY,r_brow_move_up|1,r_brow_move_dn|-1,r_brow_move_l|1,r_brow_move_r|-1
+l_brow_move_facialControl,XY,l_brow_move_up|1,l_brow_move_dn|-1,l_brow_move_l|1,l_brow_move_r|-1

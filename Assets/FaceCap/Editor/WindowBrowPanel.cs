@@ -24,13 +24,47 @@ namespace FaceCapEditor
         public WindowBrowPanel(EditorWindow window, Rect rect)
         {
             panelRect = rect;
-            panelWindow = window;
+            panelWindow = window; 
+            
+
+            
+
+            
+
+        }
+
+        public override void OnPanelEnable()
+        {
+            base.OnPanelEnable();
+
+            Texture2D unsetIcon = (Texture2D)AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/FaceCap/Png/default_icon.png");
+            Texture2D setIcon = (Texture2D)AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/FaceCap/Png/white.png");
+
+            unsetStyle = new GUIStyle();
+            unsetStyle.normal.background = unsetIcon;
+            setStyle = new GUIStyle();
+            setStyle.normal.background = setIcon;
+            setStyle.alignment = TextAnchor.MiddleCenter;
+
             BlendGridController controllerLeft = new BlendGridController();
             controllerLeft.windowPosition = new Vector2(20, 10);
             controllerLeft.windowSize = new Vector2(panelSize, panelSize);
-            leftController  = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
+
+            BlenderShapesManager.BlenderShapeCtrl crl = BlenderShapesManager.getControllerByName("l_brow_move_facialControl");
+
+            if (crl != null)
+            {
+                controllerLeft.top = crl.ctrlBlendShapes[(int)BlenderShapesManager.BlenderShapeCtrl.blendIdx.top].blendableIndex;
+                controllerLeft.bottom = crl.ctrlBlendShapes[(int)BlenderShapesManager.BlenderShapeCtrl.blendIdx.down].blendableIndex; ;
+                controllerLeft.left = crl.ctrlBlendShapes[(int)BlenderShapesManager.BlenderShapeCtrl.blendIdx.left].blendableIndex; ;
+                controllerLeft.right = crl.ctrlBlendShapes[(int)BlenderShapesManager.BlenderShapeCtrl.blendIdx.right].blendableIndex; ;
+
+                controllerLeft.controllerName = "l_brow_move_facialControl";
+
+            }
+            leftController = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
             leftController.Init();
-            
+
             BlendGridController controllerRight = new BlendGridController();
             controllerRight.windowPosition = new Vector2(20, 10);
             controllerRight.windowSize = new Vector2(panelSize, panelSize);
@@ -63,47 +97,37 @@ namespace FaceCapEditor
 
         }
 
-        public override void OnPanelEnable()
-        {
-            base.OnPanelEnable();
-
-            Texture2D unsetIcon = (Texture2D)AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/FaceCap/Png/default_icon.png");
-            Texture2D setIcon = (Texture2D)AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/FaceCap/Png/white.png");
-
-            unsetStyle = new GUIStyle();
-            unsetStyle.normal.background = unsetIcon;
-            setStyle = new GUIStyle();
-            setStyle.normal.background = setIcon;
-            setStyle.alignment = TextAnchor.MiddleCenter;
-        }
-
         public override void OnPanelDisable()
         {
             base.OnPanelDisable();
-            leftController.Reset();
-            rightController.Reset();
+            //leftController.Reset();
+           // rightController.Reset();
         }
    
         public override void OnPanelSelectionChange()
         {
             base.OnPanelSelectionChange();
 
-            //leftController.OnUpdate(false);
-            //rightController.OnUpdate(false);
+            leftController.OnUpdate(true);
+            rightController.OnUpdate(true);
 
-            //leftSlider1.OnUpdate(false);
-            //leftSlider2.OnUpdate(false);
-            //leftSlider3.OnUpdate(false);
+            leftSlider1.OnUpdate(false);
+            leftSlider2.OnUpdate(false);
+            leftSlider3.OnUpdate(false);
 
-            //rightSlider1.OnUpdate(false);
-            //rightSlider2.OnUpdate(false);
-            //rightSlider3.OnUpdate(false);
+            rightSlider1.OnUpdate(false);
+            rightSlider2.OnUpdate(false);
+            rightSlider3.OnUpdate(false);
         }
 
         public void Update()
         {
-            leftController.OnUpdate(false);
-            rightController.OnUpdate(false);
+            if (BlenderShapesManager.controllerList.Count <= 0)
+            {
+                return;
+            }
+            leftController.OnUpdate(true);
+            rightController.OnUpdate(true);
 
             leftSlider1.OnUpdate(false);
             leftSlider2.OnUpdate(false);
@@ -127,6 +151,7 @@ namespace FaceCapEditor
                 GUILayout.Label("Brow", myStyle);
                 GUILayout.FlexibleSpace();
             }
+            GUILayout.BeginHorizontal();
             GUILayout.EndVertical();
             GUILayout.FlexibleSpace();
             var newRect = new Rect(panelRect.x, panelRect.y, panelRect.width, panelRect.height);

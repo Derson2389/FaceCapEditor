@@ -474,8 +474,8 @@ namespace FaceCapEditor
                     float weight = _weights[i];
 
                     //// 对于PositiveInfinity值，使用原始shape里面的weight
-                    //if (float.IsPositiveInfinity(_weights[i]))
-                    //    weight = parent.shape.blendShapes[blendShapeIndex].weight;
+                    if (float.IsPositiveInfinity(_weights[i]))
+                        weight = FaceEditorMainWin.window.FaceCtrlComp.blendShapeList[blendShapeIndex].weight;
 
                     //// 对于编辑关键帧模式， 如果是PositiveInfinity的话，还需要乘以marker的强度系数
                     //if (parent.editKey != null && float.IsPositiveInfinity(_weights[i]))
@@ -484,6 +484,8 @@ namespace FaceCapEditor
                     //}
 
                     //parent.lipSync.blendSystem.SetBlendableValue(parent.shape.blendShapes[blendShapeIndex].blendableIndex, weight);
+                    if (FaceEditorMainWin.window.FaceCtrlComp != null && weight != 0)
+                        FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(FaceEditorMainWin.window.FaceCtrlComp.blendShapeList[blendShapeIndex].blendableIndex, weight);
                 }
             }
         }

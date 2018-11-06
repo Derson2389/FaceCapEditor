@@ -273,28 +273,47 @@ namespace FaceCapEditor
 
         private void OnGUI()
         {
-            topbarPanel.panelRect = new Rect(0, 0, position.width, topBarHeight);
-            browPanel.panelRect = new Rect(0, topBarHeight, position.width - _mShapeWidth, _brawHeight);
+            if (FaceCtrlComp!= null && BlenderShapesManager.controllerList.Count>0)
+            {
+                topbarPanel.panelRect = new Rect(0, 0, position.width, topBarHeight);
+                browPanel.panelRect = new Rect(0, topBarHeight, position.width - _mShapeWidth, _brawHeight);
 
-            eyePanel.panelRect = new Rect(0, topBarHeight + browPanel.panelRect.height, position.width - _mShapeWidth, _eyeHeight);
-            cheekPanel.panelRect = new Rect(0, topBarHeight + browPanel.panelRect.height + eyePanel.panelRect.height, position.width - _mShapeWidth, _cheekHeight);
-            mouthPanel.panelRect = new Rect(0, topBarHeight + _mShapeHeight, position.width - _mShapeWidth, _MouthHeight);
-           
-            mShapePanel.panelRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight, _mShapeWidth, _mShapeHeight);
-            otherPanel.panelRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight + _mShapeHeight, _mShapeWidth, position.height - _mShapeHeight);
-            topbarPanel.OnDraw();
-            browPanel.OnDraw();
-            cheekPanel.OnDraw();
-            eyePanel.OnDraw();
-            mouthPanel.OnDraw();
-            if(otherPanel != null)
-                otherPanel.OnDraw();
+                eyePanel.panelRect = new Rect(0, topBarHeight + browPanel.panelRect.height, position.width - _mShapeWidth, _eyeHeight);
+                cheekPanel.panelRect = new Rect(0, topBarHeight + browPanel.panelRect.height + eyePanel.panelRect.height, position.width - _mShapeWidth, _cheekHeight);
+                mouthPanel.panelRect = new Rect(0, topBarHeight + _mShapeHeight, position.width - _mShapeWidth, _MouthHeight);
+
+                mShapePanel.panelRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight, _mShapeWidth, _mShapeHeight);
+                otherPanel.panelRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight + _mShapeHeight, _mShapeWidth, position.height - _mShapeHeight);
+                topbarPanel.OnDraw();
+                browPanel.OnDraw();
+                cheekPanel.OnDraw();
+                eyePanel.OnDraw();
+                mouthPanel.OnDraw();
+                if (otherPanel != null)
+                    otherPanel.OnDraw();
+
+                if (mShapePanel != null)
+                    mShapePanel.OnDraw();
+
+                DrawResizer();
+                Repaint();
+
+            }
+            else
+            {
+                GUILayout.BeginVertical();
+                GUILayout.FlexibleSpace();
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("请先进行加载配置操作！");
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                GUILayout.FlexibleSpace();
+                GUILayout.EndVertical();
+            }
+
+
             
-            if(mShapePanel != null)
-                mShapePanel.OnDraw();
-
-            DrawResizer();
-            Repaint();
 
             ProcessEvents(Event.current);
             if (GUI.changed)
