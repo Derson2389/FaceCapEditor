@@ -462,6 +462,10 @@ namespace FaceCapEditor
                 window.mouthPanel.Update();
             }
 
+            if (window != null && window.cheekPanel != null)
+            {
+                window.cheekPanel.Update();
+            }
 
         }
 

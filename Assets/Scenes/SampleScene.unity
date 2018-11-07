@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 9
+  serializedVersion: 8
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -38,12 +38,11 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
-  m_UseRadianceAmbientProbe: 0
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 9
   m_GIWorkflowMode: 0
   m_GISettings:
     serializedVersion: 2
@@ -55,10 +54,11 @@ LightmapSettings:
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 0
   m_LightmapEditorSettings:
-    serializedVersion: 10
+    serializedVersion: 8
     m_Resolution: 2
     m_BakeResolution: 10
-    m_AtlasSize: 1024
+    m_TextureWidth: 1024
+    m_TextureHeight: 1024
     m_AO: 0
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
@@ -77,20 +77,17 @@ LightmapSettings:
     m_PVRDirectSampleCount: 32
     m_PVRSampleCount: 256
     m_PVRBounces: 2
-    m_PVRFilterTypeDirect: 0
-    m_PVRFilterTypeIndirect: 0
-    m_PVRFilterTypeAO: 0
+    m_PVRFiltering: 0
     m_PVRFilteringMode: 1
     m_PVRCulling: 1
     m_PVRFilteringGaussRadiusDirect: 1
     m_PVRFilteringGaussRadiusIndirect: 5
     m_PVRFilteringGaussRadiusAO: 2
-    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
-    m_PVRFilteringAtrousPositionSigmaIndirect: 2
-    m_PVRFilteringAtrousPositionSigmaAO: 1
-    m_ShowResolutionOverlay: 1
+    m_PVRFilteringAtrousColorSigma: 1
+    m_PVRFilteringAtrousNormalSigma: 1
+    m_PVRFilteringAtrousPositionSigma: 1
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_ShadowMaskMode: 2
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -110,15 +107,13 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
-    debug:
-      m_Flags: 0
   m_NavMeshData: {fileID: 0}
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 5
   m_Component:
   - component: {fileID: 170076735}
   - component: {fileID: 170076734}
@@ -132,7 +127,7 @@ GameObject:
 --- !u!108 &170076734
 Light:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 170076733}
   m_Enabled: 1
@@ -159,7 +154,6 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_Lightmapping: 1
-  m_LightShadowCasterMode: 0
   m_AreaSize: {x: 1, y: 1}
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
@@ -169,7 +163,7 @@ Light:
 --- !u!4 &170076735
 Transform:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 170076733}
   m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
@@ -179,12 +173,149 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1001 &926464703
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4550185085502424, guid: fb3f6fb7012e9924dbcd090dd77b6b6b, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4550185085502424, guid: fb3f6fb7012e9924dbcd090dd77b6b6b, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4550185085502424, guid: fb3f6fb7012e9924dbcd090dd77b6b6b, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4550185085502424, guid: fb3f6fb7012e9924dbcd090dd77b6b6b, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4550185085502424, guid: fb3f6fb7012e9924dbcd090dd77b6b6b, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4550185085502424, guid: fb3f6fb7012e9924dbcd090dd77b6b6b, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4550185085502424, guid: fb3f6fb7012e9924dbcd090dd77b6b6b, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4550185085502424, guid: fb3f6fb7012e9924dbcd090dd77b6b6b, type: 2}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[65]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[67]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[64]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[62]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[68]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[69]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[70]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[71]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[3]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[6]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[127]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[12]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[13]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[14]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[15]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[16]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[17]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[18]
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 137363971988643888, guid: fb3f6fb7012e9924dbcd090dd77b6b6b,
+        type: 2}
+      propertyPath: m_BlendShapeWeights.Array.data[19]
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: fb3f6fb7012e9924dbcd090dd77b6b6b, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1040360694
 GameObject:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
+  serializedVersion: 5
   m_Component:
   - component: {fileID: 1040360697}
   - component: {fileID: 1040360696}
@@ -199,24 +330,20 @@ GameObject:
 --- !u!81 &1040360695
 AudioListener:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1040360694}
   m_Enabled: 1
 --- !u!20 &1040360696
 Camera:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1040360694}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
-  m_projectionMatrixMode: 1
-  m_SensorSize: {x: 36, y: 24}
-  m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -238,15 +365,15 @@ Camera:
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
-  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+  m_StereoMirrorMode: 0
 --- !u!4 &1040360697
 Transform:
   m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1040360694}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -254,625 +381,5 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1327866597
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.size
-      value: 137
-      objectReference: {fileID: 0}
-    - target: {fileID: 400100, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400100, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400100, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400100, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400100, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400100, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400100, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 400100, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_AABB.m_Center.y
-      value: 0.03238619
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_AABB.m_Center.z
-      value: 1.5877106
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_AABB.m_Extent.x
-      value: 0.074406825
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_AABB.m_Extent.y
-      value: 0.091088854
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_AABB.m_Extent.z
-      value: 0.09738672
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_DirtyAABB
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[0]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[1]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[2]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[3]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[16]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[17]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[19]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[18]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[12]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[13]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[15]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[14]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 400314, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -0.0012
-      objectReference: {fileID: 0}
-    - target: {fileID: 400314, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -0.0001
-      objectReference: {fileID: 0}
-    - target: {fileID: 400314, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.0004
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[6]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[7]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[8]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[9]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[4]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[5]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[10]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[11]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[126]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[127]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[128]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[132]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[129]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[130]
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 13700000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-      propertyPath: m_BlendShapeWeights.Array.data[131]
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: fad3db99f72988747b209b3b87679ac6, type: 3}
-  m_IsPrefabAsset: 0
---- !u!1 &1327866598 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 100106, guid: fad3db99f72988747b209b3b87679ac6,
-    type: 3}
-  m_PrefabInternal: {fileID: 1327866597}
---- !u!114 &1327866599
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1327866598}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5abf382afc986a46acc790c39ea9cd3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  blendShapeList:
-  - blendableIndex: 0
-    blendableName: facial_blendShape.r_out_brow_up
-    weight: 0
-  - blendableIndex: 1
-    blendableName: facial_blendShape.r_mid_brow_up
-    weight: 0
-  - blendableIndex: 2
-    blendableName: facial_blendShape.r_in_brow_up
-    weight: 0
-  - blendableIndex: 3
-    blendableName: facial_blendShape.l_in_brow_up
-    weight: 0
-  - blendableIndex: 4
-    blendableName: facial_blendShape.l_mid_brow_up
-    weight: 0
-  - blendableIndex: 5
-    blendableName: facial_blendShape.l_out_brow_up
-    weight: 0
-  - blendableIndex: 6
-    blendableName: facial_blendShape.r_out_brow_dn
-    weight: 0
-  - blendableIndex: 7
-    blendableName: facial_blendShape.r_mid_brow_dn
-    weight: 0
-  - blendableIndex: 8
-    blendableName: facial_blendShape.r_in_brow_dn
-    weight: 0
-  - blendableIndex: 9
-    blendableName: facial_blendShape.l_in_brow_dn
-    weight: 0
-  - blendableIndex: 10
-    blendableName: facial_blendShape.l_mid_brow_dn
-    weight: 0
-  - blendableIndex: 11
-    blendableName: facial_blendShape.l_out_brow_dn
-    weight: 0
-  - blendableIndex: 12
-    blendableName: facial_blendShape.r_brow_move_dn
-    weight: 0
-  - blendableIndex: 13
-    blendableName: facial_blendShape.r_brow_move_l
-    weight: 0
-  - blendableIndex: 14
-    blendableName: facial_blendShape.r_brow_move_up
-    weight: 0
-  - blendableIndex: 15
-    blendableName: facial_blendShape.r_brow_move_r
-    weight: 0
-  - blendableIndex: 16
-    blendableName: facial_blendShape.l_brow_move_dn
-    weight: 5.1282053
-  - blendableIndex: 17
-    blendableName: facial_blendShape.l_brow_move_l
-    weight: 2.5641026
-  - blendableIndex: 18
-    blendableName: facial_blendShape.l_brow_move_up
-    weight: 15.384616
-  - blendableIndex: 19
-    blendableName: facial_blendShape.l_brow_move_r
-    weight: 5.1282053
-  - blendableIndex: 20
-    blendableName: facial_blendShape.r_eyelid_blink
-    weight: 0
-  - blendableIndex: 21
-    blendableName: facial_blendShape.r_upper_eyelid_out
-    weight: 0
-  - blendableIndex: 22
-    blendableName: facial_blendShape.r_upper_eyelid_in
-    weight: 0
-  - blendableIndex: 23
-    blendableName: facial_blendShape.r_upper_eyelid_up
-    weight: 0
-  - blendableIndex: 24
-    blendableName: facial_blendShape.r_upper_eyelid_dn
-    weight: 0
-  - blendableIndex: 25
-    blendableName: facial_blendShape.l_upper_eyelid_dn
-    weight: 0
-  - blendableIndex: 26
-    blendableName: facial_blendShape.l_upper_eyelid_up
-    weight: 0
-  - blendableIndex: 27
-    blendableName: facial_blendShape.l_upper_eyelid_in
-    weight: 0
-  - blendableIndex: 28
-    blendableName: facial_blendShape.l_upper_eyelid_out
-    weight: 0
-  - blendableIndex: 29
-    blendableName: facial_blendShape.r_lower_eyelid_out
-    weight: 0
-  - blendableIndex: 30
-    blendableName: facial_blendShape.r_lower_eyelid_in
-    weight: 0
-  - blendableIndex: 31
-    blendableName: facial_blendShape.r_lower_eyelid_dn
-    weight: 0
-  - blendableIndex: 32
-    blendableName: facial_blendShape.r_lower_eyelid_up
-    weight: 0
-  - blendableIndex: 33
-    blendableName: facial_blendShape.l_lower_eyelid_up
-    weight: 0
-  - blendableIndex: 34
-    blendableName: facial_blendShape.l_lower_eyelid_dn
-    weight: 0
-  - blendableIndex: 35
-    blendableName: facial_blendShape.l_lower_eyelid_in
-    weight: 0
-  - blendableIndex: 36
-    blendableName: facial_blendShape.l_lower_eyelid_out
-    weight: 0
-  - blendableIndex: 37
-    blendableName: facial_blendShape.l_eyelid_blink
-    weight: 0
-  - blendableIndex: 38
-    blendableName: facial_blendShape.r_pupil_small
-    weight: 0
-  - blendableIndex: 39
-    blendableName: facial_blendShape.r_pupil_big
-    weight: 0
-  - blendableIndex: 40
-    blendableName: facial_blendShape.l_pupil_small
-    weight: 0
-  - blendableIndex: 41
-    blendableName: facial_blendShape.l_pupil_big
-    weight: 0
-  - blendableIndex: 42
-    blendableName: facial_blendShape.r_eyeHightLight_out
-    weight: 0
-  - blendableIndex: 43
-    blendableName: facial_blendShape.r_eyeHightLight_up
-    weight: 0
-  - blendableIndex: 44
-    blendableName: facial_blendShape.r_eyeHightLight_in
-    weight: 0
-  - blendableIndex: 45
-    blendableName: facial_blendShape.r_eyeHightLight_dn
-    weight: 0
-  - blendableIndex: 46
-    blendableName: facial_blendShape.r_eyeBall_in
-    weight: 0
-  - blendableIndex: 47
-    blendableName: facial_blendShape.r_eyeBall_out
-    weight: 0
-  - blendableIndex: 48
-    blendableName: facial_blendShape.r_eyeBall_up
-    weight: 0
-  - blendableIndex: 49
-    blendableName: facial_blendShape.r_eyeBall_dn
-    weight: 0
-  - blendableIndex: 50
-    blendableName: facial_blendShape.l_eyeBall_in
-    weight: 0
-  - blendableIndex: 51
-    blendableName: facial_blendShape.l_eyeBall_out
-    weight: 0
-  - blendableIndex: 52
-    blendableName: facial_blendShape.l_eyeBall_up
-    weight: 0
-  - blendableIndex: 53
-    blendableName: facial_blendShape.l_eyeBall_dn
-    weight: 0
-  - blendableIndex: 54
-    blendableName: facial_blendShape.l_eyeHightLight_in
-    weight: 0
-  - blendableIndex: 55
-    blendableName: facial_blendShape.l_eyeHightLight_up
-    weight: 0
-  - blendableIndex: 56
-    blendableName: facial_blendShape.l_eyeHightLight_out
-    weight: 0
-  - blendableIndex: 57
-    blendableName: facial_blendShape.l_eyeHightLight_dn
-    weight: 0
-  - blendableIndex: 58
-    blendableName: facial_blendShape.r_eyeHightLight_big
-    weight: 0
-  - blendableIndex: 59
-    blendableName: facial_blendShape.r_eyeHightLight_small
-    weight: 0
-  - blendableIndex: 60
-    blendableName: facial_blendShape.l_eyeHightLight_big
-    weight: 0
-  - blendableIndex: 61
-    blendableName: facial_blendShape.l_eyeHightLight_small
-    weight: 0
-  - blendableIndex: 62
-    blendableName: facial_blendShape.nose_r
-    weight: 0
-  - blendableIndex: 63
-    blendableName: facial_blendShape.nose_up
-    weight: 0
-  - blendableIndex: 64
-    blendableName: facial_blendShape.nose_dn
-    weight: 0
-  - blendableIndex: 65
-    blendableName: facial_blendShape.nose_l
-    weight: 0
-  - blendableIndex: 66
-    blendableName: facial_blendShape.r_nose_up
-    weight: 0
-  - blendableIndex: 67
-    blendableName: facial_blendShape.l_nose_up
-    weight: 0
-  - blendableIndex: 68
-    blendableName: facial_blendShape.r_cheek_out
-    weight: 0
-  - blendableIndex: 69
-    blendableName: facial_blendShape.r_cheek_in
-    weight: 0
-  - blendableIndex: 70
-    blendableName: facial_blendShape.l_cheek_in
-    weight: 0
-  - blendableIndex: 71
-    blendableName: facial_blendShape.l_cheek_out
-    weight: 0
-  - blendableIndex: 72
-    blendableName: facial_blendShape.lower_lip_dn
-    weight: 0
-  - blendableIndex: 73
-    blendableName: facial_blendShape.lower_lip_up
-    weight: 0
-  - blendableIndex: 74
-    blendableName: facial_blendShape.lower_lip_in
-    weight: 0
-  - blendableIndex: 75
-    blendableName: facial_blendShape.lower_lip_out
-    weight: 0
-  - blendableIndex: 76
-    blendableName: facial_blendShape.upper_lip_dn
-    weight: 0
-  - blendableIndex: 77
-    blendableName: facial_blendShape.upper_lip_up
-    weight: 0
-  - blendableIndex: 78
-    blendableName: facial_blendShape.upper_lip_in
-    weight: 0
-  - blendableIndex: 79
-    blendableName: facial_blendShape.upper_lip_out
-    weight: 0
-  - blendableIndex: 80
-    blendableName: facial_blendShape.l_lower_corners_dn
-    weight: 0
-  - blendableIndex: 81
-    blendableName: facial_blendShape.l_lower_corners_up
-    weight: 0
-  - blendableIndex: 82
-    blendableName: facial_blendShape.l_lower_lip_dn
-    weight: 0
-  - blendableIndex: 83
-    blendableName: facial_blendShape.l_lower_lip_up
-    weight: 0
-  - blendableIndex: 84
-    blendableName: facial_blendShape.r_lower_lip_dn
-    weight: 0
-  - blendableIndex: 85
-    blendableName: facial_blendShape.r_lower_lip_up
-    weight: 0
-  - blendableIndex: 86
-    blendableName: facial_blendShape.r_lower_corners_dn
-    weight: 0
-  - blendableIndex: 87
-    blendableName: facial_blendShape.r_lower_corners_up
-    weight: 0
-  - blendableIndex: 88
-    blendableName: facial_blendShape.l_upper_corners_dn
-    weight: 0
-  - blendableIndex: 89
-    blendableName: facial_blendShape.l_upper_corners_up
-    weight: 0
-  - blendableIndex: 90
-    blendableName: facial_blendShape.l_upper_lip_dn
-    weight: 0
-  - blendableIndex: 91
-    blendableName: facial_blendShape.l_upper_lip_up
-    weight: 0
-  - blendableIndex: 92
-    blendableName: facial_blendShape.r_upper_lip_dn
-    weight: 0
-  - blendableIndex: 93
-    blendableName: facial_blendShape.r_upper_lip_up
-    weight: 0
-  - blendableIndex: 94
-    blendableName: facial_blendShape.r_upper_corners_dn
-    weight: 0
-  - blendableIndex: 95
-    blendableName: facial_blendShape.r_upper_corners_up
-    weight: 0
-  - blendableIndex: 96
-    blendableName: facial_blendShape.l_corners_out
-    weight: 0
-  - blendableIndex: 97
-    blendableName: facial_blendShape.l_corners_in
-    weight: 0
-  - blendableIndex: 98
-    blendableName: facial_blendShape.l_corners_dn
-    weight: 0
-  - blendableIndex: 99
-    blendableName: facial_blendShape.l_corners_up
-    weight: 0
-  - blendableIndex: 100
-    blendableName: facial_blendShape.r_corners_in
-    weight: 0
-  - blendableIndex: 101
-    blendableName: facial_blendShape.r_corners_out
-    weight: 0
-  - blendableIndex: 102
-    blendableName: facial_blendShape.r_corners_dn
-    weight: 0
-  - blendableIndex: 103
-    blendableName: facial_blendShape.r_corners_up
-    weight: 0
-  - blendableIndex: 104
-    blendableName: facial_blendShape.mouth_up
-    weight: 0
-  - blendableIndex: 105
-    blendableName: facial_blendShape.mouth_dn
-    weight: 0
-  - blendableIndex: 106
-    blendableName: facial_blendShape.mouth_l
-    weight: 0
-  - blendableIndex: 107
-    blendableName: facial_blendShape.mouth_r
-    weight: 0
-  - blendableIndex: 108
-    blendableName: facial_blendShape.r_mouth_rotate
-    weight: 0
-  - blendableIndex: 109
-    blendableName: facial_blendShape.l_mouth_rotate
-    weight: 0
-  - blendableIndex: 110
-    blendableName: facial_blendShape.tongue_up
-    weight: 0
-  - blendableIndex: 111
-    blendableName: facial_blendShape.tongue_dn
-    weight: 0
-  - blendableIndex: 112
-    blendableName: facial_blendShape.tongue_r
-    weight: 0
-  - blendableIndex: 113
-    blendableName: facial_blendShape.tongue_l
-    weight: 0
-  - blendableIndex: 114
-    blendableName: facial_blendShape.lower_teeth_up
-    weight: 0
-  - blendableIndex: 115
-    blendableName: facial_blendShape.lower_teeth_dn
-    weight: 0
-  - blendableIndex: 116
-    blendableName: facial_blendShape.lower_teeth_r
-    weight: 0
-  - blendableIndex: 117
-    blendableName: facial_blendShape.lower_teeth_l
-    weight: 0
-  - blendableIndex: 118
-    blendableName: facial_blendShape.upper_teeth_up
-    weight: 0
-  - blendableIndex: 119
-    blendableName: facial_blendShape.upper_teeth_dn
-    weight: 0
-  - blendableIndex: 120
-    blendableName: facial_blendShape.upper_teeth_r
-    weight: 0
-  - blendableIndex: 121
-    blendableName: facial_blendShape.upper_teeth_l
-    weight: 0
-  - blendableIndex: 122
-    blendableName: facial_blendShape.jaw_up
-    weight: 0
-  - blendableIndex: 123
-    blendableName: facial_blendShape.jaw_dn
-    weight: 0
-  - blendableIndex: 124
-    blendableName: facial_blendShape.jaw_r
-    weight: 0
-  - blendableIndex: 125
-    blendableName: facial_blendShape.jaw_l
-    weight: 0
-  - blendableIndex: 126
-    blendableName: facial_blendShape.A_mouth
-    weight: 0
-  - blendableIndex: 127
-    blendableName: facial_blendShape.E_mouth
-    weight: 0
-  - blendableIndex: 128
-    blendableName: facial_blendShape.I_mouth
-    weight: 0
-  - blendableIndex: 129
-    blendableName: facial_blendShape.O_mouth
-    weight: 0
-  - blendableIndex: 130
-    blendableName: facial_blendShape.U_mouth
-    weight: 0
-  - blendableIndex: 131
-    blendableName: facial_blendShape.F_mouth
-    weight: 0
-  - blendableIndex: 132
-    blendableName: facial_blendShape.M_mouth
-    weight: 0
-  - blendableIndex: 133
-    blendableName: facial_blendShape.add
-    weight: 0
-  - blendableIndex: 134
-    blendableName: facial_blendShape.add01
-    weight: 0
-  - blendableIndex: 135
-    blendableName: facial_blendShape.add02
-    weight: 0
-  - blendableIndex: 136
-    blendableName: facial_blendShape.add03
-    weight: 0
-  configPath: 
-  controllerList: []

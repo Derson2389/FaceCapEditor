@@ -221,7 +221,7 @@ public static class BlenderShapesManager  {
         for (int i = 0; i < controllerList.Count; i++)
         {
             var ctrl = controllerList[i];
-            if (ctrl.ctrlName.Contains(name)|| ctrl.ctrlName == name)
+            if (/*ctrl.ctrlName.Contains(name)|| */ctrl.ctrlName == name)
             {
                 ad = ctrl;
             }

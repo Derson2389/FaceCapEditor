@@ -54,10 +54,10 @@ public class FaceControllerComponent : MonoBehaviour {
     public BlendShape GetBlendShapeIdxByName(string name)
     {
         BlendShape shape = null;
-        for(int i = 0; i< blendShapeList.Count; i++)
+        for (int i = 0; i < blendShapeList.Count; i++)
         {
             var bs = blendShapeList[i];
-            if (bs.blendableName.Contains(name))
+            if (bs.blendableName == string.Format("{0}.{1}","facial_blendShape", name))
             {
                 shape = bs;
             }

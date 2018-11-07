@@ -36,7 +36,7 @@ namespace FaceCapEditor
 
 
             BlendYController controllerNoseL = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.CheekListCtrlName[(int)FaceEditHelper.CheekListCtrl.r_nose_facialControl]);
-            if (noseSliderPanelLeft != null)
+            if (controllerNoseL != null)
             {
                 noseSliderPanelLeft = new BlendSlideControllerPanel(this, Rect.zero, null, controllerNoseL);
                 noseSliderPanelLeft.Init();
@@ -76,7 +76,7 @@ namespace FaceCapEditor
             if (noseSliderPanelLeft != null)
                 noseSliderPanelLeft.OnUpdate(false);
             if (noseSliderPanelRight != null)
-                noseSliderPanelLeft.OnUpdate(false);
+                noseSliderPanelRight.OnUpdate(false);
             if (cheekSliderPanelLeft != null)
                 cheekSliderPanelLeft.OnUpdate(false);
             if (cheekSliderPanelRight != null)

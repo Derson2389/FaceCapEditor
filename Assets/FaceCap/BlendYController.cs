@@ -73,7 +73,7 @@ public class BlendYController
     public static float GetWeightFromPosition(ControllerDirection dir, float sliderValue)
     {
         float value = 0f;
-
+   
         switch (dir)
         {
             case ControllerDirection.Top:
