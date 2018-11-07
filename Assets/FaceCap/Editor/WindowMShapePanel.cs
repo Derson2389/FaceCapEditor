@@ -21,35 +21,55 @@ namespace FaceCapEditor
             panelRect = rect;
             panelWindow = window;
 
-            BlendXController controllerA = new BlendXController();
-            controllerPanelA = new BlendSlideControllerPanel(this, Rect.zero , controllerA, null);
-            controllerPanelA.Init();
+            BlendXController controllerA = BlenderShapesManager.CreateBlendXCtrl("A_facialControlShape");
+            if (controllerA!= null)
+            {
+                controllerPanelA = new BlendSlideControllerPanel(this, Rect.zero, controllerA, null);
+                controllerPanelA.Init();
 
-            BlendXController controllerE = new BlendXController();
-            controllerPanelE = new BlendSlideControllerPanel(this, Rect.zero, controllerE, null);
-            controllerPanelE.Init();
+            }
+        
+            BlendXController controllerE = BlenderShapesManager.CreateBlendXCtrl("E_facialControlShape");
+            if (controllerE != null) {
+                controllerPanelE = new BlendSlideControllerPanel(this, Rect.zero, controllerE, null);
+                controllerPanelE.Init();
+            }
 
 
-            BlendXController controllerI = new BlendXController();
-            controllerPanelI = new BlendSlideControllerPanel(this, Rect.zero, controllerI, null);
-            controllerPanelI.Init();
+            BlendXController controllerI = BlenderShapesManager.CreateBlendXCtrl("I_facialControlShape");
+            if (controllerI!=null)
+            {
+                controllerPanelI = new BlendSlideControllerPanel(this, Rect.zero, controllerI, null);
+                controllerPanelI.Init();
+            }
 
 
-            BlendXController controllerO = new BlendXController();
-            controllerPanelO = new BlendSlideControllerPanel(this, Rect.zero, controllerO, null);
-            controllerPanelO.Init();
+            BlendXController controllerO = BlenderShapesManager.CreateBlendXCtrl("O_facialControlShape");
+            if (controllerO!=null)
+            {
+                controllerPanelO = new BlendSlideControllerPanel(this, Rect.zero, controllerO, null);
+                controllerPanelO.Init();
+            }
+            BlendXController controllerU = BlenderShapesManager.CreateBlendXCtrl("U_facialControlShape");
+            if (controllerU != null)
+            {
+                controllerPanelU = new BlendSlideControllerPanel(this, Rect.zero, controllerO, null);
+                controllerPanelU.Init();
+            }
 
-            BlendXController controllerU = new BlendXController();
-            controllerPanelU = new BlendSlideControllerPanel(this, Rect.zero, controllerO, null);
-            controllerPanelU.Init();
+            BlendXController controllerF = BlenderShapesManager.CreateBlendXCtrl("F_facialControlShape");
+            if (controllerF != null)
+            {
+                controllerPanelF = new BlendSlideControllerPanel(this, Rect.zero, controllerF, null);
+                controllerPanelF.Init();
+            }
 
-            BlendXController controllerF = new BlendXController();
-            controllerPanelF = new BlendSlideControllerPanel(this, Rect.zero, controllerF, null);
-            controllerPanelF.Init();
-
-            BlendXController controllerM = new BlendXController();
-            controllerPanelM = new BlendSlideControllerPanel(this, Rect.zero, controllerM, null);
-            controllerPanelM.Init();
+            BlendXController controllerM = BlenderShapesManager.CreateBlendXCtrl("M_facialControlShape");
+            if (controllerM != null)
+            {
+                controllerPanelM = new BlendSlideControllerPanel(this, Rect.zero, controllerM, null);
+                controllerPanelM.Init();
+            }
    
         }
 
@@ -62,7 +82,6 @@ namespace FaceCapEditor
         {
             base.OnPanelDisable();
         }
-
 
         private float defaultHeight = 66f;
         public override void OnDraw()
@@ -85,43 +104,49 @@ namespace FaceCapEditor
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            GUILayout.Label("E", myStyle);        
-            controllerPanelE.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+            GUILayout.Label("E", myStyle);   
+            if(controllerPanelE!=null)
+                controllerPanelE.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("I", myStyle);
-            controllerPanelI.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+            if (controllerPanelI != null)
+                controllerPanelI.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("O", myStyle);
-            controllerPanelO.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+            if (controllerPanelO != null)
+                controllerPanelO.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("U", myStyle);
-            controllerPanelU.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+            if (controllerPanelU != null)
+                controllerPanelU.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("F", myStyle);
-            controllerPanelF.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+            if (controllerPanelF != null)
+                controllerPanelF.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("M", myStyle);
-            controllerPanelM.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+            if (controllerPanelM != null)
+                controllerPanelM.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 

@@ -9,7 +9,8 @@ public class FaceControllerComponent : MonoBehaviour {
     private SkinnedMeshRenderer SkinMesh = null;
     public List<BlendShape> blendShapeList = new List<BlendShape>();
 
-    private string configPath = string.Empty;
+    [SerializeField]
+    private string configPath;
     [SerializeField]
     public List<string> controllerList = new List<string>();
 
@@ -39,6 +40,16 @@ public class FaceControllerComponent : MonoBehaviour {
             SkinMesh.SetBlendShapeWeight(idx, weight);
         }
     }
+    public float getBlendShapePreValue(int idx )
+    {
+        SkinMesh = this.GetComponent<SkinnedMeshRenderer>();
+        if (SkinMesh != null)
+        {
+           return SkinMesh.GetBlendShapeWeight(idx);
+        }
+        return 0;
+    }
+
 
     public BlendShape GetBlendShapeIdxByName(string name)
     {

@@ -293,8 +293,8 @@ namespace FaceCapEditor
                         //}
 
                         //parent.lipSync.blendSystem.SetBlendableValue(parent.shape.blendShapes[blendShapeIndex].blendableIndex, weight);
-                        if (FaceEditorMainWin.window.FaceCtrlComp != null  && weight != 0)
-                            FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(FaceEditorMainWin.window.FaceCtrlComp.blendShapeList[i].blendableIndex, weight);
+                        if (FaceEditorMainWin.window.FaceCtrlComp != null )
+                            FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(FaceEditorMainWin.window.FaceCtrlComp.blendShapeList[blendShapeIndex].blendableIndex, weight);
                     }
                 }
             }
