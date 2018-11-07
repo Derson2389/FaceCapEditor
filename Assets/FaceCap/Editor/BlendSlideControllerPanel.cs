@@ -242,32 +242,101 @@ namespace FaceCapEditor
         void CalculateBlendShapeValue(float sliderValue)
         {
             if (blendControllerX != null)
-            {                
-                // set drag value for left controller
-                if (blendControllerX.left != -1)
+            {
+                if (blendControllerX.leftSliderValue == blendControllerX.rightSliderValue)
                 {
-                    _weights[(int)BlendXController.ControllerDirection.Left] = BlendXController.GetWeightFromPosition(BlendXController.ControllerDirection.Left, sliderValue);
+                    if (blendControllerX.leftSliderValue > 0)
+                    {
+                        // set drag value for right controller
+                        if (blendControllerX.right != -1)
+                        {
+                            _weights[(int)BlendXController.ControllerDirection.Right] = BlendXController.GetWeightFromPosition(BlendXController.ControllerDirection.Right, sliderValue);
+                        }
+
+                        if (blendControllerX.left != -1)
+                        {
+                            _weights[(int)BlendXController.ControllerDirection.Left] = _weights[(int)BlendXController.ControllerDirection.Right];
+                        }
+                    }
+                    else
+                    {
+                        // set drag value for left controller
+                        if (blendControllerX.left != -1)
+                        {
+                            _weights[(int)BlendXController.ControllerDirection.Left] = BlendXController.GetWeightFromPosition(BlendXController.ControllerDirection.Left, sliderValue);
+                        }
+
+                        // set drag value for right controller
+                        if (blendControllerX.right != -1)
+                        {
+                            _weights[(int)BlendXController.ControllerDirection.Right] = _weights[(int)BlendXController.ControllerDirection.Left];
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    // set drag value for left controller
+                    if (blendControllerX.left != -1)
+                    {
+                        _weights[(int)BlendXController.ControllerDirection.Left] = BlendXController.GetWeightFromPosition(BlendXController.ControllerDirection.Left, sliderValue);
+                    }
+
+                    // set drag value for right controller
+                    if (blendControllerX.right != -1)
+                    {
+                        _weights[(int)BlendXController.ControllerDirection.Right] = BlendXController.GetWeightFromPosition(BlendXController.ControllerDirection.Right, sliderValue);
+                    }
                 }
 
-                // set drag value for right controller
-                if (blendControllerX.right != -1)
-                {
-                    _weights[(int)BlendXController.ControllerDirection.Right] = BlendXController.GetWeightFromPosition(BlendXController.ControllerDirection.Right, sliderValue);
-                }
                 
             }
             if(blendControllerY != null)
             {
-                // set drag value for top controller
-                if (blendControllerY.top != -1)
+                if (blendControllerY.downSliderValue == blendControllerY.upSliderValue)
                 {
-                    _weights[(int)BlendYController.ControllerDirection.Top] = BlendYController.GetWeightFromPosition(BlendYController.ControllerDirection.Top, sliderValue);
-                }
+                    if (blendControllerY.downSliderValue > 0)
+                    {
+                        if (blendControllerY.top != -1)
+                        {
+                            _weights[(int)BlendYController.ControllerDirection.Top] = BlendYController.GetWeightFromPosition(BlendYController.ControllerDirection.Top, sliderValue);
+                        }
+                        if (blendControllerY.bottom != -1)
+                        {
+                            _weights[(int)BlendYController.ControllerDirection.Bottom] = _weights[(int)BlendYController.ControllerDirection.Top];
+                        }
+                    }
+                    else
+                    {
+                    
+                        // set drag value for bottom controller
+                        if (blendControllerY.bottom != -1)
+                        {
+                            _weights[(int)BlendYController.ControllerDirection.Bottom] = BlendYController.GetWeightFromPosition(BlendYController.ControllerDirection.Bottom, sliderValue);
+                        }
+                        // set drag value for top controller
+                        if (blendControllerY.top != -1)
+                        {
+                            _weights[(int)BlendYController.ControllerDirection.Top] = _weights[(int)BlendYController.ControllerDirection.Bottom];
+                        }
 
-                // set drag value for bottom controller
-                if (blendControllerY.bottom != -1)
+                    }
+
+                }
+                else
                 {
-                    _weights[(int)BlendYController.ControllerDirection.Bottom] = BlendYController.GetWeightFromPosition(BlendYController.ControllerDirection.Bottom, sliderValue);
+                    // set drag value for top controller
+                    if (blendControllerY.top != -1)
+                    {
+                        _weights[(int)BlendYController.ControllerDirection.Top] = BlendYController.GetWeightFromPosition(BlendYController.ControllerDirection.Top, sliderValue);
+                    }
+
+                    // set drag value for bottom controller
+                    if (blendControllerY.bottom != -1)
+                    {
+                        _weights[(int)BlendYController.ControllerDirection.Bottom] = BlendYController.GetWeightFromPosition(BlendYController.ControllerDirection.Bottom, sliderValue);
+                    }
                 }
             }           
 

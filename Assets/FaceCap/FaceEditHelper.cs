@@ -206,6 +206,7 @@ public static class FaceEditHelper
         r_eyeHightLight_scale_facialControl,
         l_eyeHightLight_scale_facialControl,
         r_eyelid_blink_facialControl,
+        l_eyelid_blink_facialControl,
     }
     public static string[] EyeListCtrlName =
     {
@@ -223,6 +224,7 @@ public static class FaceEditHelper
         "r_eyeHightLight_scale_facialControl",
         "l_eyeHightLight_scale_facialControl",
         "r_eyelid_blink_facialControl",
+        "l_eyelid_blink_facialControl"
 
     };
 
