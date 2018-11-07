@@ -13,6 +13,9 @@ public class BlendXController
         Count
     }
 
+    public float leftSliderValue = -1.0f;
+    public float rightSliderValue = 1.0f;
+
     /// <summary>
     /// the name of this controller
     /// </summary>

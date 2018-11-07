@@ -66,6 +66,14 @@ namespace FaceCapEditor
             base.OnPanelDisable();          
         }
 
+        public void Update()
+        {
+
+
+
+        }
+
+
         public override void OnDraw()
         {
             GUILayout.BeginArea(panelRect);

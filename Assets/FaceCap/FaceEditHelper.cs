@@ -112,6 +112,7 @@ public static class FaceEditHelper
 		"l_cheek_facialControl",
 		"nose_facialControl",
 		"r_nose_facialControl",
+        "l_nose_facialControl",
 
 		//mouth_list
 		"r_corners_facialControl",
@@ -232,15 +233,16 @@ public static class FaceEditHelper
         l_cheek_facialControl,
         nose_facialControl,
         r_nose_facialControl,
+        l_nose_facialControl,
     }
     public static string[] CheekListCtrlName =
    {
-        // other_list
-		"tongue_facialControl",
-        "jaw_facialControl",
-        "upper_teeth_facialControl",
-        "lower_teeth_facialControl",
-        "add_facialControl",
+        //cheek_list
+		"r_cheek_facialControl",
+        "l_cheek_facialControl",
+        "nose_facialControl",
+        "r_nose_facialControl",
+        "l_nose_facialControl",
    };
 
     public enum MouthCtrl

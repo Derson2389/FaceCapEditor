@@ -21,39 +21,69 @@ namespace FaceCapEditor
             panelRect = rect;
             panelWindow = window;
 
-            //Nose
-            BlendGridController _noseController = new BlendGridController();
-            _noseController.windowPosition = new Vector2(10, 10);
-            _noseController.windowSize = new Vector2(panelSizeMax, panelSizeMax);
-            noseController = new BlendControllerPanel(this, new Rect(_noseController.windowPosition, _noseController.windowSize), _noseController);
-            noseController.Init();
-
-            BlendYController controllerNoseL = new BlendYController();
-            noseSliderPanelLeft = new BlendSlideControllerPanel(this, Rect.zero, null, controllerNoseL);
-            noseSliderPanelLeft.Init();
-
-            BlendYController controllerNose1R = new BlendYController();
-            noseSliderPanelRight = new BlendSlideControllerPanel(this, Rect.zero, null, controllerNose1R);
-            noseSliderPanelRight.Init();
-
-            BlendXController controllerCheekLeft = new BlendXController();
-            cheekSliderPanelLeft = new BlendSlideControllerPanel(this, Rect.zero, controllerCheekLeft, null);
-            cheekSliderPanelLeft.Init();
-            BlendXController controllerCheekRight = new BlendXController();
-            cheekSliderPanelRight = new BlendSlideControllerPanel(this, Rect.zero, controllerCheekRight, null);
-            cheekSliderPanelRight.Init();
-
         }
 
         public override void OnPanelEnable()
         {
-            base.OnPanelEnable();          
+            base.OnPanelEnable();
+            //Nose
+            BlendGridController _noseController = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.CheekListCtrlName[(int)FaceEditHelper.CheekListCtrl.nose_facialControl], panelSizeMax, panelSizeMax, 10, 10);
+            if (_noseController != null)
+            {
+                noseController = new BlendControllerPanel(this, new Rect(_noseController.windowPosition, _noseController.windowSize), _noseController);
+                noseController.Init();
+            }
+
+
+            BlendYController controllerNoseL = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.CheekListCtrlName[(int)FaceEditHelper.CheekListCtrl.r_nose_facialControl]);
+            if (noseSliderPanelLeft != null)
+            {
+                noseSliderPanelLeft = new BlendSlideControllerPanel(this, Rect.zero, null, controllerNoseL);
+                noseSliderPanelLeft.Init();
+            }
+
+            BlendYController controllerNose1R = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.CheekListCtrlName[(int)FaceEditHelper.CheekListCtrl.l_nose_facialControl]);
+            if (controllerNose1R != null)
+            {
+                noseSliderPanelRight = new BlendSlideControllerPanel(this, Rect.zero, null, controllerNose1R);
+                noseSliderPanelRight.Init();
+            }
+
+            BlendXController controllerCheekLeft = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.CheekListCtrlName[(int)FaceEditHelper.CheekListCtrl.r_cheek_facialControl]);
+            if (controllerCheekLeft != null)
+            {
+                cheekSliderPanelLeft = new BlendSlideControllerPanel(this, Rect.zero, controllerCheekLeft, null);
+                cheekSliderPanelLeft.Init();
+            }
+            BlendXController controllerCheekRight = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.CheekListCtrlName[(int)FaceEditHelper.CheekListCtrl.l_cheek_facialControl]);
+            if (controllerCheekRight != null)
+            {
+                cheekSliderPanelRight = new BlendSlideControllerPanel(this, Rect.zero, controllerCheekRight, null);
+                cheekSliderPanelRight.Init();
+            }
         }
 
         public override void OnPanelDisable()
         {
             base.OnPanelDisable();
-            noseController.Reset();
+            if(noseController!= null)
+                noseController.Reset();
+        }
+
+
+        public void Update()
+        {
+            if (noseSliderPanelLeft != null)
+                noseSliderPanelLeft.OnUpdate(false);
+            if (noseSliderPanelRight != null)
+                noseSliderPanelLeft.OnUpdate(false);
+            if (cheekSliderPanelLeft != null)
+                cheekSliderPanelLeft.OnUpdate(false);
+            if (cheekSliderPanelRight != null)
+                cheekSliderPanelRight.OnUpdate(false);
+
+            if (noseController != null)
+                noseController.OnUpdate(true);
         }
 
         public override void OnDraw()
@@ -65,15 +95,18 @@ namespace FaceCapEditor
             GUILayout.BeginHorizontal();
             GUILayout.Space(20);
             //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(120));
-            noseSliderPanelLeft.OnDraw(new Vector2(30, 120));
+            if(noseSliderPanelLeft!= null)
+                noseSliderPanelLeft.OnDraw(new Vector2(30, 120));
             GUILayout.FlexibleSpace();
             newRect = new Rect(panelRect.width / 4 - panelSizeMax / 2 - 20, 0, 260, panelRect.height);
             GUILayout.BeginArea(newRect);
-            noseController.OnDraw();
+            if(noseController!= null)
+                noseController.OnDraw();
             GUILayout.EndArea();
             GUILayout.FlexibleSpace();
             //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(120));
-            noseSliderPanelRight.OnDraw(new Vector2(30, 120));
+            if (noseSliderPanelRight != null)
+                noseSliderPanelRight.OnDraw(new Vector2(30, 120));
             GUILayout.Space(20);
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
@@ -92,10 +125,12 @@ namespace FaceCapEditor
             GUILayout.FlexibleSpace();
             GUILayout.Space(60);
             GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();           
-            cheekSliderPanelLeft.OnDraw(new Vector2(120, 20));
-            GUILayout.Space(6);      
-            cheekSliderPanelRight.OnDraw(new Vector2(120, 20));
+            GUILayout.BeginHorizontal();
+            if (cheekSliderPanelLeft != null)
+                cheekSliderPanelLeft.OnDraw(new Vector2(120, 20));
+            GUILayout.Space(6);
+            if (cheekSliderPanelRight != null)
+                cheekSliderPanelRight.OnDraw(new Vector2(120, 20));
             GUILayout.EndHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();

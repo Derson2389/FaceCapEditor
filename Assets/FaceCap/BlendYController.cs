@@ -13,6 +13,9 @@ public class BlendYController
         Count
     }
 
+    public float upSliderValue = -1.0f;
+    public float downSliderValue = 1.0f;
+
     /// <summary>
     /// the name of this controller
     /// </summary>

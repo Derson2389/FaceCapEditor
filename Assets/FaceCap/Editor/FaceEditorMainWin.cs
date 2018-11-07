@@ -436,13 +436,33 @@ namespace FaceCapEditor
                 {
                     ResetFaceCompoent(shapesCtrl);
                 }
-
             }
-            /// viewPanel.onUpdate();
+           
             if (window!= null && window.browPanel != null)
             {
                 window.browPanel.Update();
-            }               
+            }
+
+            if (window != null && window.mShapePanel != null)
+            {
+                window.mShapePanel.Update();
+            }
+
+            if (window != null && window.otherPanel != null)
+            {
+                window.otherPanel.Update();
+            }
+            if (window != null && window.otherPanel != null)
+            {
+                window.eyePanel.Update();
+            }
+
+            if (window != null && window.mouthPanel != null)
+            {
+                window.mouthPanel.Update();
+            }
+
+
         }
 
     }

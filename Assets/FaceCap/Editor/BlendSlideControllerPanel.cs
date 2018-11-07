@@ -8,6 +8,12 @@ namespace FaceCapEditor
         public const int panelPadding = 6;
         public const int dragButtonSize = 10;
 
+        public float _leftValue = -1f;
+        public float _rightValue = 1f;
+        public float _upValue = 1f;
+        public float _downValue = -1f;
+
+
         public Rect centerPanel;
         public WindowPanel parent;
 
@@ -80,10 +86,53 @@ namespace FaceCapEditor
             _resizerStyle = new GUIStyle();
             _resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
 
-            if(_blendControllerX != null)
+            if (_blendControllerX != null)
+            {
+                
+                if (blendControllerX.leftSliderValue == blendControllerX.rightSliderValue)
+                {
+                    if (blendControllerX.leftSliderValue < 0)
+                    {
+                        _leftValue = blendControllerX.leftSliderValue;
+                        _rightValue = 0f;
+                    }
+                    else if (blendControllerX.leftSliderValue >= 0)
+                    {
+                        _leftValue = 0;
+                        _rightValue = blendControllerX.rightSliderValue;
+                    }
+                }
+                else
+                {
+                    _leftValue = blendControllerX.leftSliderValue;
+                    _rightValue = blendControllerX.rightSliderValue;
+                }
+
                 _weights = new float[_blendControllerX.blendShapeIndexs.Count];
-            if(_blendControllerY != null)
+            }
+            if (_blendControllerY != null)
+            {
+                if (_blendControllerY.upSliderValue == _blendControllerY.downSliderValue)
+                {
+                    if (_blendControllerY.upSliderValue < 0)
+                    {
+                        _upValue = 0f;
+                        _downValue = _blendControllerY.downSliderValue;
+                    }
+                    else if (_blendControllerY.upSliderValue >= 0)
+                    {
+                        _upValue = blendControllerY.upSliderValue;
+                        _downValue = 0f;
+                    }
+                }
+                else
+                {
+                    _upValue = _blendControllerY.upSliderValue;
+                    _downValue = _blendControllerY.downSliderValue;
+                }
+
                 _weights = new float[_blendControllerY.blendShapeIndexs.Count];
+            }
         }
        
         public void OnUpdate(bool onfocus)
@@ -95,13 +144,13 @@ namespace FaceCapEditor
         {
 
             if (blendControllerX != null)
-            {
-                HorizontalSliderValue = GUILayout.HorizontalSlider(HorizontalSliderValue, -1.00f, 1.00f, GUILayout.Width(size.x), GUILayout.Height(size.y));
+            {                
+                HorizontalSliderValue = GUILayout.HorizontalSlider(HorizontalSliderValue, _leftValue, _rightValue, GUILayout.Width(size.x), GUILayout.Height(size.y));
             }     
             
             if(blendControllerY != null)
             {              
-                VerticalSliderValue = GUILayout.VerticalSlider(VerticalSliderValue, 1.00f, -1.00f, GUILayout.Width(size.x), GUILayout.Height(size.y));
+                VerticalSliderValue = GUILayout.VerticalSlider(VerticalSliderValue, _upValue, _downValue, GUILayout.Width(size.x), GUILayout.Height(size.y));
             }
 
            
@@ -265,8 +314,8 @@ namespace FaceCapEditor
                         //}
 
                         //parent.lipSync.blendSystem.SetBlendableValue(parent.shape.blendShapes[blendShapeIndex].blendableIndex, weight);
-                        if (FaceEditorMainWin.window.FaceCtrlComp != null && weight !=0)
-                            FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(FaceEditorMainWin.window.FaceCtrlComp.blendShapeList[i].blendableIndex, weight);
+                        if (FaceEditorMainWin.window.FaceCtrlComp != null)
+                            FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(FaceEditorMainWin.window.FaceCtrlComp.blendShapeList[blendShapeIndex].blendableIndex, weight);
 
                     }
                 }

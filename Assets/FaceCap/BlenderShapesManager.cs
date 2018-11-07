@@ -12,10 +12,10 @@ public static class BlenderShapesManager  {
     {
         public string ctrlName = string.Empty;
         public int ctrlType = 0;
-        public int leftValue = -1;
-        public int rightValue = 1;
-        public int upValue = 1;
-        public int downValue = -1;
+        public float leftValue = -1f;
+        public float rightValue = 1f;
+        public float upValue = 1f;
+        public float downValue = -1f;
 
         public enum blendIdx
         {
@@ -77,14 +77,14 @@ public static class BlenderShapesManager  {
                         addDummy.ctrlName = ctrName;
                         addDummy.ctrlType = intType;
                         string[] bs1 = parseStr[2].Split('|');
-                        addDummy.upValue = int.Parse(bs1[1]);
+                        addDummy.upValue = float.Parse(bs1[1]);
                         BlendShape newBs1 = new BlendShape();
                         newBs1.blendableName = bs1[0];
                         newBs1.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs1.blendableName).blendableIndex;
 
                         addDummy.ctrlBlendShapes.Add(newBs1);
                         string[] bs2 = parseStr[3].Split('|');
-                        addDummy.downValue = int.Parse(bs2[1]);
+                        addDummy.downValue = float.Parse(bs2[1]);
                         BlendShape newBs2 = new BlendShape();
                         newBs2.blendableName = bs2[0];
                         newBs2.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs2.blendableName).blendableIndex;
@@ -99,14 +99,14 @@ public static class BlenderShapesManager  {
                         addDummy.ctrlName = ctrName;
                         addDummy.ctrlType = intType;
                         string[] bs1 = parseStr[2].Split('|');
-                        addDummy.rightValue = int.Parse(bs1[1]);
+                        addDummy.rightValue = float.Parse(bs1[1]);
                         BlendShape newBs1 = new BlendShape();
                         newBs1.blendableName = bs1[0];
                         newBs1.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs1.blendableName).blendableIndex;
                         addDummy.ctrlBlendShapes.Add(newBs1);
 
                         string[] bs2 = parseStr[3].Split('|');
-                        addDummy.leftValue = int.Parse(bs2[1]);
+                        addDummy.leftValue = float.Parse(bs2[1]);
                         BlendShape newBs2 = new BlendShape();
                         newBs2.blendableName = bs2[0];
                         newBs2.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs2.blendableName).blendableIndex;
@@ -122,28 +122,28 @@ public static class BlenderShapesManager  {
                         addDummy.ctrlName = ctrName;
                         addDummy.ctrlType = intType;
                         string[] bs1 = parseStr[2].Split('|');
-                        addDummy.rightValue = int.Parse(bs1[1]);
+                        addDummy.rightValue = float.Parse(bs1[1]);
                         BlendShape newBs1 = new BlendShape();
                         newBs1.blendableName = bs1[0];
                         newBs1.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs1.blendableName).blendableIndex;
                         addDummy.ctrlBlendShapes.Add(newBs1);
 
                         string[] bs2 = parseStr[3].Split('|');
-                        addDummy.leftValue = int.Parse(bs2[1]);
+                        addDummy.leftValue = float.Parse(bs2[1]);
                         BlendShape newBs2 = new BlendShape();
                         newBs2.blendableName = bs2[0];
                         newBs2.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs2.blendableName).blendableIndex;
                         addDummy.ctrlBlendShapes.Add(newBs2);
 
                         string[] bs3 = parseStr[4].Split('|');
-                        addDummy.upValue = int.Parse(bs3[1]);
+                        addDummy.upValue = float.Parse(bs3[1]);
                         BlendShape newBs3 = new BlendShape();
                         newBs3.blendableName = bs3[0];
                         newBs3.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs3.blendableName).blendableIndex;
                         addDummy.ctrlBlendShapes.Add(newBs3);
 
                         string[] bs4 = parseStr[5].Split('|');
-                        addDummy.downValue = int.Parse(bs4[1]);
+                        addDummy.downValue = float.Parse(bs4[1]);
                         BlendShape newBs4 = new BlendShape();
                         newBs4.blendableName = bs4[0];
                         newBs4.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs4.blendableName).blendableIndex;
@@ -188,6 +188,8 @@ public static class BlenderShapesManager  {
         {
             dummy.top = crl.ctrlBlendShapes[(int)BlenderShapesManager.BlenderShapeCtrl.blendYIdx.top].blendableIndex;
             dummy.bottom = crl.ctrlBlendShapes[(int)BlenderShapesManager.BlenderShapeCtrl.blendYIdx.down].blendableIndex;
+            dummy.upSliderValue = crl.upValue;
+            dummy.downSliderValue = crl.downValue;
             return dummy;
         }
       
@@ -204,6 +206,8 @@ public static class BlenderShapesManager  {
         {
             dummy.left = crl.ctrlBlendShapes[(int)BlenderShapesManager.BlenderShapeCtrl.blendXIdx.left].blendableIndex;
             dummy.right = crl.ctrlBlendShapes[(int)BlenderShapesManager.BlenderShapeCtrl.blendXIdx.right].blendableIndex;
+            dummy.leftSliderValue = crl.leftValue;
+            dummy.rightSliderValue = crl.rightValue;
             return dummy;
         }
 
@@ -217,7 +221,7 @@ public static class BlenderShapesManager  {
         for (int i = 0; i < controllerList.Count; i++)
         {
             var ctrl = controllerList[i];
-            if (ctrl.ctrlName.Contains(name))
+            if (ctrl.ctrlName.Contains(name)|| ctrl.ctrlName == name)
             {
                 ad = ctrl;
             }
