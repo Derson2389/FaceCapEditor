@@ -72,8 +72,7 @@ namespace FaceCapEditor
             }
 
             BlendGridController controllerCenter = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.mouth_move_facialControl], panelSize, panelSize, 180, 0);
-            controllerCenter.windowPosition = new Vector2(180, 0);
-            controllerCenter.windowSize = new Vector2(panelSize, panelSize);
+
             if (controllerCenter != null)
             {
                 mouthCenterController = new BlendControllerPanel(this, new Rect(controllerCenter.windowPosition, controllerCenter.windowSize), controllerCenter);
@@ -81,9 +80,8 @@ namespace FaceCapEditor
             }
 
 
-            BlendGridController controllerLeft = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.r_corners_facialControl], panelSize, panelSize, 180, 0);
-            controllerLeft.windowPosition = new Vector2(65, 0);
-            controllerLeft.windowSize = new Vector2(panelSize, panelSize);
+            BlendGridController controllerLeft = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.r_corners_facialControl], panelSize, panelSize, 65, 0);
+
             if (controllerLeft != null)
             {
                 mouthLeftController = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
@@ -91,8 +89,7 @@ namespace FaceCapEditor
             }
 
             BlendGridController controllerRight = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.l_corners_facialControl], panelSize, panelSize, 300, 0);
-            controllerRight.windowPosition = new Vector2(300, 0);
-            controllerRight.windowSize = new Vector2(panelSize, panelSize);
+
             if (controllerRight != null)
             {
                 mouthRightController = new BlendControllerPanel(this, new Rect(controllerRight.windowPosition, controllerRight.windowSize), controllerRight);

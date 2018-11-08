@@ -128,7 +128,10 @@ namespace DigitalSky.Tracker
                     if (data)
                     {
                         _emotionRetargeter = _target.gameObject.AddComponent<PrevizTrackRetargeter>();
-                        _emotionRetargeter.controllerConfiguration = data;
+                        var previzRt = _emotionRetargeter as PrevizTrackRetargeter;
+                        if(previzRt!= null)
+                            previzRt.controllerConfiguration = data;
+
                     }
                 }
                 else if (_emotionTracker is ARRemoteFaceTracker)

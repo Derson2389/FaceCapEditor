@@ -18,7 +18,6 @@ namespace dxyz
     public class PrevizTrackRetargeter : TrackRetargeter
     {
 
-
         /// <summary>
         /// 控制器配置信息
         /// </summary>
@@ -39,7 +38,17 @@ namespace dxyz
         //private bool mIsBinding = false;
         public override bool isBinding
         {
-			get { return trackBindings != null && trackBindings.Count > 0; }
+            get { return trackBindings != null && trackBindings.Count > 0; }
+        }
+
+        /// <summary>
+        /// 控制器处理逻辑器
+        /// </summary>
+        private PrevizCtrlHandler _ctrlHandler;
+        public PrevizCtrlHandler CtrHandler
+        {
+            set { _ctrlHandler = value; }
+            get { return _ctrlHandler;  }
         }
 
         /// <summary>
@@ -134,7 +143,6 @@ namespace dxyz
             Debug.Log("[PrevizRetargeter.Init] -> Mesh(es) detected: " + System.Environment.NewLine + mRigSkinnedMeshRenderers.Length + meshesStr);
 
             mTrackBindings = new List<ITrackBinding>();
-            _bindingData = controllerConfiguration;
             mIsInit = true;
 
             return true;
@@ -332,12 +340,20 @@ namespace dxyz
                 }
                 mTrackBindings.Clear();
             }
+            if (CtrHandler != null)
+            {
+                CtrHandler = null;
+            }
 
             PrevizBindingData bingingData = (PrevizBindingData)bindingData;
             mTrackBindings = ParseESCandAllocateBuffers(bingingData.data, bingingData.size);
-            TextAsset data = controllerConfiguration;    
-
-
+            TextAsset data = controllerConfiguration;
+            if (data != null)
+            {
+                CtrHandler = new PrevizCtrlHandler();
+                CtrHandler.LoadConfig(data ,this.gameObject);
+            }
+            
             if (mTrackBindings == null || mTrackBindings.Count <= 0)
             {
                 Debug.LogError("[PrevizRetargeter.CreateTrackBinding] -> 创建绑定关系失败, target: " + target.name);
@@ -347,20 +363,7 @@ namespace dxyz
             return true;
         }
 
-        public void ParseControllerConfig(TextAsset configuration)
-        {
-            string text = configuration.text;
-            string[] lines = text.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string line in lines)
-            {
-                if (string.IsNullOrEmpty(line))
-                {
-                    continue;
-                }
-
-            }
-        }
-
+       
         // Parse ESC.
         private List<ITrackBinding> ParseESCandAllocateBuffers(string iEsc, uint iNbCoeff)
         {

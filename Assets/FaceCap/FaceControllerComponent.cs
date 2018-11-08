@@ -32,6 +32,17 @@ public class FaceControllerComponent : MonoBehaviour {
         }
     }
 
+    public int GetMeshRenderIdxByName(string name)
+    {
+        int blenderIdx = 0;
+        SkinMesh = this.GetComponent<SkinnedMeshRenderer>();
+        if (SkinMesh != null)
+        {
+            blenderIdx = SkinMesh.sharedMesh.GetBlendShapeIndex(string.Format("{0}.{1}", "facial_blendShape", name));
+        }
+        return blenderIdx;
+    }
+
     public void SetFaceController(int idx, float weight)
     {
         SkinMesh = this.GetComponent<SkinnedMeshRenderer>();
