@@ -545,6 +545,7 @@ namespace dxyz
                     // NOTA: this code is not used currently, but might be in
                     // future.
                     // Parsing default position for bones.
+                    bindings.Add(binding);
                 }
             }
 
