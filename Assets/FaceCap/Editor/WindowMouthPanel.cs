@@ -42,87 +42,126 @@ namespace FaceCapEditor
             panelRect = rect;
             panelWindow = window;
 
-            BlendGridController controllerTogue = new BlendGridController();
-            controllerTogue.windowPosition = new Vector2(10, 22);
-            controllerTogue.windowSize = new Vector2(panelSize, panelSize);
-            togueController = new BlendControllerPanel(this, new Rect(controllerTogue.windowPosition, controllerTogue.windowSize), controllerTogue);
-            togueController.Init();
+            BlendGridController controllerTogue = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.tongue_facialControl], panelSize, panelSize, 10, 22);
+            
+            if (controllerTogue != null)
+            {
+                togueController = new BlendControllerPanel(this, new Rect(controllerTogue.windowPosition, controllerTogue.windowSize), controllerTogue);
+                togueController.Init();
+            }
 
+            BlendGridController controllerJaw = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.jaw_facialControl], panelSize, panelSize, 10, 28);
+            if (controllerJaw != null)
+            {
+                jawController = new BlendControllerPanel(this, new Rect(controllerJaw.windowPosition, controllerJaw.windowSize), controllerJaw);
+                jawController.Init();
+            }
 
-            BlendGridController controllerJaw = new BlendGridController();
-            controllerJaw.windowPosition = new Vector2(10, 28);
-            controllerJaw.windowSize = new Vector2(panelSize, panelSize);
-            jawController = new BlendControllerPanel(this, new Rect(controllerJaw.windowPosition, controllerJaw.windowSize), controllerJaw);
-            jawController.Init();
+            BlendGridController controllerMouthUp = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.upper_lip_facialControl], panelSize, panelSize, 180, 0);
+            if (controllerMouthUp != null)
+            {
+                mouthUpController = new BlendControllerPanel(this, new Rect(controllerMouthUp.windowPosition, controllerMouthUp.windowSize), controllerMouthUp);
+                mouthUpController.Init();
+            }
 
-            BlendGridController controllerMouthUp= new BlendGridController();
-            controllerMouthUp.windowPosition = new Vector2(180, 0);
-            controllerMouthUp.windowSize = new Vector2(panelSize, panelSize);
-            mouthUpController = new BlendControllerPanel(this, new Rect(controllerMouthUp.windowPosition, controllerMouthUp.windowSize), controllerMouthUp);
-            mouthUpController.Init();
+            BlendGridController controllerMouthDown = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.lower_lip_facialControl], panelSize, panelSize, 180, 0);
+            if (controllerMouthDown != null)
+            {
+                mouthDownController = new BlendControllerPanel(this, new Rect(controllerMouthDown.windowPosition, controllerMouthDown.windowSize), controllerMouthDown);
+                mouthDownController.Init();
+            }
 
-
-            BlendGridController controllerMouthDown = new BlendGridController();
-            controllerMouthDown.windowPosition = new Vector2(180, 0);
-            controllerMouthDown.windowSize = new Vector2(panelSize, panelSize);
-            mouthDownController = new BlendControllerPanel(this, new Rect(controllerMouthDown.windowPosition, controllerMouthDown.windowSize), controllerMouthDown);
-            mouthDownController.Init();
-
-
-            BlendGridController controllerCenter = new BlendGridController();
+            BlendGridController controllerCenter = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.mouth_move_facialControl], panelSize, panelSize, 180, 0);
             controllerCenter.windowPosition = new Vector2(180, 0);
             controllerCenter.windowSize = new Vector2(panelSize, panelSize);
-            mouthCenterController = new BlendControllerPanel(this, new Rect(controllerCenter.windowPosition, controllerCenter.windowSize), controllerCenter);
-            mouthCenterController.Init();
+            if (controllerCenter != null)
+            {
+                mouthCenterController = new BlendControllerPanel(this, new Rect(controllerCenter.windowPosition, controllerCenter.windowSize), controllerCenter);
+                mouthCenterController.Init();
+            }
 
 
-            BlendGridController controllerLeft = new BlendGridController();
+            BlendGridController controllerLeft = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.r_corners_facialControl], panelSize, panelSize, 180, 0);
             controllerLeft.windowPosition = new Vector2(65, 0);
             controllerLeft.windowSize = new Vector2(panelSize, panelSize);
-            mouthLeftController = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
-            mouthLeftController.Init();
+            if (controllerLeft != null)
+            {
+                mouthLeftController = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
+                mouthLeftController.Init();
+            }
 
-            BlendGridController controllerRight = new BlendGridController();
+            BlendGridController controllerRight = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.l_corners_facialControl], panelSize, panelSize, 300, 0);
             controllerRight.windowPosition = new Vector2(300, 0);
             controllerRight.windowSize = new Vector2(panelSize, panelSize);
-            mouthRightController = new BlendControllerPanel(this, new Rect(controllerRight.windowPosition, controllerRight.windowSize), controllerRight);
-            mouthRightController.Init();
+            if (controllerRight != null)
+            {
+                mouthRightController = new BlendControllerPanel(this, new Rect(controllerRight.windowPosition, controllerRight.windowSize), controllerRight);
+                mouthRightController.Init();
+            }
 
             //slider controller
             //up
-            BlendYController controllerMouthUpL = new BlendYController();
-            mouthLeftUpPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthUpL);
-            mouthLeftUpPanel1.Init();
+            BlendYController controllerMouthUpL = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.r_upper_corners_facialControl]);
+            if (controllerMouthUpL != null)
+            {
+                mouthLeftUpPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthUpL);
+                mouthLeftUpPanel1.Init();
+            }
 
-            BlendYController controllerMouthUpR = new BlendYController();
-            mouthLeftUpPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthUpR);
-            mouthLeftUpPanel2.Init();
+            BlendYController controllerMouthUpR = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.r_upper_lip_facialControl]);
+            if (controllerMouthUpR != null)
+            {
+                mouthLeftUpPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthUpR);
+                mouthLeftUpPanel2.Init();
+            }
 
-            BlendYController controllerMouthL = new BlendYController();
-            mouthRightUpPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthL);
-            mouthRightUpPanel1.Init();
+            BlendYController controllerMouthL = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.l_upper_lip_facialControl]);
+            if (controllerMouthL != null)
+            {
+                mouthRightUpPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthL);
+                mouthRightUpPanel1.Init();
+            }
 
-            BlendYController controllerMouthR = new BlendYController();
-            mouthRightUpPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthR);
-            mouthRightUpPanel2.Init();
+            BlendYController controllerMouthR = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.l_upper_corners_facialControl]);
+            if (controllerMouthR != null)
+            {
+                mouthRightUpPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthR);
+                mouthRightUpPanel2.Init();
+            }
             //down
-            BlendYController controllerMouthDownL1 = new BlendYController();
-            mouthLeftDownPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownL1);
-            mouthLeftDownPanel1.Init();
-            BlendYController controllerMouthDownL2 = new BlendYController();
-            mouthLeftDownPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownL2);
-            mouthLeftDownPanel2.Init();
+            BlendYController controllerMouthDownL1 = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.r_lower_corners_facialControl]);
+            if (controllerMouthDownL1 != null)
+            {
+                mouthLeftDownPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownL1);
+                mouthLeftDownPanel1.Init();
+            }
 
-            BlendYController controllerMouthDownR1 = new BlendYController();
-            mouthRightDownPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownR1);
-            mouthRightDownPanel1.Init();
-            BlendYController controllerMouthDownR2 = new BlendYController();
-            mouthRightDownPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownR2);
-            mouthRightDownPanel2.Init();
+            BlendYController controllerMouthDownL2 = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.r_lower_lip_facialControl]);
+            if (controllerMouthDownL2 != null)
+            {
+                mouthLeftDownPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownL2);
+                mouthLeftDownPanel2.Init();
+            }
 
-            BlendXController controllerCenterDown = new BlendXController();
-            mouthCenterDownPanel = new BlendSlideControllerPanel(this, Rect.zero, controllerCenterDown, null);
-            mouthCenterDownPanel.Init();
+            BlendYController controllerMouthDownR1 = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.l_lower_lip_facialControl]);
+            if (controllerMouthDownR1 != null)
+            {
+                mouthRightDownPanel1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownR1);
+                mouthRightDownPanel1.Init();
+            }
+            BlendYController controllerMouthDownR2 = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.l_lower_corners_facialControl]);
+            if (controllerMouthDownR2 != null)
+            {
+                mouthRightDownPanel2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerMouthDownR2);
+                mouthRightDownPanel2.Init();
+            }
+
+            BlendXController controllerCenterDown = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.mouth_rotate_facialControl]);
+            if (controllerCenterDown != null)
+            {
+                mouthCenterDownPanel = new BlendSlideControllerPanel(this, Rect.zero, controllerCenterDown, null);
+                mouthCenterDownPanel.Init();
+            }
 
         }
 
@@ -139,10 +178,49 @@ namespace FaceCapEditor
 
         public void Update()
         {
+            if (togueController != null)
+                togueController.OnUpdate(true);
 
+            if (jawController != null)
+                jawController.OnUpdate(true);
 
+            //Mouth
+            if (mouthLeftController != null)
+                mouthLeftController.OnUpdate(true);
+            if (mouthRightController != null)
+                mouthRightController.OnUpdate(true);
+            if (mouthUpController != null)
+                mouthUpController.OnUpdate(true);
+            if (mouthDownController != null)
+                mouthDownController.OnUpdate(true);
+            if (mouthCenterController != null)
+                mouthCenterController.OnUpdate(true);
 
-        }
+            //slide left up
+            if (mouthLeftUpPanel1 != null)
+                mouthLeftUpPanel1.OnUpdate(true);
+            if (mouthLeftUpPanel2 != null)
+                mouthLeftUpPanel2.OnUpdate(true);
+            //slide right up
+            if (mouthRightUpPanel1 != null)
+                mouthRightUpPanel1.OnUpdate(true);
+            if (mouthRightUpPanel2 != null)
+                mouthRightUpPanel2.OnUpdate(true);
+            //slide left down
+            if (mouthLeftDownPanel1 != null)
+                mouthLeftDownPanel1.OnUpdate(true);
+            if (mouthLeftDownPanel2 != null)
+                mouthLeftDownPanel2.OnUpdate(true);
+            //slide right down
+            if (mouthRightDownPanel1 != null)
+                mouthRightDownPanel1.OnUpdate(true);
+            if (mouthRightDownPanel2 != null)
+                mouthRightDownPanel2.OnUpdate(true);
+            //slide center down
+            if (mouthCenterDownPanel != null)
+                mouthCenterDownPanel.OnUpdate(true);
+
+    }
 
 
         public override void OnDraw()
@@ -166,7 +244,8 @@ namespace FaceCapEditor
                     newRect = new Rect(0, 20, 110, panelRect.height - 20);
                     GUILayout.BeginArea(newRect);
                     {
-                        togueController.OnDraw();
+                        if (togueController != null)
+                            togueController.OnDraw();
                         EditorGUIUtility.AddCursorRect(togueController.centerPanel, MouseCursor.Link);
 
                     }
@@ -184,7 +263,8 @@ namespace FaceCapEditor
                         GUILayout.EndHorizontal();
                         GUILayout.Space(20);
                         GUILayout.FlexibleSpace();
-                        jawController.OnDraw();
+                        if (jawController != null)
+                            jawController.OnDraw();
                        EditorGUIUtility.AddCursorRect(jawController.centerPanel, MouseCursor.Link);
 
                     }
@@ -214,17 +294,21 @@ namespace FaceCapEditor
                     GUILayout.BeginArea(newRect1);
                     {
                         GUILayout.BeginHorizontal();
-
-                        mouthLeftUpPanel1.OnDraw(new Vector2(30, 80));
-                        mouthLeftUpPanel2.OnDraw(new Vector2(30, 80));
+                        if (mouthLeftUpPanel1 != null)
+                            mouthLeftUpPanel1.OnDraw(new Vector2(30, 80));
+                        if (mouthLeftUpPanel2 != null)
+                            mouthLeftUpPanel2.OnDraw(new Vector2(30, 80));
                         GUILayout.FlexibleSpace();
 
-                        mouthRightUpPanel1.OnDraw(new Vector2(30, 80));
-                        mouthRightUpPanel2.OnDraw(new Vector2(30, 80));
+                        if (mouthRightUpPanel1 != null)
+                            mouthRightUpPanel1.OnDraw(new Vector2(30, 80));
+                        if (mouthRightUpPanel2 != null)
+                            mouthRightUpPanel2.OnDraw(new Vector2(30, 80));
 
                         GUILayout.EndHorizontal();
 
-                        mouthUpController.OnDraw();
+                        if (mouthUpController != null)
+                            mouthUpController.OnDraw();
                         EditorGUIUtility.AddCursorRect(mouthUpController.centerPanel, MouseCursor.Link);
                     }
                     GUILayout.EndArea();
@@ -232,13 +316,16 @@ namespace FaceCapEditor
                     var newRect2 = new Rect(110, 154, newRect.width - 110, 100);
                     GUILayout.BeginArea(newRect2);
                     {
-                        mouthLeftController.OnDraw();
+                        if (mouthLeftController != null)
+                            mouthLeftController.OnDraw();
                         EditorGUIUtility.AddCursorRect(mouthLeftController.centerPanel, MouseCursor.Link);
 
-                        mouthRightController.OnDraw();
+                        if (mouthRightController != null)
+                            mouthRightController.OnDraw();
                         EditorGUIUtility.AddCursorRect(mouthRightController.centerPanel, MouseCursor.Link);
 
-                        mouthCenterController.OnDraw();
+                        if (mouthCenterController != null)
+                            mouthCenterController.OnDraw();
                         EditorGUIUtility.AddCursorRect(mouthCenterController.centerPanel, MouseCursor.Link);
                     }
                     GUILayout.EndArea();
@@ -248,26 +335,32 @@ namespace FaceCapEditor
                     {
                         GUILayout.BeginVertical();
                         GUILayout.BeginHorizontal();
-                       
-                        mouthLeftDownPanel1.OnDraw(new Vector2(30, 80));
-                        mouthLeftDownPanel2.OnDraw(new Vector2(30, 80));
+
+                        if (mouthLeftDownPanel1 != null)
+                            mouthLeftDownPanel1.OnDraw(new Vector2(30, 80));
+                        if (mouthLeftDownPanel2 != null)
+                            mouthLeftDownPanel2.OnDraw(new Vector2(30, 80));
 
                         GUILayout.FlexibleSpace();
-                        mouthRightDownPanel1.OnDraw(new Vector2(30, 80));
-                        mouthRightDownPanel2.OnDraw(new Vector2(30, 80));
+                        if (mouthRightDownPanel1 != null)
+                            mouthRightDownPanel1.OnDraw(new Vector2(30, 80));
+                        if (mouthRightDownPanel2 != null)
+                            mouthRightDownPanel2.OnDraw(new Vector2(30, 80));
                         GUILayout.EndHorizontal();
                         GUILayout.FlexibleSpace();
                         GUILayout.Space(10);
                         GUILayout.BeginHorizontal();
                         GUILayout.FlexibleSpace();
                         ///GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(80), GUILayout.Height(30));
-                        mouthCenterDownPanel.OnDraw(new Vector2(80, 30));
+                        if (mouthCenterDownPanel != null)
+                            mouthCenterDownPanel.OnDraw(new Vector2(80, 30));
                         GUILayout.Space(20);
                         GUILayout.FlexibleSpace();
                         GUILayout.EndHorizontal();
                         GUILayout.EndVertical();
 
-                        mouthDownController.OnDraw();
+                        if (mouthDownController != null)
+                            mouthDownController.OnDraw();
                         EditorGUIUtility.AddCursorRect(mouthDownController.centerPanel, MouseCursor.Link);
                     }
                     GUILayout.EndArea();

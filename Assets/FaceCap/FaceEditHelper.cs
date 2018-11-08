@@ -250,6 +250,8 @@ public static class FaceEditHelper
     public enum MouthCtrl
     {
         //mouth_list
+        tongue_facialControl,
+        jaw_facialControl,
         r_corners_facialControl,
         l_corners_facialControl,
         upper_lip_facialControl,
@@ -268,7 +270,9 @@ public static class FaceEditHelper
     public static string[] MouthCtrlName =
     {
         //mouth_list
-		"r_corners_facialControl",
+        "tongue_facialControl",
+        "jaw_facialControl",
+        "r_corners_facialControl",
         "l_corners_facialControl",
         "upper_lip_facialControl",
         "lower_lip_facialControl",
@@ -326,13 +330,25 @@ public static class FaceEditHelper
     public enum OtherCtrl
     {
         // other_list
-        tongue_facialControl,
-        jaw_facialControl,
         upper_teeth_facialControl,
         lower_teeth_facialControl,
         add_facialControl,
+        add01_facialControl,
+        add02_facialControl,
+        add03_facialControl,
 
     }
+
+    public static string[] OtherCtrlName =
+    {
+        // other_list
+        "upper_teeth_facialControl",
+        "lower_teeth_facialControl",
+        "add_facialControl",
+        "add01_facialControl",
+        "add02_facialControl",
+        "add03_facialControl",
+    };
 
 
     public enum ControllerType          
