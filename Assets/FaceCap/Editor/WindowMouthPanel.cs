@@ -242,8 +242,10 @@ namespace FaceCapEditor
                     GUILayout.BeginArea(newRect);
                     {
                         if (togueController != null)
+                        {
                             togueController.OnDraw();
-                        EditorGUIUtility.AddCursorRect(togueController.centerPanel, MouseCursor.Link);
+                            EditorGUIUtility.AddCursorRect(togueController.centerPanel, MouseCursor.Link);
+                        }
 
                     }
                     GUILayout.EndArea();
@@ -261,8 +263,10 @@ namespace FaceCapEditor
                         GUILayout.Space(20);
                         GUILayout.FlexibleSpace();
                         if (jawController != null)
+                        {
                             jawController.OnDraw();
-                       EditorGUIUtility.AddCursorRect(jawController.centerPanel, MouseCursor.Link);
+                            EditorGUIUtility.AddCursorRect(jawController.centerPanel, MouseCursor.Link);
+                        }
 
                     }
                     GUILayout.EndArea();
@@ -305,8 +309,10 @@ namespace FaceCapEditor
                         GUILayout.EndHorizontal();
 
                         if (mouthUpController != null)
+                        {
                             mouthUpController.OnDraw();
-                        EditorGUIUtility.AddCursorRect(mouthUpController.centerPanel, MouseCursor.Link);
+                            EditorGUIUtility.AddCursorRect(mouthUpController.centerPanel, MouseCursor.Link);
+                        }
                     }
                     GUILayout.EndArea();
 
@@ -314,16 +320,22 @@ namespace FaceCapEditor
                     GUILayout.BeginArea(newRect2);
                     {
                         if (mouthLeftController != null)
+                        {
                             mouthLeftController.OnDraw();
-                        EditorGUIUtility.AddCursorRect(mouthLeftController.centerPanel, MouseCursor.Link);
+                            EditorGUIUtility.AddCursorRect(mouthLeftController.centerPanel, MouseCursor.Link);
+                        }
 
                         if (mouthRightController != null)
+                        {
                             mouthRightController.OnDraw();
-                        EditorGUIUtility.AddCursorRect(mouthRightController.centerPanel, MouseCursor.Link);
+                            EditorGUIUtility.AddCursorRect(mouthRightController.centerPanel, MouseCursor.Link);
+                        }
 
                         if (mouthCenterController != null)
+                        {
                             mouthCenterController.OnDraw();
-                        EditorGUIUtility.AddCursorRect(mouthCenterController.centerPanel, MouseCursor.Link);
+                            EditorGUIUtility.AddCursorRect(mouthCenterController.centerPanel, MouseCursor.Link);
+                        }
                     }
                     GUILayout.EndArea();
 
@@ -357,11 +369,12 @@ namespace FaceCapEditor
                         GUILayout.EndVertical();
 
                         if (mouthDownController != null)
+                        {
                             mouthDownController.OnDraw();
-                        EditorGUIUtility.AddCursorRect(mouthDownController.centerPanel, MouseCursor.Link);
+                            EditorGUIUtility.AddCursorRect(mouthDownController.centerPanel, MouseCursor.Link);
+                        }
                     }
                     GUILayout.EndArea();
-
 
                 }
                 GUILayout.EndArea();
