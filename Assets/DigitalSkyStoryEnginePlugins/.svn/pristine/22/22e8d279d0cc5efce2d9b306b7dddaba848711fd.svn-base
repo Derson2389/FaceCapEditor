@@ -1,0 +1,548 @@
+﻿using DigitalSky.Recorder;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+
+public class GateRecorderManager : RecorderManager
+{
+    public new static GateRecorderManager Instance
+    {
+        get
+        {
+            var instance = Slate.SlateExtensions.Instance.RecordUtility.GetRecorderManager(typeof(GateRecorderManager));
+            if (instance != null)
+            {
+                return (GateRecorderManager)instance;
+            }
+            else
+            {
+                return Singleton<GateRecorderManager>.Instance;
+            }
+        }
+    }
+
+    public GateRecorderManager()
+    {
+        EditorApplication.update -= OnNetUpdate;
+        EditorApplication.update += OnNetUpdate;
+    }
+
+    public class RecordObjInfo
+    {
+        public MBRootNodeInfo MBNode;
+        public GameObject Root;
+        public GameObject Target;
+        public int SynDashIndex = -1;
+        public string SynDashSekFile = string.Empty;
+        public bool NeedRecord = true;
+
+        public RecordObjInfo(GameObject root, GameObject target, bool _needRecord)
+        {
+            Root = root;
+            Target = target;
+            NeedRecord = _needRecord;
+            SynDashSekFile = Application.dataPath + "/DigitalSkyStoryEnginePlugins/ViconRecorder/SkeletonFiles/v853_Pair160_D0_T64_M24_Jig2.sk";
+        }
+    }
+    
+    private List<RecordObjInfo> m_RecordObjectList = new List<RecordObjInfo>();
+    private List<GameObject> m_CloneObjectList = new List<GameObject>();
+    private List<GameObject> m_OffsetObjectList = new List<GameObject>();
+    private List<DavinciRecorderSync> m_SyncList = new List<DavinciRecorderSync>();
+    private GameObject m_TargetNode = null;
+    
+    public List<RecordObjInfo> RecordObjectList
+    {
+        get
+        {
+            return m_RecordObjectList;
+        }
+    }
+
+    public List<RecordObjInfo> NeedRecordObjectList()
+    {
+        return RecordObjectList.FindAll(dummy => dummy.NeedRecord == true);
+    }
+
+    private  Vector3 mSceneOffset = Vector3.zero;
+    public  Vector3 SceneOffset
+    {
+        get { return mSceneOffset; }
+        set
+        {
+            if (mSceneOffset != value)
+            {
+                mSceneOffset = value;
+                Instance.SaveConfig();
+            }
+        }
+    }
+
+    private  float mAnimationFrameFPS = 30;
+    public override float AnimationFrameFPS
+    {
+        get { return mAnimationFrameFPS; }
+        set
+        {
+            mAnimationFrameFPS = value;
+            SaveConfig();
+        }
+    }
+
+    public override void SetRecordSavePath(string value)
+    {
+        m_recordSavePath = value;
+        SaveConfig();
+    }
+
+    public override string GetRecordSavePath()
+    {
+        return m_recordSavePath;
+    }
+
+    public override string InitSavePath()
+    {
+        return "RecordAnimations/";
+    }
+
+    public override void LoadConfig()
+    {
+        mAnimationFrameFPS = PlayerPrefs.GetFloat("FrameInterval", 30.0f);
+      
+        SetRecordSavePath( PlayerPrefs.GetString("AnimationDir", "RecordAnimations/"));
+        mSceneOffset.x = PlayerPrefs.GetFloat("SceneOffsetX", 0.0f);
+        mSceneOffset.y = PlayerPrefs.GetFloat("SceneOffsetY", 0.0f);
+        mSceneOffset.z = PlayerPrefs.GetFloat("SceneOffsetZ", 0.0f);
+    }
+
+    public override void SaveConfig()
+    {
+        PlayerPrefs.SetFloat("FrameInterval", mAnimationFrameFPS);
+        PlayerPrefs.SetString("AnimationDir", GetRecordSavePath());
+        PlayerPrefs.SetFloat("SceneOffsetX", mSceneOffset.x);
+        PlayerPrefs.SetFloat("SceneOffsetY", mSceneOffset.y);
+        PlayerPrefs.SetFloat("SceneOffsetZ", mSceneOffset.z);
+    }
+
+    public override void Init()
+    {
+        LoadConfig();
+    }
+
+    public override void Clear()
+    {
+        m_RecordObjectList.Clear();
+    }
+
+    public override void SetObjRecordEnalbe(GameObject obj ,bool value)
+    {
+        var recordInfo = GateRecorderManager.Instance.Find(obj);
+        recordInfo.NeedRecord = value;
+
+    }
+
+    public override void AddObject(GameObject obj, bool needRecord, GameObject hipsObj = null)
+    {
+        if (hipsObj == null)
+        {
+           RecordObjInfo objInfo = new RecordObjInfo(obj, obj, needRecord);
+            RecordObjectList.Add(objInfo);
+        }
+        else
+        {
+            RecordObjInfo objInfo = new RecordObjInfo(obj, hipsObj.gameObject, needRecord);
+            RecordObjectList.Add(objInfo);
+        }        
+    }
+
+    public override void RemoveObject(object obj)
+    {
+        RecordObjectList.Remove((RecordObjInfo)obj);
+    }
+
+    public override void OnUpdate()
+    {
+        for (int i = RecordObjectList.Count - 1; i >= 0; i--)
+        {
+            if (RecordObjectList[i].Root == null || !RecordObjectList[i].Root.activeSelf)
+                RecordObjectList.RemoveAt(i);
+        }
+    }
+
+    public override void OnNetUpdate()
+    {
+    }
+
+    public RecordObjInfo Find(GameObject obj)
+    {
+        for(int i = 0; i < m_RecordObjectList.Count; i++)
+        {
+            if (m_RecordObjectList[i].Root == obj)
+                return m_RecordObjectList[i];
+        }
+
+        return null;
+    }
+
+
+    public override void RenderGeneraConifg(Color color, Color _buttonColor)
+    {
+        GUILayout.Space(5);
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("动画帧率: ", GUILayout.Width(60.0f));
+        float newFps = EditorGUILayout.Slider(GateRecorderManager.Instance.AnimationFrameFPS, 1.0f, 120.0f);
+        if (newFps != GateRecorderManager.Instance.AnimationFrameFPS)
+        {
+            GateRecorderManager.Instance.AnimationFrameFPS = newFps;
+        }
+        GUILayout.Space(2);
+        GUILayout.EndHorizontal();
+
+        GUILayout.Space(5);
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("MotionBuilder连接: ", GUILayout.Width(120.0f));
+
+        GUILayout.FlexibleSpace();
+
+        GUI.backgroundColor = _buttonColor;
+        if (GateRecorderManager.Instance.IsConnected())
+        {
+            if (GUILayout.Button("断开", GUILayout.Width(60.0f)))
+            {
+                GateRecorderManager.Instance.StopConnect();
+            }
+        }
+        else
+        {
+            if (GUILayout.Button("连接", GUILayout.Width(60.0f)))
+            {
+                GateRecorderManager.Instance.StartConnect();
+            }
+        }
+        GUI.backgroundColor = color;
+
+        GUILayout.Space(2);
+        GUILayout.EndHorizontal();
+    }
+
+    public override void RenderConfigObjectItem(ConfigComponent config, GameObject selectobj, Rect rc)
+    {
+        Color _buttonColor = new Color(0, 183 / 255f, 238 / 255f);
+        RecordObjInfo obj = GateRecorderManager.Instance.Find(selectobj);
+        if (obj == null)
+            return ;
+        if (config == null)
+            return ;
+        var actorConfig = config.GetActorConfigByObj(selectobj);
+        obj.MBNode = null;
+        obj.SynDashIndex = actorConfig.SynDashIndex;
+        obj.SynDashSekFile = actorConfig.SynDashSekFile;
+        SynBinder.LockState = actorConfig.SynBinderLockState;
+
+        Color color = GUI.backgroundColor;
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("MotionBuilder Setting", EditorStyles.boldLabel);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("MotionBuilder角色配置: ", GUILayout.Width(150.0f));
+
+        int mbNodeCount = MontionRecorderServer.Instance.MBObjectList.Count;
+        if(mbNodeCount == 0)
+        {
+            obj.MBNode = null;
+            GUILayout.Label("MotionBuilder未连接", GUILayout.Width(150.0f));
+        }
+        else
+        {
+            string[] objList = new string[MontionRecorderServer.Instance.MBObjectList.Count];
+            int selectIndex = MontionRecorderServer.Instance.MBObjectList.FindIndex(c=>c.RootName == actorConfig.ActorMBName);
+            selectIndex = EditorGUILayout.Popup(selectIndex, Array.ConvertAll(MontionRecorderServer.Instance.MBObjectList.ToArray(), item => item.RootName));
+            if(selectIndex < 0 || selectIndex > MontionRecorderServer.Instance.MBObjectList.Count)
+            {
+                actorConfig.ActorMBName = string.Empty;
+            }
+            else
+            {
+                actorConfig.ActorMBName = MontionRecorderServer.Instance.MBObjectList[selectIndex].RootName;
+                obj.MBNode = MontionRecorderServer.Instance.MBObjectList[selectIndex];
+            }
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.Space(10.0f);
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Gesture Setting For MotionBuilder", EditorStyles.boldLabel);
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("手套角色配置: ", GUILayout.Width(85.0f));
+        GUILayout.Space(5.0f);
+
+        GUI.backgroundColor = _buttonColor;
+        if (GUILayout.Button("↓", GUILayout.Width(20.0f)))
+        {
+            if (obj.SynDashIndex >= 0)
+            {
+                actorConfig.SynDashIndex--;
+                config.RefreshActorConfig(selectobj, actorConfig);
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(config.gameObject.scene);
+                obj.SynDashIndex = actorConfig.SynDashIndex;
+                
+            }
+        }
+        GUI.backgroundColor = color;
+
+        GUILayout.Label(obj.SynDashIndex >= 0 ? string.Format("手套[{0}]", obj.SynDashIndex) : "未启用", GUILayout.Width(45.0f));
+
+        GUI.backgroundColor = _buttonColor;
+        if (GUILayout.Button("↑", GUILayout.Width(20.0f)))
+        {
+            actorConfig.SynDashIndex++;
+            config.RefreshActorConfig(selectobj, actorConfig);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(config.gameObject.scene);
+            obj.SynDashIndex = actorConfig.SynDashIndex;
+           
+        }
+        GUI.backgroundColor = color;
+
+        GUILayout.EndHorizontal();
+        GUILayout.Space(5.0f);
+
+        GUILayout.BeginHorizontal();
+
+        GUI.backgroundColor = _buttonColor;
+        if (GUILayout.Button(SynBinder.LockState ? "UNLOCK" : "LOCK", GUILayout.Width(70.0f)))
+        {
+            actorConfig.SynBinderLockState = !actorConfig.SynBinderLockState;
+            config.RefreshActorConfig(selectobj, actorConfig);
+            UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(config.gameObject.scene);
+            SynBinder.LockState = actorConfig.SynBinderLockState;
+        }
+        if (GUILayout.Button("POSE1", GUILayout.Width(60.0f)))
+        {
+            SynBinder.SetRefPose(obj.SynDashIndex);
+        }
+        if (GUILayout.Button("POSE2", GUILayout.Width(60.0f)))
+        {
+            SynBinder.SetZeroPose(obj.SynDashIndex);
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.Space(5.0f);
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("sk文件"))
+        {
+            string path = EditorUtility.OpenFilePanel("选择导入sk文件", Application.streamingAssetsPath, "sk");
+            if (!string.IsNullOrEmpty(path) && obj.SynDashSekFile != path)
+            {
+                actorConfig.SynDashSekFile = path;
+                config.RefreshActorConfig(selectobj, actorConfig);
+                UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(config.gameObject.scene);
+                obj.SynDashSekFile = actorConfig.SynDashSekFile;
+                
+            }
+        }
+        GUI.backgroundColor = color;
+
+        GUILayout.Space(5.0f);
+        GUIStyle label = new GUIStyle();
+        label.normal.textColor = GUI.skin.label.normal.textColor;
+        label.wordWrap = true;
+        GUILayout.Label(obj.SynDashSekFile, label, GUILayout.Width(245));
+        label.wordWrap = false;
+
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+
+        GUILayout.Space(20.0f);
+        GUILayout.Label("___________________________________");
+    }
+
+    public override void Destroy()
+    {
+        ;
+    }
+
+    public override bool CanRecord()
+    {
+        return true;
+    }
+
+    private static void EnableRendererRecursive(GameObject go, bool enabled)
+    {
+        Renderer[] componentsInChildren = go.GetComponentsInChildren<Renderer>();
+        for (int i = 0; i < componentsInChildren.Length; i++)
+        {
+            Renderer renderer = componentsInChildren[i];
+            renderer.enabled = enabled;
+        }
+    }
+
+    public void RefreshObjectList()
+    {
+        Cleanup();
+   
+        ///m_RecordObjectList = NeedRecordObjectList();
+        m_TargetNode = new GameObject("Offset Node");
+        m_TargetNode.AddComponent<TagetNodeComponent>();
+        m_TargetNode.transform.position = GateRecorderManager.Instance.SceneOffset;
+        m_TargetNode.AddComponent<ViconBoxComponent>();
+
+        int count = m_RecordObjectList.Count;    
+        for (int i = 0; i < count; i++)
+        {
+            var dummy = m_RecordObjectList[i];
+            if (!dummy.NeedRecord || !GateRecorderManager.Instance.IsConnected() || dummy.MBNode == null)
+                continue;
+            AddCloneObject(m_RecordObjectList[i]);
+        }
+    }
+
+    private void AddCloneObject(RecordObjInfo objInfo)
+    {
+        GameObject target = objInfo.Root;
+
+#if UNITY_EDITOR
+        GameObject cloneObject = SlateRecorderCache.Instance.CreateClone(objInfo.Root);
+        DavinciRecorderSync sync = cloneObject.AddComponent<DavinciRecorderSync>();
+        if (objInfo.Target == null)
+        {
+            objInfo.Root = objInfo.Target;
+        }
+        sync.Config(target, objInfo.MBNode, objInfo.Root == objInfo.Target ? string.Empty : objInfo.Target.name, objInfo.SynDashIndex, objInfo.SynDashSekFile);
+        m_CloneObjectList.Add(cloneObject);
+        m_SyncList.Add(sync);
+        GateOffset offset = target.GetComponent<GateOffset>();
+        if (offset != null)
+        {
+            GameObject obj = new GameObject("Offset: " + cloneObject.name);
+            obj.transform.parent = m_TargetNode.transform;
+            obj.transform.localPosition = offset.Offset;
+            m_OffsetObjectList.Add(obj);
+        }
+        else
+        {
+            m_OffsetObjectList.Add(null);
+        }
+        EnableRendererRecursive(cloneObject, true);
+        EnableRendererRecursive(target, false);
+
+        cloneObject.layer = target.layer;
+        cloneObject.transform.localPosition = target.transform.localPosition;
+        cloneObject.transform.localRotation = Quaternion.identity;
+        cloneObject.transform.localScale = target.transform.localScale;
+#endif
+    }
+
+    public override void Cleanup()
+    {
+        if (m_TargetNode != null)
+        {
+            GameObject.DestroyImmediate(m_TargetNode);
+            m_TargetNode = null;
+        }
+
+        m_OffsetObjectList.Clear();
+        foreach (DavinciRecorderSync recorder in m_SyncList)
+        {
+            recorder.Cleanup();
+        }
+
+        m_SyncList.Clear();
+
+        foreach (RecordObjInfo obj in m_RecordObjectList)
+        {
+            if (obj != null)
+            {
+                EnableRendererRecursive(obj.Root, true);
+            }
+        }
+
+        foreach (GameObject obj in m_CloneObjectList)
+        {
+#if UNITY_EDITOR
+            SlateRecorderCache.Instance.DestoryFromClone(obj);
+#endif
+        }
+        m_CloneObjectList.Clear();
+    }
+
+
+    public override bool IsConnected()
+    {
+        return MontionRecorderServer.Instance.IsRunning();
+    }
+
+    public override void StartConnect()
+    {
+        MontionRecorderServer.Instance.BeginListen();
+    }
+
+    public override void StopConnect()
+    {
+        MontionRecorderServer.Instance.StopListen();
+    }
+
+    public override void UpdateConnect()
+    {
+        Vector3 screenOffset = Vector3.zero;
+        if(m_TargetNode!= null)
+            screenOffset = m_TargetNode.transform.position;
+        GateRecorderManager.Instance.SceneOffset = screenOffset;
+        Vector3 offset = Vector3.zero;
+        for (int i = 0; i < m_SyncList.Count; i++)
+        {
+            m_SyncList[i].transform.position = Vector3.zero;
+            m_SyncList[i].UpdateRecorder();
+            m_SyncList[i].Target.transform.position += screenOffset;
+            m_SyncList[i].LocationOffset = screenOffset;
+
+            if (m_OffsetObjectList[i] != null)
+            {
+                offset = m_OffsetObjectList[i].transform.localPosition;
+                m_RecordObjectList[i].Root.GetComponent<GateOffset>().Offset = offset;
+                m_SyncList[i].Target.transform.position += offset;
+                m_SyncList[i].LocationOffset += offset;
+            }
+        }
+
+    }
+
+    public override void StartRecord(float startTime)
+    {
+        RefreshObjectList();
+
+        foreach (DavinciRecorderSync recorder in m_SyncList)
+        {
+            recorder.StartRecord();
+        }
+    }
+
+    public override void StopRecord(Slate.Cutscene cutscene, float startTime, float endTime, int? recordIdx = null)
+    {
+        foreach (DavinciRecorderSync recorder in m_SyncList)
+        {
+            recorder.StopRecord(cutscene, startTime, recordIdx);
+        }
+
+#if UNITY_EDITOR
+        EditorUtility.ClearProgressBar();
+#endif
+      
+    }
+    public override void Record(float currentTime, float totalTime)
+    {
+        foreach (DavinciRecorderSync recorder in m_SyncList)
+        {
+            recorder.Record(currentTime);
+        }
+    }
+
+}

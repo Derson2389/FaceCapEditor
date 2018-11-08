@@ -1,0 +1,705 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEditor;
+using System.IO;
+using UnityEditor.SceneManagement;
+using System.Linq;
+
+public class CutsceneBuilderView : EditorWindow
+{
+    class SceneListviewItem
+    {
+        public bool selected;
+        public Texture2D image;
+        public string fullname;
+        public string name;
+    }
+
+    class CloneListviewItem
+    {
+        public bool selected;
+        public Texture image;
+        public string fullname;
+        public string name;
+    }
+
+    private string mCurrentProject = string.Empty;
+    private Vector2 mSceneScrollviewPos = Vector2.zero;
+    private Vector2 mCharacterScrollviewPos = Vector2.zero;
+    private Vector2 mPropScrollviewPos = Vector2.zero;
+    private List<SceneListviewItem> mSceneItemList = new List<SceneListviewItem>();
+    private List<CutsceneAssetsManagerUtility.PrefabListviewItem> mCharacterItemList = new List<CutsceneAssetsManagerUtility.PrefabListviewItem>();
+    private List<CutsceneAssetsManagerUtility.PrefabListviewItem> mPropItemList = new List<CutsceneAssetsManagerUtility.PrefabListviewItem>();
+    private List<CloneListviewItem> mCloneItemList = new List<CloneListviewItem>();
+    private string mCopySceneName = string.Empty;
+    private string mNewCutsceneName = string.Empty;
+    private string mCurrentActName = string.Empty;
+
+    [SerializeField]
+    private List<CutsceneClip> mCutsceneClips = new List<CutsceneClip>();
+    [SerializeField]
+    private List<CutsceneClip> mActCutsceneClips = new List<CutsceneClip>();
+    private string mDesc = string.Empty;
+    private int mStep = 0;
+    private System.Action<Scene> mCallBack = null;
+
+    private enum ResouresType
+    {
+        scene = 0,
+        character,
+        prop,
+
+        CloneExist//克隆现有
+    }
+
+    private float leftRectW = 100f;
+    //private string mSceneSearchText = string.Empty;
+    //private string mCharacterSearchText = string.Empty;
+
+    public static CutsceneBuilderView ShowWindow(string project, string actName, string desc = null, System.Action<Scene>  callback = null)
+    {
+        CutsceneBuilderView window = EditorWindow.GetWindow<CutsceneBuilderView>("分镜创建");
+        window.mCurrentActName = actName;
+        var cutscenceCnt = window.mActCutsceneClips.Count;
+        window.mNewCutsceneName = actName + string.Format("{0:D2}", cutscenceCnt+1);
+        window.SetProject(project);
+        window.Show();
+        
+        if (desc != null)
+        {
+            window.mDesc = desc;
+        }        
+        window.mCallBack = callback;
+        window.SysDescWithUnitySence();
+        return window;
+    }
+
+    private void SetProject(string project)
+    {
+        mCurrentProject = project;
+
+        mActCutsceneClips.Clear();
+        mCutsceneClips.Clear();
+        List<string> cutscenes = CutsceneAssetsManagerUtility.GetCutsceneFilesByDesc(mCurrentProject, mCurrentActName);
+        foreach (string cs in cutscenes)
+        {
+            CutsceneClip clip = new CutsceneClip();
+            clip.fullname = cs;
+            clip.name = System.IO.Path.GetFileNameWithoutExtension(cs);
+            clip.image = CutsceneAssetsManagerUtility.LoadImage(clip.fullname);
+            clip.belongActName = mCurrentActName;
+            mCutsceneClips.Add(clip);
+        }
+
+        foreach (CutsceneClip cc in mCutsceneClips)
+        {
+            if (cc.belongActName == mCurrentActName && !string.IsNullOrEmpty(cc.belongActName) && !string.IsNullOrEmpty(mCurrentActName))
+            {
+                mActCutsceneClips.Add(cc);
+            }
+        }
+
+        foreach(CutsceneClip cc in mActCutsceneClips)
+        {
+            CloneListviewItem item = new CloneListviewItem();
+            item.selected = false;
+            item.fullname = cc.fullname;
+            item.name = cc.name;
+            item.image = cc.IMGAGE;
+            var sameItem = mCloneItemList.Where(d => d.name == cc.name).FirstOrDefault();
+            if (sameItem == null)
+                mCloneItemList.Add(item);
+        }
+        
+
+        List<string> scenes = CutsceneAssetsManagerUtility.GetSceneFiles(project);
+        List<string> characters = CutsceneAssetsManagerUtility.GetCharacterFiles(project);
+        List<string> props = CutsceneAssetsManagerUtility.GetPropFiles(project);
+
+        mSceneItemList.Clear();
+        mCharacterItemList.Clear();
+        mPropItemList.Clear();
+        foreach (string s in scenes)
+        {
+            SceneListviewItem item = new SceneListviewItem();
+            item.selected = false;
+            item.fullname = s;
+            item.name = System.IO.Path.GetFileNameWithoutExtension(s);
+            item.image = CutsceneAssetsManagerUtility.LoadImage(item.fullname);
+
+            mSceneItemList.Add(item);
+        }
+
+        foreach (string c in characters)
+        {
+            CutsceneAssetsManagerUtility.PrefabListviewItem item = new CutsceneAssetsManagerUtility.PrefabListviewItem();
+            item.selected = false;
+            item.fullname = c;
+            item.name = System.IO.Path.GetFileNameWithoutExtension(c);
+            item.image = CutsceneAssetsManagerUtility.LoadImage(item.fullname);
+
+            mCharacterItemList.Add(item);
+        }
+
+
+        foreach (string p in props)
+        {
+            CutsceneAssetsManagerUtility.PrefabListviewItem item = new CutsceneAssetsManagerUtility.PrefabListviewItem();
+            item.selected = false;
+            item.fullname = p;
+            item.name = System.IO.Path.GetFileNameWithoutExtension(p);
+            item.image = CutsceneAssetsManagerUtility.LoadImage(item.fullname);
+
+            mPropItemList.Add(item);
+
+        }
+    }
+
+    private void ClearCloneSelected()
+    {
+        foreach (CloneListviewItem item in mCloneItemList)
+        {
+            item.selected = false;
+        }
+    }
+
+    private void refreshThumbnails()
+    {
+        foreach (CutsceneAssetsManagerUtility.PrefabListviewItem cc in mCharacterItemList)
+        {
+            CutsceneAssetsManagerUtility.LoadImage(cc.fullname, true);
+        }
+
+        foreach (CutsceneAssetsManagerUtility.PrefabListviewItem p in mPropItemList)
+        {
+            CutsceneAssetsManagerUtility.LoadImage(p.fullname, true);
+        }
+    }
+
+    private void Toolbar()
+    {
+        EditorGUILayout.BeginHorizontal(EditorStyles.toolbar, GUILayout.ExpandWidth(true));
+        {
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("刷新缩略图", EditorStyles.toolbarButton, GUILayout.Width(60)))
+            {
+                refreshThumbnails();
+            }       
+            GUILayout.FlexibleSpace();
+        }
+        EditorGUILayout.EndHorizontal();
+
+    }
+
+    private void OnLeftPanel()
+    {
+        float clientY = 30;
+        float clientH = Screen.height - clientY;
+
+        float scrollviewHeight = (clientH - (22 + 22 + 32))/* * 0.5f*/;
+        GUILayout.BeginArea(new Rect(0, 18, leftRectW - 2, scrollviewHeight+20));
+        GUILayout.BeginVertical("GroupBox");
+
+        if (GUILayout.Toggle(mStep == (int)ResouresType.scene, "场景"))
+        {
+            if (mStep != (int)ResouresType.scene)
+            {
+                mNewCutsceneName = "";
+            }
+
+            mStep = (int)ResouresType.scene;
+            
+        };
+
+        if (GUILayout.Toggle(mStep == (int)ResouresType.character, "角色"))
+        {
+            if (mStep != (int)ResouresType.character)
+            {
+                mNewCutsceneName = "";
+            }
+            mStep = (int)ResouresType.character;
+            
+        };
+
+        if (GUILayout.Toggle(mStep == (int)ResouresType.prop, "道具"))
+        {
+            if (mStep != (int)ResouresType.prop)
+            {
+                mNewCutsceneName = "";
+            }
+            mStep = (int)ResouresType.prop;
+            
+        }
+
+        if (GUILayout.Toggle(mStep == (int)ResouresType.CloneExist, "克隆已有"))
+        {
+            mStep = (int)ResouresType.CloneExist;
+        }
+
+        GUILayout.FlexibleSpace();
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+
+    }
+
+    private void OnScenseGUI()
+    {
+       
+        float clientY = 30;
+        float clientH = Screen.height - clientY;
+
+        float scrollviewHeight = (clientH - (22 + 22 + 32))/* * 0.5f*/;
+        
+        GUILayout.BeginArea(new Rect(leftRectW, 18, Screen.width - leftRectW, Screen.height - 30));
+        GUILayout.BeginVertical("GroupBox");
+        
+        mSceneScrollviewPos = EditorGUILayout.BeginScrollView(mSceneScrollviewPos,  GUILayout.Height(scrollviewHeight));
+        {
+            
+            int column = Mathf.Max(1, Mathf.FloorToInt((Screen.width - leftRectW) / 182f));
+            int row = mSceneItemList.Count / column;
+            if (mSceneItemList.Count % column > 0)
+            {
+                row++;
+            }
+
+            for (int r = 0; r < row; r++)
+            {
+                GUILayout.Space(164);
+
+                int cc = Mathf.Min(column, mSceneItemList.Count - (r * column));
+                for (int c = 0; c < cc; c++)
+                {
+                    SceneListviewItem item = mSceneItemList[r * column + c];
+                    float x = 2 + (c * 180);
+                    float y = 2 + (r * 162);
+
+                    if (item.image == null)
+                    {
+                        item.image = CutsceneAssetsManagerUtility.LoadImage(item.fullname);
+                    }
+
+                    Color backgroundColor = item.selected ? new Color(0, 192 / 255f, 255 / 255f) : Color.white;
+                    Color textColor = item.selected ? new Color(0, 192 / 255f, 255 / 255f) : Color.white;
+
+                    Rect itemRect = new Rect(x, y, 178, 160);
+                    CutsceneAssetsManagerGUI.ListviewItem(itemRect, item.image, item.name, backgroundColor, textColor);
+
+                    if (Event.current.type == EventType.MouseDown && itemRect.Contains(Event.current.mousePosition))
+                    {
+                        foreach (SceneListviewItem s in mSceneItemList)
+                        {
+                            s.selected = false;
+                        }
+
+                        item.selected = !item.selected;
+                    }
+                }
+            }
+        }    
+        EditorGUILayout.EndScrollView();
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+    }
+
+    private void OnClonePanel()
+    {
+        float clientY = 30;
+        float clientH = Screen.height - clientY;
+
+        float scrollviewHeight = (clientH - (22 + 22 + 32))/* * 0.5f*/;
+
+        GUILayout.BeginArea(new Rect(leftRectW, 18, Screen.width - leftRectW, Screen.height - 30));
+        GUILayout.BeginVertical("GroupBox");
+
+        //mCharacterSearchText = CutsceneAssetsManagerGUI.SearchField(new Rect(Screen.width - 224, (Screen.height - CutsceneAssetsManagerGUI.LISTVIEW_TITLE_HEIGHT) * 0.5f + 5, 200, 20), mCharacterSearchText);
+
+        mPropScrollviewPos = EditorGUILayout.BeginScrollView(mPropScrollviewPos, GUILayout.Height(scrollviewHeight));
+        {
+            int column = Mathf.Max(1, Mathf.FloorToInt((Screen.width - leftRectW) / 182f));
+            int row = mCloneItemList.Count / column;
+            if (mCloneItemList.Count % column > 0)
+            {
+                row++;
+            }
+
+            for (int r = 0; r < row; r++)
+            {
+                GUILayout.Space(164);
+
+                int cc = Mathf.Min(column, mCloneItemList.Count - (r * column));
+                for (int c = 0; c < cc; c++)
+                {
+                    CloneListviewItem item = mCloneItemList[r * column + c];
+
+                    if (item.image == null)
+                    {
+                        item.image = CutsceneAssetsManagerUtility.LoadImage(item.fullname);
+                    }
+
+                    float x = 2 + (c * 180);
+                    float y = 2 + (r * 162);
+
+                    Color backgroundColor = item.selected ? new Color(0, 192 / 255f, 255 / 255f) : Color.white;
+                    Color textColor = item.selected ? new Color(0, 192 / 255f, 255 / 255f) : Color.white;
+
+                    Rect itemRect = new Rect(x, y, 178, 160);
+                    CutsceneAssetsManagerGUI.ListviewItem(itemRect, item.image, item.name, backgroundColor, textColor);
+
+                    if (Event.current.type == EventType.MouseDown && itemRect.Contains(Event.current.mousePosition))
+                    {
+                        if (!item.selected)
+                        {
+                            ClearCloneSelected();
+                            mCopySceneName = item.fullname;
+                            mNewCutsceneName = item.name+"_Clone";
+                            item.selected = true;
+                        };
+                    }
+                }
+            }
+        }
+        EditorGUILayout.EndScrollView();
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+
+    }
+
+
+
+    private void OnPropGUI()
+    {
+        Toolbar();
+        float clientY = 30;
+        float clientH = Screen.height - clientY;
+
+        float scrollviewHeight = (clientH - (22 + 22 + 32))/* * 0.5f*/;
+
+        GUILayout.BeginArea(new Rect(leftRectW, 18, Screen.width - leftRectW, Screen.height - 30));
+        GUILayout.BeginVertical("GroupBox");
+
+        //mCharacterSearchText = CutsceneAssetsManagerGUI.SearchField(new Rect(Screen.width - 224, (Screen.height - CutsceneAssetsManagerGUI.LISTVIEW_TITLE_HEIGHT) * 0.5f + 5, 200, 20), mCharacterSearchText);
+
+        mPropScrollviewPos = EditorGUILayout.BeginScrollView(mPropScrollviewPos, GUILayout.Height(scrollviewHeight));
+        {
+            int column = Mathf.Max(1, Mathf.FloorToInt((Screen.width - leftRectW) / 182f));
+            int row = mPropItemList.Count / column;
+            if (mPropItemList.Count % column > 0)
+            {
+                row++;
+            }
+
+            for (int r = 0; r < row; r++)
+            {
+                GUILayout.Space(164);
+
+                int cc = Mathf.Min(column, mPropItemList.Count - (r * column));
+                for (int c = 0; c < cc; c++)
+                {
+                    CutsceneAssetsManagerUtility.PrefabListviewItem item = mPropItemList[r * column + c];
+
+                    if (item.image == null)
+                    {
+                        item.image = CutsceneAssetsManagerUtility.LoadImage(item.fullname);
+                    }
+
+                    float x = 2 + (c * 180);
+                    float y = 2 + (r * 162);
+
+                    Color backgroundColor = item.selected ? new Color(0, 192 / 255f, 255 / 255f) : Color.white;
+                    Color textColor = item.selected ? new Color(0, 192 / 255f, 255 / 255f) : Color.white;
+
+                    Rect itemRect = new Rect(x, y, 178, 160);
+                    if (item.selected)
+                    {
+                        CutsceneAssetsManagerGUI.ListviewItem(itemRect, item.image, item.name, backgroundColor, textColor, addItemNumber, reduceItemNumber, 0, false, null, item);
+                    }
+                    else
+                    {
+                        CutsceneAssetsManagerGUI.ListviewItem(itemRect, item.image, item.name, backgroundColor, textColor);
+                    }
+
+                    if (Event.current.type == EventType.MouseDown && itemRect.Contains(Event.current.mousePosition))
+                    {
+                        item.selected = !item.selected;
+                    }
+                }
+            }
+        }
+        EditorGUILayout.EndScrollView();
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+
+
+    }
+
+
+    private void OnCharacterGUI()
+    {
+        Toolbar();
+        float clientY = 30;
+        float clientH = Screen.height - clientY;
+     
+        float scrollviewHeight = (clientH - (22 + 22 + 32))/* * 0.5f*/;
+
+        GUILayout.BeginArea(new Rect(leftRectW, 18, Screen.width - leftRectW, Screen.height - 30));
+        GUILayout.BeginVertical("GroupBox");
+
+        //mCharacterSearchText = CutsceneAssetsManagerGUI.SearchField(new Rect(Screen.width - 224, (Screen.height - CutsceneAssetsManagerGUI.LISTVIEW_TITLE_HEIGHT) * 0.5f + 5, 200, 20), mCharacterSearchText);
+
+        mCharacterScrollviewPos = EditorGUILayout.BeginScrollView(mCharacterScrollviewPos, GUILayout.Height(scrollviewHeight));
+        {
+            int column = Mathf.Max(1, Mathf.FloorToInt((Screen.width -leftRectW) / 182f));
+            int row = mCharacterItemList.Count / column;
+            if (mCharacterItemList.Count % column > 0)
+            {
+                row++;
+            }
+
+            for (int r = 0; r < row; r++)
+            {
+                GUILayout.Space(164);
+
+                int cc = Mathf.Min(column, mCharacterItemList.Count - (r * column));
+                for (int c = 0; c < cc; c++)
+                {
+                    CutsceneAssetsManagerUtility.PrefabListviewItem item = mCharacterItemList[r * column + c];
+
+                    if (item.image == null)
+                    {
+                        item.image = CutsceneAssetsManagerUtility.LoadImage(item.fullname);
+                    }
+
+                    float x = 2 + (c * 180);
+                    float y = 2 + (r * 162);
+
+                    Color backgroundColor = item.selected ? new Color(0, 192 / 255f, 255 / 255f) : Color.white;
+                    Color textColor = item.selected ? new Color(0, 192 / 255f, 255 / 255f) : Color.white;
+
+                    Rect itemRect = new Rect(x, y, 178, 160);
+                    if (item.selected)
+                    {
+                        CutsceneAssetsManagerGUI.ListviewItem(itemRect, item.image, item.name, backgroundColor, textColor,addItemNumber, reduceItemNumber, 0, false, null, item);
+                    }
+                    else
+                    {
+                        CutsceneAssetsManagerGUI.ListviewItem(itemRect, item.image, item.name, backgroundColor, textColor);
+                    }
+                    
+                    if (Event.current.type == EventType.MouseDown && itemRect.Contains(Event.current.mousePosition))
+                    {
+                        item.selected = !item.selected;
+                    }
+                }
+            }
+        }
+        EditorGUILayout.EndScrollView();
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+
+    }
+
+    private void addItemNumber(CutsceneAssetsManagerUtility.PrefabListviewItem item)
+    {
+        item.number++;
+    }
+    private void reduceItemNumber(CutsceneAssetsManagerUtility.PrefabListviewItem item)
+    {
+        item.number = item.number - 1;
+        item.number = Mathf.Max(1, item.number);
+    }
+
+    private bool isCloneType()
+    {
+        return mStep == (int)ResouresType.CloneExist;
+    }
+
+    private void OnGUI()
+    {
+        ///Toolbar();
+        OnLeftPanel();
+        if (mStep == (int)ResouresType.scene)
+        {
+            mCopySceneName = "";
+            //mNewCutsceneName = "";
+            OnScenseGUI();
+        }
+        if (mStep == (int)ResouresType.character)
+        {
+           // mNewCutsceneName = "";
+            mCopySceneName = "";
+            OnCharacterGUI();          
+        }
+
+        if (mStep == (int)ResouresType.prop)
+        {
+           // mNewCutsceneName = "";
+            mCopySceneName = "";
+            OnPropGUI();
+        }
+
+        if (mStep == (int)ResouresType.CloneExist)
+        {
+            OnClonePanel();
+        }
+
+        float clientY = 30;
+        float clientH = Screen.height - clientY;
+
+        bool creating = false;
+        float scrollviewHeight = (clientH - (22 + 22 + 32)) * 0.5f;
+
+        EditorGUILayout.BeginVertical();
+
+        GUILayout.BeginArea(new Rect(0, Screen.height - 60, Screen.width, 60));
+        EditorGUILayout.BeginHorizontal("GroupBox");
+        {
+            GUILayout.Label("镜头名称：", GUILayout.Width(70));
+            mNewCutsceneName = GUILayout.TextField(mNewCutsceneName);
+            GUI.enabled = !string.IsNullOrEmpty(mNewCutsceneName);
+            if (GUILayout.Button(isCloneType()? "克隆":"创建" , GUILayout.Width(100)))
+            {
+                creating = true;
+            }
+            GUI.enabled = true;
+        }
+        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.EndVertical();
+        GUILayout.EndArea();
+
+        if (creating)
+        {
+            if (isCloneType())
+            {
+                string finalPath = mCopySceneName.Replace('\\', '/');
+                Scene sc = UnityEditor.SceneManagement.EditorSceneManager.GetSceneByPath(finalPath);
+
+                sc = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(finalPath);
+                string newSceneDic = Path.GetDirectoryName(finalPath);
+                string newScenePath = newSceneDic + "/" + mNewCutsceneName + ".unity";
+                bool success = UnityEditor.SceneManagement.EditorSceneManager.SaveScene(sc, newScenePath, true);
+                if (success)
+                {
+                    Scene newScene = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(newScenePath);
+                    GameObject[] roots = newScene.GetRootGameObjects();
+                    foreach (GameObject go in roots)
+                    {
+                        Slate.Cutscene cutsceneGO = go.GetComponent<Slate.Cutscene>();
+                        if (cutsceneGO != null)
+                        {
+                            GameObject.DestroyImmediate(cutsceneGO.gameObject);
+                            break;
+                        }
+                    }
+
+                    //创建cutscene
+                    Slate.Cutscene cutscene = Slate.Commands.CreateCutscene();
+                    cutscene.name = newScene.name;
+                    EditorSceneManager.MoveGameObjectToScene(cutscene.gameObject, newScene);
+                    Selection.activeObject = cutscene.gameObject;
+                    SysDescWithUnitySence();
+
+                    if (mCallBack != null)
+                    {
+                        mCallBack(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+                        this.Close();
+                    }
+                }               
+            }
+            else
+            {
+                List<string> scenes = new List<string>();
+                foreach (SceneListviewItem item in mSceneItemList)
+                {
+                    if (item.selected)
+                    {
+                        scenes.Add(item.fullname);
+                    }
+                }
+
+                List<CutsceneAssetsManagerUtility.CharactorInfo> characterInfoList = new List<CutsceneAssetsManagerUtility.CharactorInfo>();
+                foreach (CutsceneAssetsManagerUtility.PrefabListviewItem item in mCharacterItemList)
+                {
+                    CutsceneAssetsManagerUtility.CharactorInfo chInfo = new CutsceneAssetsManagerUtility.CharactorInfo();
+                    chInfo.charactorName = item.fullname;
+                    chInfo.number = item.number;
+                    if (item.selected)
+                    {
+                        characterInfoList.Add(chInfo);
+                    }
+                }
+                ///添加道具
+                foreach (CutsceneAssetsManagerUtility.PrefabListviewItem item in mPropItemList)
+                {
+                    CutsceneAssetsManagerUtility.CharactorInfo chInfo = new CutsceneAssetsManagerUtility.CharactorInfo();
+                    chInfo.charactorName = item.fullname;
+                    chInfo.number = item.number;
+                    if (item.selected)
+                    {
+                        characterInfoList.Add(chInfo);
+                    }
+                }
+
+                this.Close();
+                CutsceneAssetsManagerUtility.CreateCutscene(mCurrentProject, scenes, characterInfoList, mNewCutsceneName, mCurrentActName);
+                SysDescWithUnitySence();
+
+                if (mCallBack != null)
+                {
+                    mCallBack(UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene());
+                }
+            }
+
+        }
+
+        //DrawGridLines();
+        Repaint();
+    }
+
+    private void SysDescWithUnitySence()
+    {
+        //update .desc
+        List<string> cutscenes = CutsceneAssetsManagerUtility.GetCutsceneFilesByAct(mCurrentProject, mCurrentActName);
+        List<CutsceneClip> mCutsceneClips = new List<CutsceneClip>();
+        foreach (string cs in cutscenes)
+        {
+            CutsceneClip clip = new CutsceneClip();
+            clip.fullname = cs;
+            clip.name = Path.GetFileNameWithoutExtension(cs);
+            clip.image = CutsceneAssetsManagerUtility.LoadImage(clip.fullname);
+            clip.belongActName = mCurrentActName;
+            mCutsceneClips.Add(clip);
+        }
+
+        CinemaClip mCurrentCinemaClip = new CinemaClip();
+        mCurrentCinemaClip.desc = mDesc;
+        mCurrentCinemaClip.name = mCurrentActName;
+        mCurrentCinemaClip.cutsceneClips = mCutsceneClips;
+        CutsceneAssetsManagerUtility.UpdateDescFile(mCurrentProject, mCurrentCinemaClip);
+        //
+    }
+
+
+    //private void DrawGridLines()
+    //{
+    //    Handles.color = Color.black;
+
+    //    float y = CutsceneAssetsManagerGUI.LISTVIEW_TITLE_HEIGHT;
+    //    Handles.DrawLine(new Vector3(0, y, 0), new Vector3(Screen.width, y, 0));
+    //    y = (Screen.height - CutsceneAssetsManagerGUI.LISTVIEW_TITLE_HEIGHT) * 0.5f;
+    //    Handles.DrawLine(new Vector3(0, y, 0), new Vector3(Screen.width, y, 0));
+    //    y = y + CutsceneAssetsManagerGUI.LISTVIEW_TITLE_HEIGHT;
+    //    Handles.DrawLine(new Vector3(0, y, 0), new Vector3(Screen.width, y, 0));
+    //    y = Screen.height - CutsceneAssetsManagerGUI.LISTVIEW_TITLE_HEIGHT;
+    //    Handles.DrawLine(new Vector3(0, y, 0), new Vector3(Screen.width, y, 0));
+
+    //    Handles.color = Color.white;
+    //}
+
+    private void OnLostFocus()
+    {
+        ///this.Close();
+    }
+}

@@ -1,0 +1,284 @@
+﻿#if UNITY_EDITOR
+
+
+using System.Collections;
+using UnityEngine;
+
+namespace Slate
+{
+    public class AVIRecorder : MovieRecorder
+    {
+        #region Data
+
+        //private AVICapturer _capturer = new AVICapturer();
+
+        private bool _isCapturing = false;
+        private int _framerate = 24;
+        private string _targetFilePath = string.Empty;
+        private string _targetFileName = string.Empty;
+        private bool _captureGBuffer = false;
+        private bool _captureFramebuffer = false;
+        private bool _isRenderingWait = false;
+        private bool _isUseRenderingWait = true;
+
+        private PngRecorder _recorder = null;
+
+        #endregion
+
+        #region Public
+
+        public override void Initialize()
+        {
+            IsRenderingWait = false;
+            IsUseRenderingWait = true;
+        }
+
+        public override void Release()
+        {
+            //if (_capturer.IsCapturing)
+            //{
+            //    _capturer.StopCapture();
+            //}
+
+            //_capturer.Deinit();
+
+            _isCapturing = false;
+            if (_recorder != null)
+            {
+                _recorder.Release();
+                DestroyImmediate(_recorder, true);
+            }
+            _recorder = null;
+        }
+
+        public override bool StartRecording()
+        {
+            //return _capturer.StartCapture();
+            if (!_isCapturing)
+            {
+                _recorder = gameObject.GetAddComponent<PngRecorder>();
+                if (_recorder != null)
+                {
+                    _recorder.dirName = _targetFilePath;
+                    _recorder.fileName = _targetFileName;
+                    _recorder.captureGBuffer = _captureGBuffer;
+                    _recorder.captureFramebuffer = _captureFramebuffer;
+                    _recorder.IsRenderingWait = _isRenderingWait;
+                    _recorder.IsUseRenderingWait = _isUseRenderingWait;
+                    _recorder.Initialize();
+
+                    _isCapturing = true;
+                }
+            }
+
+            return _isCapturing;
+        }
+
+        public override void StopRecording()
+        {
+            //capturer.StopCapture();
+
+            ConvertPNGsToMP4();
+            Release();
+        }
+
+        public override bool IsCapturing
+        {
+            get { return _isCapturing; }
+        }
+
+        public override int FrameRate
+        {
+            set { _framerate = value; }
+            get { return _framerate; }
+        }
+
+        public override string TargetFilePath
+        {
+            set { _targetFilePath = value; }
+            get { return _targetFilePath; }
+        }
+
+        public override string TargetFileName
+        {
+            set { _targetFileName = value; }
+            get { return _targetFileName; }
+        }
+
+        public override bool CaptureGBuffer
+        {
+            set { _captureGBuffer = value; }
+            get { return _captureGBuffer; }
+        }
+
+        public override bool CaptureFramebuffer
+        {
+            set { _captureFramebuffer = value; }
+            get { return _captureFramebuffer; }
+        }
+
+        //public override int ResolutionWidth
+        //{
+        //    set { _capturer.ResolutionWidth = Mathf.Min(8 * 1024, value); }// 8k means the max resolution width
+        //    get { return _capturer.ResolutionWidth; }
+        //}
+
+        public override bool IsRenderingWait
+        {
+            set 
+            {
+                if (_recorder != null)
+                {
+                    _recorder.IsRenderingWait = value;
+                }
+                _isRenderingWait = value; 
+            }
+            get 
+            {
+                if (_recorder != null)
+                {
+                    return _recorder.IsRenderingWait;
+                }
+
+                return _isRenderingWait; 
+            }
+        }
+
+        public override bool IsUseRenderingWait
+        {
+            set
+            {
+                if (_recorder != null)
+                {
+                    _recorder.IsUseRenderingWait = value;
+                }
+                _isUseRenderingWait = value;
+            }
+            get
+            {
+                if (_recorder != null)
+                {
+                    return _recorder.IsUseRenderingWait;
+                }
+
+                return _isUseRenderingWait;
+            }
+        }
+
+        #endregion
+
+        #region Private
+
+        //IEnumerator OnPostRender()
+        //{
+        //    yield return Application.isPlaying ? new WaitForEndOfFrame() : null;
+
+        //    if (_capturer.IsCapturing)
+        //    {
+        //        _capturer.UpdateFrame();
+        //    }
+        //}
+
+        //void OnAudioFilterRead(float[] data, int channels)
+        //{
+        //    if (_capturer.IsCapturing)
+        //    {
+        //        _capturer.OnAudioFilterRead(data, channels);
+        //    }
+        //    Debug.Log("AVIRecorder:OnAudioFilterRead");
+        //}
+
+        private string GenerateWorkingDirectory()
+        {
+            string projectFolder = System.IO.Path.GetFullPath(System.IO.Path.Combine(Application.dataPath, ".."));
+            string fileFolder = System.IO.Path.Combine(projectFolder, _recorder.dirName);
+
+            return fileFolder;
+        }
+
+        private string GenerateMP4Filename()
+        {
+            string filename = _recorder.fileName + "_" + System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".mp4";
+            return filename;
+        }
+
+        private string GeneratePNGFilename()
+        {
+            string filename = _recorder.fileName + "_%04d.png";
+            return filename;
+        }
+
+        private string GenerateWAVFilename()
+        {
+            string filename = _recorder.fileName + ".wav";
+            return filename;
+        }
+
+        private void ConvertPNGsToMP4()
+        {
+            string mp4Filename = GenerateMP4Filename();
+            string pngFilename = GeneratePNGFilename();
+            string wavFilename = GenerateWAVFilename();
+
+#if SOTRYENGINE_SDK
+            string ffmpegFilename = System.IO.Path.Combine(Application.dataPath, @"DigitalSkyStoryEngine\EditorPlugins\ffmpeg\ffmpeg.exe");
+#else
+            string ffmpegFilename = System.IO.Path.Combine(Application.dataPath, @"ParadoxNotion\SLATE Cinematic Sequencer\Utility\UTJ\FrameCapturer\MovieCapturePro\Plugins\ffmpeg\ffmpeg.exe");
+#endif
+
+            string ffmpegCommand = string.Empty;
+            if (string.IsNullOrEmpty(wavFilename))
+            {
+                ffmpegCommand = string.Format("-threads 4 -r {0} -i {1} -c:v libx264 -q:v 10 -qmax:v 12 -level 4.1 -x264opts crf=18 -y {2}",
+                                              _framerate,
+                                              pngFilename,
+                                              mp4Filename);
+            }
+            else
+            {
+                ffmpegCommand = string.Format("-threads 4 -r {0} -i {1} -i {2} -c:v libx264 -q:v 8 -x264opts crf=18 -pix_fmt yuv420p -y {3}",
+                                              _framerate,
+                                              pngFilename,
+                                              wavFilename,
+                                              mp4Filename);
+            }
+            //Debug.Log("ffmpegCommand = " + ffmpegCommand);
+
+            try
+            {
+                string workingDirectory = GenerateWorkingDirectory();
+
+                System.Diagnostics.Process p = new System.Diagnostics.Process();//建立外部调用线程
+                p.StartInfo.FileName = ffmpegFilename;
+                p.StartInfo.Arguments = ffmpegCommand;
+                p.StartInfo.UseShellExecute = true;
+                p.StartInfo.RedirectStandardError = false;
+                p.StartInfo.CreateNoWindow = false;
+                p.StartInfo.WorkingDirectory = workingDirectory;
+                p.Start();
+
+                p.WaitForExit();
+
+                string[] pngs = System.IO.Directory.GetFiles(workingDirectory, "*.png", System.IO.SearchOption.TopDirectoryOnly);
+                foreach (string png in pngs)
+                {
+                    System.IO.File.Delete(png);
+                }
+
+                if (!string.IsNullOrEmpty(wavFilename))
+                {
+                    string wav = System.IO.Path.Combine(workingDirectory, wavFilename);
+                    System.IO.File.Delete(wav);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError(ex.Message);
+            }
+        }
+
+        #endregion
+    }
+}
+
+#endif 

@@ -1,0 +1,878 @@
+﻿using System.IO;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+
+public class CutsceneAssetsManagerUtility
+{
+    #region Data
+
+    /// <summary>
+    /// 根目录
+    /// </summary>
+    public static readonly string workspace = Path.Combine(Application.dataPath, "Workspace");
+    public static readonly string _storyStr = "_Story";
+
+    private const int IMAGE_WIDTH  = 160;
+    private const int IMAGE_HEIGHT = 128;
+    public static readonly string[] mProjectStatusArr = { "inProgress", "Compelete", "Locking" };
+    public enum projectStatus  
+    {
+        s_InProgress = 0,
+        s_Compelete = 1,
+        s_Locking = 2,
+    }
+
+    public enum ProjectDetailIdx
+    {
+       s_proj_status = 0,
+       s_proj_chager = 1,      
+       s_proj_name = 2,
+       s_proj_projectId = 3,
+    }
+
+    public class CharactorInfo
+    {
+        public string charactorName;
+        public int number;
+    }
+
+    public class PrefabListviewItem
+    {
+        public bool selected;
+        public Texture image;
+        public string fullname;
+        public string name;
+        public int number = 1;
+    }
+
+    #endregion
+
+    #region Public
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public static List<string> GetProjects()
+    {
+        List<string> list = new List<string>();
+
+        string[] directories = Directory.GetDirectories(workspace, "*", SearchOption.TopDirectoryOnly);
+        foreach (string dir in directories)
+        {
+            if (Directory.Exists(Path.Combine(dir, "_Resources")))
+            {
+                list.Add(dir);
+            }
+        }
+
+        return list;
+    }
+
+    public static void UpdateDescFile(string project, CinemaClip cineClip)
+    {
+        string projectPath = Path.Combine(CutsceneAssetsManagerUtility.workspace, project);
+        string _stroyPath = Path.Combine(projectPath, _storyStr);
+        string actPath = Path.Combine(_stroyPath, cineClip.name);
+        string descPath = Path.Combine(actPath, "desc");
+        if (Directory.Exists(descPath))
+        {
+            string descFile = Path.Combine(descPath, cineClip.name + ".desc");
+            if (File.Exists(descFile))
+            {
+                File.Delete(descFile);
+            }
+            StreamWriter sw = new StreamWriter(descFile);
+            sw.WriteLine(cineClip.desc);
+
+            for (int i = 0; i< cineClip.cutsceneClips.Count; i++)
+            {
+                int index = cineClip.cutsceneClips[i].fullname.IndexOf("Assets");
+                string path = cineClip.cutsceneClips[i].fullname.Substring(index);
+                sw.WriteLine(path);
+            }
+            sw.Close();
+        }
+    }
+
+    public static void UpdateProjFile(ProjectDetail proj)
+    {
+        string projectPath = Path.Combine(CutsceneAssetsManagerUtility.workspace, proj.name);
+        if (Directory.Exists(projectPath))
+        {
+            string projFile = Path.Combine(projectPath, proj.name + ".proj");
+            if (File.Exists(projFile))
+            {
+                File.Delete(projFile);
+            }    
+            StreamWriter sw = new StreamWriter(projFile);
+            sw.WriteLine(System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"));
+            sw.WriteLine(proj.status + "|" + proj.charger + "|" + proj.name + "|" + proj.projectId);
+            sw.Close();
+        }
+
+    }
+
+    public static projectStatus GetStatusByStr(string str)
+    {
+        for (int i =0; i< mProjectStatusArr.Length; i++)
+        {
+            if (mProjectStatusArr[i] == str)
+            {
+                return (projectStatus)i;
+            }
+        }
+        return projectStatus.s_InProgress;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="projectName"></param>
+    /// <returns></returns>
+    public static List<string> GetCutsceneFiles(string project)
+    {
+        List<string> list = new List<string>();
+
+        string[] files = Directory.GetFiles(Path.Combine(workspace, project), "*.unity", SearchOption.TopDirectoryOnly);
+        foreach(string file in files)
+        {
+            list.Add(file);
+        }
+
+        return list;
+    }
+
+   
+    public static List<string> GetCutsceneFilesByDesc(string project, string actName)
+    {
+        List<string> list = new List<string>();
+        string projectPath = Path.Combine(workspace, project);
+        string storyPath = Path.Combine(projectPath, _storyStr);
+        string descPath = Path.Combine(storyPath, actName);
+        string descToPath = Path.Combine(descPath, "desc");
+        string descFinalPath = Path.Combine(descToPath, actName + ".desc");
+        if (File.Exists(descFinalPath))
+        {
+            StreamReader sr = new StreamReader(descFinalPath);
+            while (!sr.EndOfStream)
+            {
+                string text = sr.ReadLine();
+                if(text.Contains(".unity"))
+                list.Add(text);
+            }
+           
+            sr.Close();
+        }
+        ///end    
+
+        return list;
+    }
+
+    public static List<string> GetCutsceneFilesByAct(string project, string actName)
+    {
+        List<string> list = new List<string>();
+
+        string actTopDummy = Path.Combine(_storyStr, actName);
+        string actDummy = Path.Combine(project, actTopDummy);
+
+        string[] files = Directory.GetFiles(Path.Combine(workspace, actDummy), "*.unity", SearchOption.TopDirectoryOnly);
+        foreach (string file in files)
+        {
+            list.Add(file);
+        }
+
+        return list;
+    }
+
+    public static string AutoGentProjectID()
+    {
+        List<string> projList = CutsceneAssetsManagerUtility.GetProjects();
+        int count = projList.Count;
+        string ID_Prefix = "DG_S_{0}";
+        return string.Format(ID_Prefix, (count+1));
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static List<string> GetSceneFiles(string project)
+    {
+        List<string> list = new List<string>();
+
+        string scenePath = Path.Combine(workspace, project + "/_Resources/Scenes");
+        if (Directory.Exists(scenePath))
+        {
+            string[] files = Directory.GetFiles(scenePath, "*.unity", SearchOption.AllDirectories);
+            foreach (string file in files)
+            {
+                list.Add(file);
+            }
+        }
+
+        return list;
+    }
+
+    public static List<string> GetPropFiles(string project)
+    {
+        List<string> list = new List<string>();
+
+        string propPath = Path.Combine(workspace, project + "/_Resources/Props");
+        if (Directory.Exists(propPath))
+        {
+            string[] files = Directory.GetFiles(propPath, "*.prefab", SearchOption.AllDirectories);
+            foreach (string file in files)
+            {
+                list.Add(file);
+            }
+        }
+
+        return list;
+
+    }
+
+
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static List<string> GetCharacterFiles(string project)
+    {
+        List<string> list = new List<string>();
+
+        string characterPath = Path.Combine(workspace, project + "/_Resources/Characters");
+        if (Directory.Exists(characterPath))
+        {
+            string[] files = Directory.GetFiles(characterPath, "*.prefab", SearchOption.AllDirectories);
+            foreach (string file in files)
+            {
+                list.Add(file);
+            }
+        }
+
+        return list;
+    }
+
+    public static List<string> GetCinemaClipFiles(string project)
+    {
+        List<string> list = new List<string>();
+
+        string characterPath = Path.Combine(workspace, project);
+        if (Directory.Exists(characterPath))
+        {
+            string[] files = Directory.GetFiles(characterPath, "*.cinemaclip", SearchOption.TopDirectoryOnly);
+            foreach (string file in files)
+            {
+                list.Add(file);
+            }
+        }
+
+        return list;
+    }
+
+    public static List<string> GetCinemaClipFilesByActName(string project)
+    {
+        List<string> list = null ;
+
+        string combinePath = Path.Combine(workspace, project);
+        string actPathRoot = Path.Combine(combinePath, _storyStr);
+        if (Directory.Exists(actPathRoot))
+        {
+            string[] dumyArr = Directory.GetDirectories(actPathRoot);
+            list = new List<string>(dumyArr);
+        }
+
+        return list;
+    }
+
+    public static string[] MergerArray(string[] First, string[] Second)
+    {
+        if (First == null)
+            return Second;
+        if (Second == null)
+            return First;
+
+        string[] result = new string[First.Length + Second.Length];
+        First.CopyTo(result, 0);
+        Second.CopyTo(result, First.Length);
+        return result;
+    }
+    public static CinemaClip LoadCinemaClipByFolder(string actFolder)
+    {
+        CinemaClip clip = null;
+        if (Directory.Exists(actFolder))
+        {
+            clip = new CinemaClip();
+            clip.name = Path.GetFileNameWithoutExtension(actFolder);
+            clip.cutsceneClips = new List<CutsceneClip>();
+            if (Directory.Exists(Path.Combine(actFolder, "desc")))
+            {
+                string[] descArr = Directory.GetFiles(Path.Combine(actFolder, "desc"));
+                for (int i = 0; i < descArr.Length; i++)
+                {
+                    if (descArr[i].EndsWith(".meta", System.StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+                    ///get desc file
+                    string descPath = Path.Combine(actFolder, "desc");
+                    string descFinalPath = Path.Combine(descPath, clip.name + ".desc");
+                    if (File.Exists(descFinalPath))
+                    {
+                        StreamReader sr = new StreamReader(descFinalPath);
+                        List<string> lines = new List<string>();
+                        while (!sr.EndOfStream)
+                        { 
+                            string text = sr.ReadLine();
+                            lines.Add(text);   
+                        }
+                        clip.desc = lines[0] == null ? string.Empty : lines[0];
+                        sr.Close();
+                    }
+                    ///end    
+                }
+            }
+
+            string[] dumyArr = Directory.GetFiles(actFolder);
+            for (int i = 0; i < dumyArr.Length; i++)
+            {
+                if (dumyArr[i].EndsWith(".meta", System.StringComparison.OrdinalIgnoreCase) )
+                {
+                    continue;
+                }
+                CutsceneClip cc = new CutsceneClip();
+                cc.fullname = Path.Combine(actFolder, dumyArr[i]);
+                cc.name = Path.GetFileNameWithoutExtension(cc.fullname);
+                cc.image = CutsceneAssetsManagerUtility.LoadImage(cc.fullname);
+                
+                cc.belongActName = clip.name;
+                clip.cutsceneClips.Add(cc);
+            }
+        }
+        return clip;
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="stage"></param>
+    public static void CreateCutscene(string project, List<string> scenes, List<CharactorInfo> characters, string sceneName, string actName = null)
+    {
+        CloseScenes();
+
+        //创建空场景，添加角色和cutscene
+        Scene newScene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+
+        //创建cofigComponent
+        GameObject configObj = new GameObject();
+        ConfigComponent configCom = configObj.AddComponent<ConfigComponent>();
+        
+        configObj.name = "ConfigCom";
+
+        //
+
+        //加载角色
+        foreach (CharactorInfo character in characters)
+        {
+            string assetpath = character.charactorName;
+            for (int i = 0;i<character.number;i++)
+            {
+                int index = assetpath.IndexOf("Assets");
+                string path = assetpath.Substring(index);
+                GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(path);                
+                if (go != null)
+                {
+                   var desGo = PrefabUtility.InstantiatePrefab(go, newScene);                 
+                   string oldName = desGo.name;
+                   desGo.name = oldName + "_" + i.ToString();
+                   Texture dummyTexture = LoadImage(assetpath);
+                   configCom.DataInit((GameObject)desGo, dummyTexture);
+                }
+                
+            }
+        }
+        Resources.UnloadUnusedAssets();
+
+        //创建cutscene
+        Slate.Cutscene cutscene = Slate.Commands.CreateCutscene();
+        cutscene.name = sceneName;
+        EditorSceneManager.MoveGameObjectToScene(cutscene.gameObject, newScene);
+        Slate.DirectorCamera camera = Slate.DirectorCamera.current;
+        EditorSceneManager.MoveGameObjectToScene(camera.gameObject, newScene);
+
+        if (scenes.Count > 0)
+        {
+            string scene = scenes[0];
+            
+            //创建sceneloader
+            TempLoadScene tempLoader = new GameObject("SceneLoader").AddComponent<TempLoadScene>();
+            if (tempLoader != null)
+            {
+                tempLoader.projectDir = Path.GetFileName(project);
+                tempLoader.sceneName = Path.GetFileNameWithoutExtension(scene);
+                tempLoader.cutscene = cutscene;
+                int idx = scene.IndexOf("Assets");
+                string addtionsPath = scene.Substring(idx);
+                tempLoader.currentScenePath = addtionsPath.Replace('\\', '/');
+
+                EditorSceneManager.MoveGameObjectToScene(tempLoader.gameObject, newScene);
+            }
+
+            //加载场景
+            Scene openScene = EditorSceneManager.OpenScene(scene, OpenSceneMode.Additive);
+            EditorSceneManager.SetActiveScene(openScene);
+
+        } 
+
+        string storySavePath = Path.Combine(project, _storyStr);
+        string actSavePath = Path.Combine(actName, sceneName);
+        SaveCutscene(Path.Combine(storySavePath, actSavePath), newScene);
+    }
+
+    private static System.Action<Scene> mOpenCutsceneCallback;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="filepath"></param>
+    /// <returns></returns>
+    /// 
+
+
+
+    public static void OpenCutscene(string cutscene, System.Action<Scene> callback)
+    {
+        cutscene = cutscene.Replace("\\", "/");
+        mOpenCutsceneCallback = callback;
+        
+        if (Application.isPlaying)
+        {
+            bool existedInBuildSettings = false;
+
+            foreach (EditorBuildSettingsScene ebss in EditorBuildSettings.scenes)
+            {
+                if (ebss.path == cutscene && ebss.enabled )
+                {
+                    existedInBuildSettings = true;
+                    break;
+                }
+            }
+
+            if (!existedInBuildSettings)
+            {
+                EditorBuildSettingsScene[] scenes = new EditorBuildSettingsScene[EditorBuildSettings.scenes.Length + 1];
+                for (int i = 0; i < EditorBuildSettings.scenes.Length; ++i)
+                {
+                    scenes[i] = EditorBuildSettings.scenes[i];
+                }
+                scenes[EditorBuildSettings.scenes.Length] = new EditorBuildSettingsScene(cutscene, true);
+
+                EditorBuildSettings.scenes = scenes;
+            }
+
+            EditorSceneManager.sceneLoaded += OnSceneLoadedHandler;
+            EditorSceneManager.LoadScene(cutscene, LoadSceneMode.Single);
+        }
+        else
+        {
+            Scene scene = EditorSceneManager.OpenScene(cutscene, OpenSceneMode.Single);
+            EditorSceneManager.SetActiveScene(scene);
+
+            if (mOpenCutsceneCallback != null)
+            {
+                mOpenCutsceneCallback(scene);
+            }
+        }
+    }
+
+    static void OnSceneLoadedHandler(Scene scene, LoadSceneMode mode)
+    {
+        EditorSceneManager.SetActiveScene(scene);
+        if (mOpenCutsceneCallback != null)
+        {
+            mOpenCutsceneCallback(scene);
+        }
+    }
+
+
+    //public static Texture LoadImageTexture(string assetname)
+    //{
+    //    Texture2D image = null;
+
+    //    string assetnameWithoutExt = Path.GetFileNameWithoutExtension(assetname);
+    //    string targetname = Path.Combine(Application.persistentDataPath, assetnameWithoutExt + ".png");
+
+    //    if (File.Exists(targetname))
+    //    {
+    //        return LoadImageFromFile(assetnameWithoutExt);
+    //    }
+    //    else
+    //    {
+    //        int index = assetname.IndexOf("Assets");
+    //        assetname = assetname.Substring(index);
+
+    //        if (assetname.EndsWith(".unity", System.StringComparison.OrdinalIgnoreCase))
+    //        {
+    //            if (File.Exists(assetname))/// 加保护
+    //            {
+    //                Scene scene = EditorSceneManager.OpenScene(assetname);
+    //                image = LoadImageFromSceneWithLoader(scene);
+    //            }
+
+    //        }
+    //        else if (assetname.EndsWith(".prefab", System.StringComparison.OrdinalIgnoreCase))
+    //        {
+    //            GameObject go = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(assetname);
+    //            if (go != null)
+    //            {
+    //                image = AssetPreview.GetAssetPreview(go);                
+    //            }
+    //        }
+
+    //        if (image == null)
+    //        {
+    //            image = new Texture2D(IMAGE_WIDTH, IMAGE_HEIGHT, TextureFormat.RGB24, false);
+    //        }
+
+    //        //保存到文件
+    //        byte[] png = image.EncodeToPNG();
+    //        File.WriteAllBytes(targetname, png);
+
+    //        //image = null;
+    //    }
+
+    //    return image;
+    //}
+
+    public static void refreshSenceThumbnails(List<CutsceneClip> CutsceneClips)
+    {     
+        foreach (CutsceneClip cc in CutsceneClips)
+        {
+            LoadImage(cc.fullname, true);
+        }
+
+    }
+
+    public static Texture2D LoadImage(string assetname, bool foreRefresh = false)
+    {
+        Texture2D image = null;
+
+        string assetnameWithoutExt = Path.GetFileNameWithoutExtension(assetname);
+        string targetname = Path.Combine(Application.persistentDataPath, assetnameWithoutExt + ".png");
+
+        if (File.Exists(targetname) && !foreRefresh)
+        {
+            return LoadImageFromFile(assetnameWithoutExt);
+        }
+        else
+        {
+            int index = assetname.IndexOf("Assets");
+            assetname = assetname.Substring(index);
+
+            if (assetname.EndsWith(".unity", System.StringComparison.OrdinalIgnoreCase))
+            {
+                if (File.Exists(assetname))/// 加保护
+                {
+                    Scene scene = EditorSceneManager.OpenScene(assetname);
+                    image = LoadImageFromSceneWithLoader(scene);
+                }
+                
+            }
+            else if (assetname.EndsWith(".prefab", System.StringComparison.OrdinalIgnoreCase))
+            {
+                
+                GameObject go = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(assetname);
+              
+                EditorUtility.SetDirty(go);
+                if (go != null)
+                {
+                    image = AssetPreview.GetAssetPreview(go);
+                }
+            }
+
+            if (image == null)
+            {
+                image = new Texture2D(IMAGE_WIDTH, IMAGE_HEIGHT, TextureFormat.RGB24, false);
+            }
+
+            //保存到文件
+            byte[] png = image.EncodeToPNG();
+            File.WriteAllBytes(targetname, png);
+            //image = null;
+        }
+
+        return image;
+    }
+
+    public static void ChooseCutsence(Scene sn)
+    {
+        GameObject[] roots = sn.GetRootGameObjects();
+        foreach (GameObject go in roots)
+        {
+            Slate.Cutscene cutscene = go.GetComponent<Slate.Cutscene>();
+            if (cutscene != null)
+            {
+                Slate.CutsceneEditor.ShowWindow(cutscene);
+                Selection.activeObject = cutscene;
+                break;
+            }
+        }
+    }
+
+    private static Camera GetCameraOfScene(Scene scene)
+    {
+        GameObject[] roots = scene.GetRootGameObjects();
+        foreach (GameObject go in roots)
+        {
+            Camera camera = go.GetComponentInChildren<Camera>(true);
+            if (camera != null && camera.CompareTag("MainCamera"))
+            {
+                camera.gameObject.SetActive(true);
+                return camera;
+            }
+        }
+
+        return null;
+    }
+
+
+    private static Texture2D LoadImageFromSceneWithLoader(Scene scene)
+    {
+        Texture2D image = null;
+        Camera camera = GetCameraOfScene(scene);
+        Camera cameraLoadeSence = null;
+        
+        GameObject[] roots = scene.GetRootGameObjects();
+        bool hasSenceLoader = false;
+        TempLoadScene tls = null;
+        foreach (GameObject go in roots)
+        {
+            tls = go.GetComponentInChildren<TempLoadScene>(true);
+            if (tls != null)
+            {
+                hasSenceLoader = true;
+                break;
+            }
+        }
+        if (hasSenceLoader)
+        {
+            string scenePath = tls.currentScenePath;     
+            if(!string.IsNullOrEmpty(scenePath))
+            {
+                int index = scenePath.IndexOf("Assets");
+                scenePath = scenePath.Substring(index);
+
+                if (scenePath.EndsWith(".unity", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    if (File.Exists(scenePath))/// 加保护
+                    {
+                        Scene loadeScene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Additive);
+                        cameraLoadeSence = GetCameraOfScene(loadeScene);
+                        if (cameraLoadeSence != null && camera == null)
+                        {
+                            SceneManager.SetActiveScene(loadeScene);
+                        }
+                        if (cameraLoadeSence == null && camera == null)
+                        {
+                            SceneManager.SetActiveScene(loadeScene);
+                        }
+
+                    }
+
+                }
+                else if (scenePath.EndsWith(".prefab", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    GameObject go = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(scenePath);
+                    if (go != null)
+                    {
+                        image = AssetPreview.GetAssetPreview(go);
+                        //if (image == null)
+                        //{
+                        //    AssetDatabase.ImportAsset(assetname, ImportAssetOptions.ForceUpdate);
+                        //    image = AssetPreview.GetAssetPreview(go);
+                        //}
+                    }
+                }
+            }
+        }
+        Camera dumyCamera = camera != null ? camera : cameraLoadeSence;
+
+        if (dumyCamera != null)
+        {
+            RenderTexture rt = new RenderTexture(IMAGE_WIDTH, IMAGE_HEIGHT, 16);
+            dumyCamera.targetTexture = rt;
+            dumyCamera.Render();
+
+            RenderTexture.active = rt;
+            image = new Texture2D(IMAGE_WIDTH, IMAGE_HEIGHT, TextureFormat.RGB24, false);
+            image.ReadPixels(new Rect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT), 0, 0);
+            image.Apply();
+
+            dumyCamera.targetTexture = null;
+            RenderTexture.active = null;
+            GameObject.DestroyImmediate(rt);
+        }
+        else
+        {
+            GameObject dummyCamera = new GameObject("DummyCamera");
+            Camera dyCamera = dummyCamera.AddComponent<Camera>();
+           
+
+            RenderTexture rt = new RenderTexture(IMAGE_WIDTH, IMAGE_HEIGHT, 0);
+            dyCamera.targetTexture = rt;
+            dyCamera.Render();
+
+            RenderTexture.active = rt;
+            image = new Texture2D(IMAGE_WIDTH, IMAGE_HEIGHT, TextureFormat.RGB24, false);
+            image.ReadPixels(new Rect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT), 0, 0);
+            image.Apply();
+
+            dyCamera.targetTexture = null;
+            RenderTexture.active = null;
+            GameObject.DestroyImmediate(rt);
+            GameObject.DestroyImmediate(dummyCamera);
+        }
+
+        return image;
+    }
+
+
+    private static Texture2D LoadImageFromScene(Scene scene)
+    {
+        Texture2D image = null;
+        Camera camera = GetCameraOfScene(scene);
+
+        if (camera != null)
+        {
+            RenderTexture rt = new RenderTexture(IMAGE_WIDTH, IMAGE_HEIGHT, 0);
+            camera.targetTexture = rt;
+            camera.Render();
+
+            RenderTexture.active = rt;
+            image = new Texture2D(IMAGE_WIDTH, IMAGE_HEIGHT, TextureFormat.RGB24, false);
+            image.ReadPixels(new Rect(0, 0, IMAGE_WIDTH, IMAGE_HEIGHT), 0, 0);
+            image.Apply();
+
+            camera.targetTexture = null;
+            RenderTexture.active = null;
+            GameObject.DestroyImmediate(rt);
+        }
+        else
+        {
+            GameObject[] roots = scene.GetRootGameObjects();
+            foreach (GameObject go in roots)
+            {
+                TempLoadScene tls = go.GetComponentInChildren<TempLoadScene>(true);
+                if (tls != null)
+                {
+                    string scenePath = tls.currentScenePath;
+                    image = LoadImage(scenePath);
+                    break;
+                }
+            }
+        }
+
+        return image;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="filename"></param>
+    /// <returns></returns>
+    private static Texture2D LoadImageFromFile(string filename)
+    {
+        Texture2D image = new Texture2D(IMAGE_WIDTH, IMAGE_HEIGHT);
+
+        try
+        {
+            string filepath = Path.Combine(Application.persistentDataPath, filename + ".png");
+
+            if (File.Exists(filepath))
+            {
+                FileStream fs = new FileStream(filepath, FileMode.Open);
+                byte[] bytes = new byte[fs.Length];
+                fs.Read(bytes, 0, (int)fs.Length);
+                fs.Close();
+
+                image.LoadImage(bytes);
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError(ex.Message);
+        }
+
+        return image;
+    }
+
+    public static void PlayInEditorMode()
+    {
+        if (!EditorApplication.isPlaying)
+        {
+            EditorApplication.ExecuteMenuItem("Edit/Play");
+        }
+    }
+
+    public static void PauseInEditorMode()
+    {
+        EditorApplication.ExecuteMenuItem("Edit/Pause");
+    }
+
+    public static void StopInEditorMode()
+    {
+        if (EditorApplication.isPlaying)
+        {
+            EditorApplication.ExecuteMenuItem("Edit/Play");
+        }
+    }
+
+    #endregion
+
+    #region Private
+
+    /// <summary>
+    /// 
+    /// </summary>
+    private static void CloseScenes()
+    {
+        for (int i = 0; i < EditorSceneManager.sceneCount; i++)
+        {
+            Scene scene = EditorSceneManager.GetSceneAt(i);
+            EditorSceneManager.CloseScene(scene, true);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="scene"></param>
+    private static void SaveCutscene(string sceneSubpath, Scene scene)
+    {
+        if (!string.IsNullOrEmpty(sceneSubpath) && scene.IsValid())
+        {
+            string path = Path.Combine(workspace, sceneSubpath);
+
+            int index = path.IndexOf("Assets");
+            path = path.Substring(index);
+
+            if (!path.EndsWith(".unity", System.StringComparison.OrdinalIgnoreCase))
+            {
+                path += ".unity";
+            }
+
+            if (EditorSceneManager.SaveScene(scene, path))
+            {
+                AssetDatabase.Refresh();
+            }
+        }
+    }
+
+    #endregion
+}

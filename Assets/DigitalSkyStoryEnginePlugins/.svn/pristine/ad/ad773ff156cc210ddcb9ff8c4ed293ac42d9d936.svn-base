@@ -1,0 +1,87 @@
+# Action unit blendshape binding configuration file
+#
+# Lines beginning with '#' are comments.
+#
+# Each non-comment line is a semicolon delimited list of values in the following format:
+# au_name; blendshape_identifier; min_limit; max_limit; inverted [optional]; weight [optional]; filter_window [optional]; filter_amount [optional]
+# 
+# Optional parameters may be ommited, but only the last ones. For example, it is not possible to omit 'inverted' and 'weight' values and not omit 'filter_window' and 'filter_amount' values.
+#
+# Last two parameters (filter_window and filter_amount) control the smoothing filter. 
+# This is similiar to the smoothing filter used in the tracker, but these can be defined for each action unit separately.
+# Stronger filtering will stabilize the animation but can also introduce delay.
+#
+#
+# Value descriptions:
+# 
+# au_name: 
+# The name of the action unit used to drive the specified blendshape. 
+# Example: "au_jaw_drop".
+# 
+# blendshape_identifier: 
+# Platform-specific blendshape identifier. 
+# Example for Unity-based implementations: "tina_face:1". 
+# The part before the colon is the game object name with the SkinnedMeshRenderer component you wish to animate, the part after is the blendshape index.
+# Example for HTML5-based implementations: "TODO".
+# 
+# min_limit: 
+# Lower action unit limit. 
+# Consult the action unit limits defined in the tracker configuration file for appropriate values. 
+# Example: "-0.16".
+# 
+# max_limit: 
+# Upper action unit limit. 
+# Consult the action unit limits defined in the tracker configuration file for appropriate values. 
+# Example: "0.51".
+# 
+# inverted: 
+# Inverts the action unit values. 
+# Valid values are "0" and "1". 
+# Value of "1" means the action unit will be inverted. This is useful when a blendshape works in the direction opposite of the action unit.
+# For example, action unit is "au_left_inner_brow_raiser" and the blendshape works by lowering the inner brow.
+# Default value is "0".
+# 
+# weight: 
+# Action unit weight. Action units are multiplied with this value. 
+# Default value is "1.0".
+# 
+# filter_window: 
+# Action unit history size used to filter values. 
+# Valid value range are integers from "1" to "16". 
+# Default value is "1".
+# 
+# filter_amount: 
+# Strenght of the filter. 
+# Valid value range is from "0.0" to "1.0". 
+# Default value is "0.3".
+#
+#
+# 
+# au_name;							blendshape_identifier;										min_limit;	max_limit;	inverted;	     weight;		filter_window;		filter_amount
+  jawOpen;							face_morpher.Mouth_a;			   							0.0;		1.0;		0;				 1.0;			4;					0.3;
+  jawOpen;							face_morpher.Tongue_DOWN;									0.0;		1.0;		0;				 0.75;			4;					0.3;
+  jawOpen;							face_morpher.Tooth_DOWN_B;									0.0;		1.0;		0;				 0.1;			4;					0.3;
+  mouthClose;						face_morpher.Mouth_DOWN;			   						0.0;		1.0;		0;				 1.0;			4;					0.3;
+  eyeBlink_L;						face_morpher.Eye_CLOSE_A_L;									0.0;		1.0;		0;				 1.0;			4;					0.3;
+  eyeBlink_R;						face_morpher.Eye_CLOSE_A_R;									0.0;		1.0;		0;				 1.0;			4;					0.3;
+#  jawLeft;							face_morpher.down_mouth_left;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+#  jawRight;						face_morpher.down_mouth_right;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  mouthShrugLower;					face_morpher.Mouth_UP;	    								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  mouthSmile_L;						face_morpher.Mouth_zuijiaoUP_L;	    						0.0;		1.0;		0;				 1.0;			4;					0.3;
+  mouthSmile_R;						face_morpher.Mouth_zuijiaoUP_R;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  mouthFrown_L;						face_morpher.Mouth_zuijiaoDOWN_L;	    					0.0;		1.0;		0;				 1.0;			4;					0.3;
+  mouthFrown_R;						face_morpher.Mouth_zuijiaoDOWN_R;							0.0;		1.0;		0;				 1.0;			4;					0.3;
+  mouthDimple_L;					face_morpher.Mouth_zuijiaoIN_L;	    						0.0;		1.0;		0;				 1.0;			4;					0.3;
+  mouthDimple_R;					face_morpher.Mouth_zuijiaoIN_R;								0.0;		1.0;		0;				 1.0;			4;					0.3;  
+  browOuterUp_L;					face_morpher.Brow_topUP_L;									0.0;		1.0;		0;				 1.0;			4;					0.3;
+  browOuterUp_R;					face_morpher.Brow_topUP_R;									0.0;		1.0;		0;				 1.0;			4;					0.3;
+  eyeLookIn_L;						face_morpher.Eye_pupil_RIGHT_L;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  eyeLookOut_L;						face_morpher.Eye_pupil_LEFT_L;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  eyeLookDown_L;					face_morpher.Eye_pupil_DOWN_L;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  eyeLookUp_L;						face_morpher.Eye_pupil_UP_L;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  eyeLookIn_R;						face_morpher.Eye_pupil_LEFT_R;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  eyeLookOut_R;						face_morpher.Eye_pupil_RIGHT_R;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  eyeLookDown_R;					face_morpher.Eye_pupil_DOWN_R;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  eyeLookUp_R;						face_morpher.Eye_pupil_UP_R;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  browDown_L;						face_morpher.Brow_topDOWN_L;								0.0;		1.0;		0;				 1.0;			4;					0.3;
+  browDown_R;						face_morpher.Brow_topDOWN_R;								0.0;		1.0;		0;				 1.0;			4;					0.3;  

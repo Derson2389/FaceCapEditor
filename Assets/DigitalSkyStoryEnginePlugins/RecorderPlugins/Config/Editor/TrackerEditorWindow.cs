@@ -1,0 +1,1075 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+using UnityEngine.SceneManagement;
+using Rotorz.ReorderableList;
+using System.Reflection;
+using DigitalSky.Recorder;
+
+namespace DigitalSky.Tracker
+{
+    public class TrackerEditorWindow : EditorWindow
+    {
+        public class AssetObject
+        {
+            public GameObject gameObject;
+            public Texture icon;
+            public bool bNeedRecord = true;
+            public bool bSelected = false;
+
+            public AssetObject(GameObject obj, Texture tex, bool _bNeedRecord)
+            {
+                gameObject = obj;
+                icon = tex;
+                bNeedRecord = _bNeedRecord;
+            }
+
+            public void SetRecord(bool need)
+            {
+                bNeedRecord = need;
+            }
+
+            public bool Selected
+            {
+                get { return bSelected;  }
+                set { bSelected = value; }
+            } 
+            
+        }
+
+        public class AssetCamera
+        {
+            public Camera camera;
+            public bool isCreate;
+
+            public Vector3 position;
+            public Vector3 rotation;
+        }
+
+        public static TrackerEditorWindow window;
+        private static UnityEngine.SceneManagement.Scene _currentScene;
+
+        private static ConfigComponent _currentConfig;
+        private static ConfigComponent CurrentConfig()
+        {
+            if (_currentConfig == null)
+            {
+                _currentConfig = GameObject.FindObjectOfType<ConfigComponent>();
+            }
+            return _currentConfig;
+        }
+
+        /// <summary>
+        /// the min story panel width
+        /// </summary>
+        public const float minLeftWidth = 320f;
+        /// <summary>
+        /// the min resource panel width
+        /// </summary>
+        public const float minRightWidth = 320f;
+        /// <summary>
+        /// the min timeline panel height
+        /// </summary>
+        public const float minCenterDownHeight = 280f;
+        /// <summary>
+        /// the min top bar panel height
+        /// </summary>
+        public const float topBarHeight = 20f;
+        public const float topRectHeight = 80f; 
+
+        private GUIStyle _resizerStyle;
+
+        // 各个区域的Rect大小
+        private Rect _topRect;
+        private Rect _topbarRect;
+        private Rect _leftRect;
+        private Rect _centerUpRect;
+        private Rect _centerDownRect;
+        private Rect _rightRect;
+
+        /// <summary>
+        /// story resizer
+        /// </summary>
+        private Rect _leftResizerRect;
+        private bool _leftIsResizing;
+        private float _leftResizerSize = 1f;
+
+        /// <summary>
+        /// timeline resizer
+        /// </summary>
+        private Rect _centerDownResizerRect;
+        private bool _centerDownIsResizing;
+        private float _centerDownResizerSize = 1f;
+
+        /// <summary>
+        /// resource resizer
+        /// </summary>
+        private Rect _rightResizerRect;
+        private bool _rightIsResizing;
+        private float _rightResizerSize = 1f;
+
+        private float _leftWidth = minLeftWidth;
+        private float _rightWidth = minRightWidth;
+        private float _centerDownHeight = minCenterDownHeight;
+
+        // 是否显示左边或右边区域标识
+        private bool _showLeft = !false;
+        private bool _showRight = true;
+        private GUIStyle _boxStyle;
+
+        // 场景中可录制的GameObject
+        private List<AssetObject> _skinMeshRenderObjects = new List<AssetObject>();
+
+        // 需要录制的对象
+        private List<GameObject> _recordGameObjects = new List<GameObject>();
+
+        // the record list adaptor to show using ReorderableList
+        private RecordObjectListAdaptor _recordListAdaptor;
+        private GameObject _selectRecordListGameObject = null;
+
+        private Color _buttonColor = new Color(0, 183 / 255f, 238 / 255f);
+        private List<RecorderManager> RecorederManagers = new List<RecorderManager>();
+        private string _savePath = "RecordDatas/"; 
+        
+        public string savePath
+        {
+            get { return _savePath == string.Empty ? _savePath : "RecordDatas/"; }
+            set
+            {
+                _savePath = value;
+                SaveConfig();
+            }
+        }
+
+        private enum AnimationRecordType
+        {
+            DavinciGateType = 0,
+            ViconType = 1,
+        }
+
+
+        private  AnimationRecordType _recordType = AnimationRecordType.DavinciGateType;
+
+        [MenuItem("剧情工具/配置窗口", false, 10)]
+        public static void ShowWindow()
+        {
+            window = GetWindow<TrackerEditorWindow>(false);
+            window.titleContent = new GUIContent("Tracker Editor Window");
+            window.minSize = new Vector2(800, 500);
+
+            // OnInit is called after OnPanelEnable
+            window.Init();
+        }
+
+        public void Init()
+        {
+            RecorederManagers = Slate.SlateExtensions.Instance.RecordUtility.GetAllRecorderManager();
+            LoadConfig();
+        }
+
+        private void LoadConfig()
+        {
+            _savePath = PlayerPrefs.GetString("TrackerEditorWindow_savePath", "RecordDatas/");
+            CurrentConfig(); 
+            if (_savePath == string.Empty || _savePath == "")  
+            {
+                for (int i = 0; i < RecorederManagers.Count; i++)
+                {
+
+                    var temp = RecorederManagers[i];
+                    if (temp != null)
+                    {
+                        temp.SetRecordSavePath(temp.InitSavePath());
+                    }
+                }
+               
+            }
+            else
+            {
+                for (int i = 0; i < RecorederManagers.Count; i++)
+                {
+
+                    var temp = RecorederManagers[i];
+                    if (temp != null)
+                    {
+                        temp.SetRecordSavePath(_savePath + temp.InitSavePath());
+                    }
+                }
+            }            
+    } 
+
+        void SaveConfig()
+        {
+            PlayerPrefs.SetString("TrackerEditorWindow_savePath", _savePath);
+        }
+
+        private void OnEnable()
+        {
+            if(Slate.SlateExtensions.Instance!= null && Slate.SlateExtensions.Instance.RecordUtility != null)
+                 RecorederManagers = Slate.SlateExtensions.Instance.RecordUtility.GetAllRecorderManager();
+            _skinMeshRenderObjects = new List<AssetObject>();
+            _recordGameObjects = new List<GameObject>();
+
+            _recordListAdaptor = new RecordObjectListAdaptor(new RecordPanelViewList(_recordGameObjects));
+            _recordListAdaptor.onItemSelect += OnRecordListSelect;
+
+            EditorApplication.update += OnEditorUpdate;
+
+            for (int i = 0; i < RecorederManagers.Count; i++)
+            {
+                RecorederManagers[i].Init();
+            }
+            
+        }
+
+        private void OnDisable()
+        {
+            _recordListAdaptor.onItemSelect -= OnRecordListSelect; 
+            EditorApplication.update -= OnEditorUpdate;
+             
+            Clear();
+           
+            _currentConfig = null;
+            for (int i = 0; i < RecorederManagers.Count; i++)
+            {
+
+                RecorederManagers[i].Destroy();
+            }
+            
+        }
+
+        private void Clear()
+        {
+
+            for (int i = 0; i < RecorederManagers.Count; i++)
+            {
+                RecorederManagers[i].Clear();
+            }
+
+            _skinMeshRenderObjects.Clear(); 
+            _recordGameObjects.Clear();
+
+        }
+
+        private void OnDestroy()
+        {
+            _resizerStyle = null;
+        }
+
+        private void OnEditorUpdate()
+        {
+            if (_currentScene != UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene())
+            {
+                Clear();
+                _currentScene = UnityEditor.SceneManagement.EditorSceneManager.GetActiveScene();
+
+                Repaint();
+            }
+            // 及時刷新
+            RefreshRecordGameObjects();
+        }
+
+        private void OnGUI()
+        {
+            if (Slate.SlateExtensions.Instance.RecordUtility.IsRecordActive)
+                GUI.enabled = false;
+            RecorederManagers = Slate.SlateExtensions.Instance.RecordUtility.GetAllRecorderManager(); 
+            if (_boxStyle == null)
+            {
+                _boxStyle = GUI.skin.FindStyle("box");
+            }
+
+            if(_resizerStyle == null)
+            {
+                _resizerStyle = new GUIStyle();
+                _resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
+            }
+
+            if (!_showLeft)
+                _leftWidth = 0;
+            else
+                _leftWidth = minLeftWidth;
+
+            if (!_showRight)
+                _rightWidth = 0;
+            else
+                _rightWidth = minRightWidth;
+
+            if (_showRight)
+            {
+                if (CurrentConfig() != null)
+                {
+                    RefreshRecordGameObjectsInScene();
+                }
+                else
+                {
+                    ///向下兼容以前录制内容
+                    compatibleOldVersionRecord();
+                }                               
+            }
+            _topRect = new Rect(0, topBarHeight, position.width - _leftWidth - _leftResizerSize - _rightWidth, topRectHeight);
+
+            _topbarRect = new Rect(0, 0, position.width, topBarHeight);
+            _leftRect = new Rect(position.width - _rightWidth- _rightResizerSize - _leftWidth, topBarHeight, _leftWidth, position.height - topBarHeight);
+            _centerUpRect = new Rect(_leftWidth + _leftResizerSize, topBarHeight, position.width - _leftWidth - _leftResizerSize - _rightWidth, position.height - topBarHeight - _centerDownResizerSize - _centerDownHeight);
+            _centerDownRect = new Rect(/*_leftWidth + _leftResizerSize*/0, topBarHeight + topRectHeight/*topBarHeight + _centerUpRect.height + _centerDownResizerSize*/, position.width - _leftWidth - _leftResizerSize - _rightWidth, _centerDownHeight);
+            _rightRect = new Rect(position.width - _rightWidth - _rightResizerSize, topBarHeight , _rightWidth, position.height - topBarHeight);
+
+            DrawTopBarRect();
+            DrawTopAreaRect();
+            DrawLeftRect();
+            ///DrawCenterUpRect(); 
+            DrawCenterDownRect();
+            DrawRightRect();
+            DrawResizer();
+
+            ProcessEvents(Event.current);
+            if (GUI.changed)
+                Repaint();
+
+            GUI.enabled = true;
+        }
+
+        private void DrawTopAreaRect()
+        {
+            GUILayout.BeginArea(_topRect);
+            GUILayout.BeginHorizontal();
+            GUILayout.Space(5);
+            var SupportRecorderGroups = Slate.SlateExtensions.Instance.RecordUtility.GetAllSupportRecorder();
+            for (int i = 0; i < SupportRecorderGroups.Count; i++)
+            {
+                bool b = SupportRecorderGroups[i].NeedRecord;
+                GUI.color = SupportRecorderGroups[i].NeedRecord? _buttonColor : Color.white;
+                bool newNeedRecord = GUILayout.Toggle(b, b ? SupportRecorderGroups[i].RecordGroupTypeInfo()+"开启" : SupportRecorderGroups[i].RecordGroupTypeInfo()+"关闭", GUILayout.Width(110));
+                if (newNeedRecord != b)
+                {
+                    SupportRecorderGroups[i].NeedRecord = newNeedRecord;
+                }
+                GUI.color = Color.white;
+            }
+            GUILayout.EndHorizontal(); 
+            GUILayout.Label("__________________________________");
+            GUILayout.FlexibleSpace();
+            GUILayout.EndArea();
+        }
+
+        private void DrawTopBarRect()
+        {
+            GUILayout.BeginArea(_topbarRect, EditorStyles.toolbar);
+            GUILayout.BeginHorizontal();
+
+            if (GUILayout.Button(new GUIContent("属性"), EditorStyles.toolbarButton, GUILayout.Width(45)))
+                _showLeft = !_showLeft;
+            GUILayout.Space(5);
+            
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button(new GUIContent("资源"), EditorStyles.toolbarButton, GUILayout.Width(45)))
+            {
+                _showRight = !_showRight;              
+            }
+
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
+        }
+
+        private Vector2 m_LeftRectScrollPos = Vector2.zero;
+        private void DrawLeftRect()
+        {
+            if (!_showLeft)
+                return;
+
+            GUILayout.BeginArea(_leftRect);
+            GUILayout.BeginScrollView(m_LeftRectScrollPos, false, false);
+
+            if(_selectRecordListGameObject == null)
+            {
+                GUILayout.FlexibleSpace();
+                GUILayout.BeginHorizontal();
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("当前未选择任何对象");
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                GUILayout.FlexibleSpace();
+            }
+            else
+            {
+                GUILayout.BeginVertical();
+                for (int i = 0; i < RecorederManagers.Count; i++) 
+                {
+                    var dummy = RecorederManagers[i];
+
+                    if (dummy != null)
+                    {
+                        dummy.RenderConfigObjectItem(CurrentConfig(), _selectRecordListGameObject, new Rect(0, 0, 250, 250));
+                    }
+                }
+                GUILayout.EndVertical();
+            }
+            GUILayout.EndScrollView();
+            GUILayout.EndArea();
+        }
+
+        private void DrawCenterUpRect()
+        {
+            GUILayout.BeginArea(_centerUpRect);
+            GUILayout.BeginHorizontal();
+
+            ReorderableListGUI.ListField(_recordListAdaptor);
+
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
+        }
+
+        private void DrawCenterDownRect()
+        {
+            Color color = GUI.backgroundColor; 
+            GUILayout.BeginArea(_centerDownRect);
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Setting", EditorStyles.boldLabel);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("类型：");
+
+            List<string> typeNames = new List<string>() { "MotionBuilder" };
+            int newType = EditorGUILayout.Popup((int)_recordType, typeNames.ToArray());
+            if (newType != (int)_recordType)
+            {
+                _recordType = (AnimationRecordType)newType;
+            }
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+
+            GUILayout.Label("输出路径：", GUILayout.Width(60.0f));
+            GUILayout.Label(_savePath);
+
+            GUI.backgroundColor = _buttonColor;
+            if (GUILayout.Button("更改", GUILayout.Width(60.0f)))
+            {
+                string path = EditorUtility.OpenFolderPanel("请选择动画输出路径", Application.dataPath, Application.dataPath);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    if (path.StartsWith(Application.dataPath) && path.Length > Application.dataPath.Length)
+                    {
+                        path = path.Substring(Application.dataPath.Length + 1);
+                    }
+                    else
+                    {
+                        path = string.Empty;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(path) && path != savePath)
+                {
+                    savePath = path;
+
+                    if(path == string.Empty)
+                    {
+                        for (int i = 0; i < RecorederManagers.Count; i++)
+                        {
+
+                            var temp = RecorederManagers[i];
+                            if (temp != null)
+                            {
+                                temp.SetRecordSavePath(temp.InitSavePath());
+                            }
+                        }
+                        
+                    }
+                    else
+                    {
+                        for (int i = 0; i < RecorederManagers.Count; i++)
+                        {
+
+                            var temp = RecorederManagers[i];
+                            if (temp != null)
+                            {
+                                temp.SetRecordSavePath(path + temp.InitSavePath());
+                            }
+                        }
+                    }
+                }
+            }
+            GUI.backgroundColor = color;
+
+            GUILayout.Space(2);
+            GUILayout.EndHorizontal();
+
+            for (int i = 0; i < RecorederManagers.Count; i++)
+            {
+                RecorederManagers[i].RenderGeneraConifg(color,_buttonColor);
+            }
+
+            GUI.backgroundColor = color;
+            GUILayout.EndArea();
+        }
+
+
+        private Vector2 m_RightRectScrollPos = Vector2.zero;
+        private void DrawRightRect()
+        {
+            if (!_showRight)
+                return;
+
+            Color color = GUI.backgroundColor;
+
+            GUILayout.BeginArea(_rightRect);
+            m_RightRectScrollPos = GUILayout.BeginScrollView(m_RightRectScrollPos, false, true);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("  场景中可录制对象: ");
+            GUILayout.EndHorizontal();
+
+            for (int i = 0; i < _skinMeshRenderObjects.Count; i++)
+            {
+                if (_skinMeshRenderObjects[i] == null || _skinMeshRenderObjects[i].gameObject == null)
+                    continue;
+
+                GUILayout.BeginVertical(_boxStyle);
+                GUILayout.BeginHorizontal();
+                Color backgroundColor = (_selectRecordListGameObject == _skinMeshRenderObjects[i].gameObject) ? new Color(0, 1, 1) : Color.grey;
+                GUI.color = backgroundColor;
+
+                Rect itemRect = new Rect(0, (i * 68) +20+(i*2), _rightRect.width, 68);
+
+                if (_selectRecordListGameObject == _skinMeshRenderObjects[i].gameObject)
+                {
+                    //GUI.backgroundColor = backgroundColor;
+                    GUI.color = EditorGUIUtility.isProSkin ? Color.blue : _buttonColor;
+                    GUI.Box(itemRect, "");
+                    GUI.color = Color.white;
+                    //GUI.backgroundColor = color;
+                }
+                EditorGUIUtility.AddCursorRect(itemRect, MouseCursor.Link);
+
+                GUIStyle lable = new GUIStyle();
+                lable.wordWrap = true;
+                lable.normal.textColor = GUI.skin.label.normal.textColor;
+                GUI.color = Color.white;
+                GUILayout.Label(_skinMeshRenderObjects[i].icon, new GUILayoutOption[] { GUILayout.Width(60), GUILayout.Height(60) });
+                GUILayout.Label(_skinMeshRenderObjects[i].gameObject.name, lable, new GUILayoutOption[] { GUILayout.Width(155)});
+                lable.wordWrap = false;
+
+                GUI.color = _skinMeshRenderObjects[i].bNeedRecord ? _buttonColor : Color.white;
+                bool newNeedRecord = GUILayout.Toggle(_skinMeshRenderObjects[i].bNeedRecord, _skinMeshRenderObjects[i].bNeedRecord?"录制":"不录制", GUILayout.Width(60));
+                if(_skinMeshRenderObjects[i].bNeedRecord != newNeedRecord)
+                {
+                    _skinMeshRenderObjects[i].bNeedRecord = newNeedRecord; 
+                    CurrentConfig().ChangeRecord(i, _skinMeshRenderObjects[i].bNeedRecord);
+                    
+                    refreshRecordListRecord(_skinMeshRenderObjects[i].gameObject, _skinMeshRenderObjects[i].bNeedRecord);
+                    UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(CurrentConfig().gameObject.scene);
+                }
+                GUI.color = Color.white;
+                //GUI.backgroundColor = color;
+
+                if (Event.current.type == EventType.MouseDown &&
+                    (itemRect.Contains(Event.current.mousePosition)))
+                {
+                    Event.current.Use();
+                    OnRecordListSelect(_skinMeshRenderObjects[i].gameObject);
+                }
+
+                GUILayout.EndHorizontal();
+                GUILayout.EndVertical();
+            }
+            GUILayout.EndScrollView();
+            GUILayout.EndArea();
+        }
+
+        private void DrawResizer()
+        {
+            // draw left panel resizer
+            if (_showLeft)
+            {
+                _leftResizerRect = new Rect(position.width - _rightWidth - _rightResizerSize - _leftWidth-2, topBarHeight, _leftResizerSize, position.height - topBarHeight);
+                GUILayout.BeginArea(_leftResizerRect, _resizerStyle);
+                GUILayout.EndArea();
+                EditorGUIUtility.AddCursorRect(_leftResizerRect, MouseCursor.ResizeHorizontal);
+            }            
+
+            // draw center down panel resizer
+            //_centerDownResizerRect = new Rect(0, /*topBarHeight + _centerUpRect.height*/0, position.width - _leftWidth - _rightWidth, _centerDownResizerSize);
+            //GUILayout.BeginArea(_centerDownResizerRect, _resizerStyle);
+            //GUILayout.EndArea();
+            //EditorGUIUtility.AddCursorRect(_centerDownResizerRect, MouseCursor.ResizeVertical);
+
+            // draw right panel resizer
+            if (_showRight)
+            {
+                _rightResizerRect = new Rect(position.width - _rightWidth - _rightResizerSize, topBarHeight, _rightResizerSize, position.height - topBarHeight);
+                GUILayout.BeginArea(_rightResizerRect, _resizerStyle);
+                GUILayout.EndArea();
+                EditorGUIUtility.AddCursorRect(_rightResizerRect, MouseCursor.ResizeHorizontal);
+            }
+
+        }
+
+        private void ProcessEvents(Event e)
+        {
+            switch (e.type)
+            {
+                case EventType.MouseDown:
+                    {
+                        if (e.button == 0 && _leftResizerRect.Contains(e.mousePosition))
+                        {
+                            _leftIsResizing = true;
+                        }
+                        else if (e.button == 0 && _centerDownResizerRect.Contains(e.mousePosition))
+                        {
+                            _centerDownIsResizing = true;
+                        }
+                        else if (e.button == 0 && _rightResizerRect.Contains(e.mousePosition))
+                        {
+                            _rightIsResizing = true;
+                        }
+                    }
+                    break;
+
+                case EventType.MouseUp:
+                    _leftIsResizing = false;
+                    _centerDownIsResizing = false;
+                    _rightIsResizing = false;
+                    break;
+            }
+
+            ProcessResizeEvent(e);
+        }
+
+        private void ProcessResizeEvent(Event e)
+        {
+            if (_centerDownIsResizing) // handle timeline panel resize event
+            {
+                float scaleHeight = position.height - e.mousePosition.y;
+                if (scaleHeight > minCenterDownHeight && scaleHeight < position.height - topBarHeight - 50)
+                {
+                    _centerDownHeight = scaleHeight;
+                    Repaint();
+                }
+            }
+            else if (_leftIsResizing) // handle story panel resize event
+            {
+                float scaleWidth = e.mousePosition.x;
+                if (scaleWidth > minLeftWidth && scaleWidth < minLeftWidth + 100)
+                {
+                    _leftWidth = scaleWidth;
+                    Repaint();
+                }
+            }
+            else if (_rightIsResizing) // handle resource panel resize event
+            {
+                float scaleWidth = position.width - e.mousePosition.x;
+                if (scaleWidth > minRightWidth && scaleWidth < minRightWidth + 200)
+                {
+                    _rightWidth = scaleWidth;
+                    Repaint();
+                }
+            }
+        }
+       
+        private void RefreshRecordGameObjectsInScene()
+        {    
+            var configAsset = CurrentConfig().GetConfigAssetList();
+            
+            for (int i =0; i < configAsset.Count; i++)
+            {
+                // 如果当前没有添加过此SkinMesh对象，也不是SlateRecorderCache中的clone对象，就添加到显示列表
+                if (!ContainSkinMeshGameObject(configAsset[i].OBJ) && !SlateRecorderCache.Instance.IsCloneObject(configAsset[i].OBJ))
+                {
+                    _skinMeshRenderObjects.Add(new AssetObject(configAsset[i].OBJ, configAsset[i].icon, configAsset[i].bNeedRecord));
+                    OnRecordListAdded(configAsset[i].OBJ, configAsset[i].bNeedRecord); 
+                }
+            }
+        }
+
+        private void compatibleOldVersionRecord()
+        {
+            //创建cofigComponent
+            GameObject configObj = new GameObject();
+            ConfigComponent configCom = configObj.AddComponent<ConfigComponent>();
+            configObj.name = "ConfigCom";
+            
+            // get root objects in scene
+            List<GameObject> rootObjects = new List<GameObject>();
+            List<GameObject> skinMeshObjects = new List<GameObject>();
+
+            int sceneCount = SceneManager.sceneCount;
+            //Debug.Log("当前场景数量：" + scenes.Length);
+            for (int i = 0; i < sceneCount; i++)
+            {
+                List<GameObject> sceneRootObjects = new List<GameObject>();
+                Scene sn = SceneManager.GetSceneAt(i);
+                sn.GetRootGameObjects(sceneRootObjects);
+                rootObjects.AddRange(sceneRootObjects);
+            }
+            UnityEditor.SceneManagement.EditorSceneManager.MoveGameObjectToScene(configObj, SceneManager.GetSceneAt(0));
+
+            //Scene scene = SceneManager.GetActiveScene();
+            //scene.GetRootGameObjects(rootObjects);
+
+            // iterate root objects and do something
+            //Debug.Log("遍历场景中的根对象: " + rootObjects.Count);
+            for (int i = 0; i < rootObjects.Count; ++i)
+            {
+                GameObject gameObject = rootObjects[i];
+                if (!gameObject.activeSelf)
+                    continue;
+
+                if (PrefabUtility.GetPrefabType(gameObject) != PrefabType.PrefabInstance)
+                    continue;
+
+                //Debug.Log("场景根对象: " + gameObject.name);
+
+                // Retrieve all meshes on the current object.
+                // We need to store them in global variable, because network thread is
+                // not allowed to access Unity methods.
+                SkinnedMeshRenderer[] rigSkinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                if (rigSkinnedMeshRenderers != null && rigSkinnedMeshRenderers.Length > 0)
+                {
+                    skinMeshObjects.Add(gameObject);
+                }
+
+                MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>(true);
+                if (meshFilters != null && meshFilters.Length > 0)
+                {
+                    skinMeshObjects.Add(gameObject);
+                }
+            }
+
+            for (int i = 0; i < skinMeshObjects.Count; i++)
+            {
+                // 如果当前没有添加过此SkinMesh对象，也不是SlateRecorderCache中的clone对象，就添加到显示列表
+                if (!ContainSkinMeshGameObject(skinMeshObjects[i]) && !SlateRecorderCache.Instance.IsCloneObject(skinMeshObjects[i]))
+                {
+                    CreateEditCamera();
+                    GameObject prefab = PrefabUtility.GetCorrespondingObjectFromSource(skinMeshObjects[i]) as GameObject;
+                    string prefabPath = AssetDatabase.GetAssetPath(prefab);
+
+                    // 将模型旋转回原点， 照一张， 再将模型重新旋到自己的位置
+                    Quaternion q = skinMeshObjects[i].transform.rotation;
+                    skinMeshObjects[i].transform.rotation = Quaternion.identity;
+
+                    InitEditorCamera(false, skinMeshObjects[i]);
+                    Texture icon = GetAssetPreview(prefab);
+
+                    skinMeshObjects[i].transform.rotation = q;
+                    _skinMeshRenderObjects.Add(new AssetObject(skinMeshObjects[i], icon, true));
+                    configCom.DataInit((GameObject)skinMeshObjects[i], icon);
+                    OnRecordListAdded((GameObject)skinMeshObjects[i], true);
+                    DestroyEditCamera();
+                }
+            }
+            Repaint();
+        }
+
+        private void RefreshSkinMeshGameObjectsInScene()
+        {
+            // get root objects in scene
+            List<GameObject> rootObjects = new List<GameObject>();
+            List<GameObject> skinMeshObjects = new List<GameObject>();
+
+            Scene[] scenes = SceneManager.GetAllScenes();
+            //Debug.Log("当前场景数量：" + scenes.Length);
+            
+            for(int i = 0; i < scenes.Length; i++)
+            {
+                List<GameObject> sceneRootObjects = new List<GameObject>();
+                scenes[i].GetRootGameObjects(sceneRootObjects);
+                rootObjects.AddRange(sceneRootObjects);
+            }
+
+            //Scene scene = SceneManager.GetActiveScene();
+            //scene.GetRootGameObjects(rootObjects);
+
+            // iterate root objects and do something
+            //Debug.Log("遍历场景中的根对象: " + rootObjects.Count);
+            for (int i = 0; i < rootObjects.Count; ++i)
+            {
+                GameObject gameObject = rootObjects[i];
+                if (!gameObject.activeSelf)
+                    continue;
+
+                if (PrefabUtility.GetPrefabType(gameObject) != PrefabType.PrefabInstance)
+                    continue;
+
+                //Debug.Log("场景根对象: " + gameObject.name);
+
+                // Retrieve all meshes on the current object.
+                // We need to store them in global variable, because network thread is
+                // not allowed to access Unity methods.
+                SkinnedMeshRenderer[] rigSkinnedMeshRenderers = gameObject.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                if (rigSkinnedMeshRenderers != null && rigSkinnedMeshRenderers.Length > 0)
+                {
+                    skinMeshObjects.Add(gameObject);
+                }
+                
+                MeshFilter[] meshFilters = gameObject.GetComponentsInChildren<MeshFilter>(true);
+                if (meshFilters != null && meshFilters.Length > 0)
+                {
+                    skinMeshObjects.Add(gameObject);
+                }
+            }
+
+            bool isChanged = false;
+
+            for (int i = 0; i < skinMeshObjects.Count; i++)
+            {
+                // 如果当前没有添加过此SkinMesh对象，也不是SlateRecorderCache中的clone对象，就添加到显示列表
+                if (!ContainSkinMeshGameObject(skinMeshObjects[i]) && !SlateRecorderCache.Instance.IsCloneObject(skinMeshObjects[i]))
+                {
+                    CreateEditCamera();
+                    GameObject prefab = PrefabUtility.GetCorrespondingObjectFromSource(skinMeshObjects[i]) as GameObject;
+                    string prefabPath = AssetDatabase.GetAssetPath(prefab);
+
+                    // 将模型旋转回原点， 照一张， 再将模型重新旋到自己的位置
+                    Quaternion q = skinMeshObjects[i].transform.rotation;
+                    skinMeshObjects[i].transform.rotation = Quaternion.identity;
+
+                    InitEditorCamera(false, skinMeshObjects[i]);
+                    Texture icon = GetAssetPreview(prefab);
+                    
+                    skinMeshObjects[i].transform.rotation = q;
+
+                    _skinMeshRenderObjects.Add(new AssetObject(skinMeshObjects[i], icon, true));
+                    isChanged = true;
+                    DestroyEditCamera();
+                }                    
+            }
+
+            for (int i = _skinMeshRenderObjects.Count - 1; i >= 0; i--)
+            {
+                // 如果列表中的SkinMesh对象为空，或者被隐藏了，就将这个SkinMesh对象移出显示列表
+                if (_skinMeshRenderObjects[i] == null || _skinMeshRenderObjects[i].gameObject == null || !_skinMeshRenderObjects[i].gameObject.activeSelf)
+                {
+                    _skinMeshRenderObjects.Remove(_skinMeshRenderObjects[i]);
+                    isChanged = true;
+                }
+            }
+
+            if(isChanged)
+                Repaint();
+        }
+
+        private bool ContainSkinMeshGameObject(GameObject obj)
+        {
+            for (int i = 0; i < _skinMeshRenderObjects.Count; i++)
+            {
+                if (_skinMeshRenderObjects[i].gameObject != null && _skinMeshRenderObjects[i].gameObject == obj)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private void RefreshRecordGameObjects()
+        {
+            for (int i = _recordGameObjects.Count - 1; i >= 0; i--)
+            {
+                if (_recordGameObjects[i] == null || !_recordGameObjects[i].activeSelf)
+                {
+                    _recordGameObjects.Remove(_recordGameObjects[i]);
+                }
+            }
+        }
+
+        private AssetCamera _editCamera;
+
+        private void CreateEditCamera()
+        {
+            if (_editCamera == null)
+            {
+                // 新建编辑器相机
+                _editCamera = new AssetCamera();
+                _editCamera.camera = new GameObject("editorCamera").AddComponent<Camera>();
+                _editCamera.camera.tag = "MainCamera";
+                _editCamera.camera.transform.position = Vector3.zero;
+                _editCamera.camera.transform.localEulerAngles = Vector3.zero;
+                _editCamera.isCreate = true;
+            }
+        }
+
+        private void DestroyEditCamera()
+        {
+            // 销毁编辑器相机
+            GameObject.DestroyImmediate(_editCamera.camera.gameObject);
+            _editCamera = null;
+        }
+
+        /// <summary>
+        /// 初始化编辑器相机的位置和方向
+        /// </summary>
+        /// <param name="negDir"></param>
+        /// <param name="gameObject"></param>
+        void InitEditorCamera(bool negDir, GameObject gameObject)
+        {
+            if (_editCamera == null)
+                return;
+
+            // 直接控制摄像机看向表情对象， 便于观察动画
+            // 如果模型本身有旋转，则乘逆矩阵反向旋转到0点
+            /*Vector3 forward = gameObject.transform.worldToLocalMatrix.inverse * gameObject.transform.forward;
+            Vector3 position = gameObject.transform.position + (forward * 1.5f);
+            if (negDir)
+                position = gameObject.transform.position + (forward * -1.5f);*/
+            
+            Vector3 forward = gameObject.transform.forward.normalized;
+            Vector3 position = gameObject.transform.position + (forward * 1.5f);
+            if (negDir)
+                position = gameObject.transform.position + (forward * -1.5f);
+
+            // 得到模型的包围盒
+            Bounds bound = new Bounds();
+            GetRenderableBoundsRecurse(ref bound, gameObject);
+            
+            // 将相机位置高度设置为包围盒的高度一半
+            _editCamera.camera.transform.position = position + (gameObject.transform.up.normalized * bound.extents.y);
+            _editCamera.camera.transform.LookAt(bound.center);
+        }
+
+        /// <summary>
+        /// 获取预览图象
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private Texture GetAssetPreview(GameObject obj)
+        {
+            if (_editCamera == null)
+                return null;
+           
+            //_editCamera.camera.Render();
+
+            RenderTexture texture = new RenderTexture(64, 64, 24, RenderTextureFormat.Default);
+            _editCamera.camera.targetTexture = texture;
+
+            _editCamera.camera.RenderDontRestore();
+            _editCamera.camera.Render();
+
+            //Texture2D tex = new Texture2D(64, 64, TextureFormat.ARGB32, false);
+            //RenderTexture.active = texture;
+            //tex.ReadPixels(new Rect(0, 0, 64, 64), 0, 0);
+            //tex.Apply();
+            //RenderTexture.active = null;
+
+            RenderTexture tex = new RenderTexture(64, 64, 0, RenderTextureFormat.Default);
+            Graphics.Blit(texture, tex);
+
+            return tex;
+        }
+
+        public static void GetRenderableBoundsRecurse(ref Bounds bounds, GameObject go)
+        {
+            MeshRenderer meshRenderer = go.GetComponent(typeof(MeshRenderer)) as MeshRenderer;
+            MeshFilter meshFilter = go.GetComponent(typeof(MeshFilter)) as MeshFilter;
+            if (meshRenderer && meshFilter && meshFilter.sharedMesh)
+            {
+                if (bounds.extents == Vector3.zero)
+                {
+                    bounds = meshRenderer.bounds;
+                }
+                else
+                {
+                    // 扩展包围盒，以让包围盒能够包含另一个包围盒
+                    bounds.Encapsulate(meshRenderer.bounds);
+                }
+            }
+
+            SkinnedMeshRenderer skinnedMeshRenderer = go.GetComponent(typeof(SkinnedMeshRenderer)) as SkinnedMeshRenderer;
+            if (skinnedMeshRenderer && skinnedMeshRenderer.sharedMesh)
+            {
+                if (bounds.extents == Vector3.zero)
+                {
+                    bounds = skinnedMeshRenderer.bounds;
+                }
+                else
+                {
+                    bounds.Encapsulate(skinnedMeshRenderer.bounds);
+                }
+            }
+
+            foreach (Transform transform in go.transform)
+            {
+                GetRenderableBoundsRecurse(ref bounds, transform.gameObject);
+            }
+        }
+
+        private void OnRecordListSelect(GameObject selectObj)
+        {
+            _selectRecordListGameObject = selectObj;
+            LoadConfig();
+        }
+
+        private Transform FindChildRe(Transform parent, string name)
+        {
+            if(parent.name.Contains(name))
+            {
+                return parent;
+            }
+
+            for(int i=0; i< parent.childCount; i++)
+            {
+                Transform node = FindChildRe(parent.GetChild(i), name);
+                if(node != null)
+                {
+                    return node;
+                }
+            }
+
+            return null;
+        }
+
+        private void refreshRecordListRecord(GameObject changeObj, bool needRecord)
+        {
+            //if (_recordType == AnimationRecordType.ViconType)
+            //{
+            //    var recordInfo = ViconRecorderManager.instance.Find(changeObj);
+            //    recordInfo.IsNeedRecord = needRecord;
+            //}
+            //else
+            //if (_recordType == AnimationRecordType.DavinciGateType)
+            //{
+            //    var recordInfo = GateRecorderManager.Instance.Find(changeObj);
+            //    recordInfo.NeedRecord = needRecord;
+            //}
+            //var recordTrackerInfo = TrackerRecordManager.Instance.FindObject(changeObj);
+            //recordTrackerInfo.isNeedRecord = needRecord;
+
+            for (int i = 0; i < RecorederManagers.Count; i++)
+            { 
+                RecorederManagers[i].SetObjRecordEnalbe(changeObj, needRecord);
+            }
+        }
+
+
+        private void OnRecordListAdded(GameObject addedObj, bool needRecord)
+        {
+            if (addedObj == null)
+                return;
+
+            if(_recordType == AnimationRecordType.DavinciGateType)
+            {
+                Transform hips = FindChildRe(addedObj.transform, "Hips");
+                if (hips != null)
+                {
+                    for (int i = 0; i < RecorederManagers.Count; i++)
+                    {
+                        RecorederManagers[i].AddObject(addedObj, needRecord, hips.gameObject);
+                    }                
+                }
+                else
+                {
+                    for (int i = 0; i < RecorederManagers.Count; i++)
+                    {
+                        RecorederManagers[i].AddObject(addedObj, needRecord);
+                    }
+                   
+                }
+            }
+            
+        }
+
+    }
+}
+

@@ -1,0 +1,451 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+public class DirectorRoomSlateCameraRecorder : SlateCameraRecorder
+{
+    private static DirectorRoomSlateCameraRecorder m_Current = null;
+    private Camera m_PreviewCamera = null;
+
+    public static DirectorRoomSlateCameraRecorder Current
+    {
+        get
+        {
+            return m_Current;
+        }
+    }
+
+
+    public DirectorRoomSlateCameraRecorder()
+    {
+        m_Current = this;
+    }
+
+    public class CameraKeyframe
+    {
+        public float FrameTime;
+        public Vector3 FramePosition;
+        public Quaternion FrameRotation;
+
+        public CameraKeyframe(float time, Transform trans)
+        {
+            FrameTime = time;
+            FramePosition = trans.position;
+            FrameRotation = trans.rotation;
+        }
+
+        public CameraKeyframe(float time, CameraKeyframe other)
+        {
+            FrameTime = time;
+            FramePosition = other.FramePosition;
+            FrameRotation = other.FrameRotation;
+        }
+
+        public CameraKeyframe(float time, Vector3 pos, Quaternion rot)
+        {
+            FrameTime = time;
+            FramePosition = pos;
+            FrameRotation = rot;
+        }
+    }
+
+    public class CameraRecordSection
+    {
+        private CameraDirectorInstance m_Camera = null;
+        public float StartTime = 0.0f;
+        public float EndTime = 0.0f;
+        public List<CameraKeyframe> FrameList = new List<CameraKeyframe>();
+
+        public CameraDirectorInstance Camera
+        {
+            get
+            {
+                return m_Camera;
+            }
+        }
+
+        public CameraRecordSection(CameraDirectorInstance camera, float startTime)
+        {
+            m_Camera = camera;
+            StartTime = startTime;
+            FrameList.Clear();
+        }
+        public void FillKeyframes(int frameCount)
+        {
+            if (FrameList.Count == 0)
+            {
+                return;
+            }
+
+            for (int i = FrameList.Count; i < frameCount; i++)
+            {
+                FillKeyframe(i * (1.0f / GateRecorderManager.Instance.AnimationFrameFPS));
+            }
+        }
+
+        private void FillKeyframe(float time)
+        {
+            CameraKeyframe mappingKey = FrameList[FrameList.Count - 1];
+            FrameList.Add(new CameraKeyframe(time, mappingKey));
+        }
+
+        public void RecoredAndFill(float totalTime)
+        {
+            float time = totalTime - StartTime;
+            if (FrameList.Count == 0)
+            {
+                Recored(0.0f);
+            }
+
+            int frameCount = Mathf.FloorToInt(time / (1.0f / GateRecorderManagerBrage.AnimationFrameFPS));
+            if (frameCount > FrameList.Count)
+            {
+                FillKeyframes(frameCount);
+            }
+            else
+            {
+                return;
+            }
+
+            Recored(frameCount * (1.0f / GateRecorderManagerBrage.AnimationFrameFPS));
+        }
+
+        public void Recored(float time)
+        {
+            FrameList.Add(new CameraKeyframe(time, m_Camera.transform));
+        }
+
+        public void RecoredTotal(float totalTime)
+        {
+            float time = totalTime - StartTime;
+            FrameList.Add(new CameraKeyframe(time, m_Camera.transform));
+        }
+
+        public void SavePositionParameter(Slate.AnimatedParameter posParamter)
+        {
+            for (int i = 0; i < FrameList.Count; i++)
+            {
+                Vector3 pos = FrameList[i].FramePosition;
+                posParamter.GetCurves()[0].AddKey(new Keyframe(FrameList[i].FrameTime, pos.x, float.PositiveInfinity, float.PositiveInfinity));
+                posParamter.GetCurves()[1].AddKey(new Keyframe(FrameList[i].FrameTime, pos.y, float.PositiveInfinity, float.PositiveInfinity));
+                posParamter.GetCurves()[2].AddKey(new Keyframe(FrameList[i].FrameTime, pos.z, float.PositiveInfinity, float.PositiveInfinity));
+            }
+        }
+
+        public void SaveRotationParameter(Slate.AnimatedParameter rotParamter)
+        {
+            List<Vector3> rotations = new List<Vector3>();
+            for (int i = 0; i < FrameList.Count; i++)
+            {
+                rotations.Add(FrameList[i].FrameRotation.eulerAngles);
+            }
+
+            for (int i = 0; i < FrameList.Count; i++)
+            {
+                Vector3 rot = rotations[i];
+                rotParamter.GetCurves()[0].AddKey(new Keyframe(FrameList[i].FrameTime, rot.x, float.PositiveInfinity, float.PositiveInfinity));
+                rotParamter.GetCurves()[1].AddKey(new Keyframe(FrameList[i].FrameTime, rot.y, float.PositiveInfinity, float.PositiveInfinity));
+                rotParamter.GetCurves()[2].AddKey(new Keyframe(FrameList[i].FrameTime, rot.z, float.PositiveInfinity, float.PositiveInfinity));
+            }
+        }
+    }
+
+    private List<CameraRecordSection> m_RecordSectionList = new List<CameraRecordSection>();
+    private CameraRecordSection m_RecordSection = null;
+    private float? ClipOffset = null;
+
+    public override void Refresh()
+    {
+        //m_NetworkServer.BeginListen();
+        Cleanup();
+
+        m_PreviewCamera = new GameObject("DirectorCamera").AddComponent<Camera>();
+        m_PreviewCamera.enabled = false;
+        if (Slate.DirectorCamera.current != null)
+        {
+            m_PreviewCamera.CopyFrom(Slate.DirectorCamera.current.cam);
+            Component[] comps = Slate.DirectorCamera.current.cam.GetComponents<Component>();
+            foreach (var comp in comps)
+            {
+                if (m_PreviewCamera.GetComponents(comp.GetType()).Length > 0)
+                {
+                    continue;
+                }
+
+                Component newComp = m_PreviewCamera.gameObject.AddComponent(comp.GetType());
+                EditorUtility.CopySerialized(comp, newComp);
+            }
+        }
+    }
+    public override void Cleanup()
+    {
+        Slate.CurveSmooth.BeginSmoothRotationRT();
+
+        if (m_PreviewCamera != null)
+        {
+            GameObject.DestroyImmediate(m_PreviewCamera.gameObject);
+            m_PreviewCamera = null;
+        }
+    }
+    public override void UpdateRecord()
+    {
+        if (m_PreviewCamera == null)
+        {
+            return;
+        }
+
+        if (DirectorRoomRecorderManager.Instance.SelectedInstance == null)
+        {
+            m_PreviewCamera.enabled = false;
+        }
+        else
+        {
+            m_PreviewCamera.enabled = true;
+            m_PreviewCamera.CopyFrom(DirectorRoomRecorderManager.Instance.SelectedInstance.Camera);
+            m_PreviewCamera.targetTexture = null;
+        }
+
+    }
+
+    public override void PostRecord()
+    {
+        if (m_PreviewCamera != null && DirectorRoomRecorderManager.Instance.SelectedInstance != null && !DirectorRoomRecorderManager.Instance.SelectedInstance.IsFixed && DirectorRoomRecorderManager.Instance.SelectedInstance.AutoSmooth)
+        {
+            float cameraSmoothFrequency = EditorPrefs.GetFloat("CameraSmoothFrequency", 120f); ;
+            float cameraSmoothBeta = EditorPrefs.GetFloat("CameraSmoothBeta", 0.01f); ;
+            float cameraSmoothMinCutoff = EditorPrefs.GetFloat("CameraSmoothMinCutoff", 1.0f);
+            float cameraSmoothDcutoff = EditorPrefs.GetFloat("CameraSmoothDcutoff", 1.0f);
+            int smoothType = EditorPrefs.GetInt("SmoothType", 0);
+            
+            if (smoothType == (int)Slate.CurveSmooth.SmoothType.kalMan
+                || smoothType == (int)Slate.CurveSmooth.SmoothType.oneEuro)
+            {
+                Slate.CurveSmooth.SetSmoothParam(cameraSmoothFrequency, cameraSmoothBeta, cameraSmoothMinCutoff, cameraSmoothDcutoff);
+                m_PreviewCamera.transform.localEulerAngles = Slate.CurveSmooth.SmoothRotationVectorTQRt(m_PreviewCamera.transform.localEulerAngles, smoothType);
+            }
+            else if (smoothType == (int)Slate.CurveSmooth.SmoothType.average)
+            {
+                m_PreviewCamera.transform.rotation = SmoothCamera.SmoothRotation(m_PreviewCamera.transform.rotation);
+            }
+        }
+    }
+
+    private void CreateSection(float startTime)
+    {
+        if (DirectorRoomRecorderManager.Instance.SelectedInstance != null)
+        {
+            m_RecordSection = new CameraRecordSection(DirectorRoomRecorderManager.Instance.SelectedInstance, startTime);
+            m_RecordSectionList.Add(m_RecordSection);
+        }
+        else
+        {
+            m_RecordSection = null;
+        }
+    }
+
+    public override void StartRecord(float startTime)
+    {
+        Slate.CurveSmooth.BeginSmoothRotationRT();
+
+        ClipOffset = null;
+        m_RecordSectionList.Clear();
+        CreateSection(startTime);
+    }
+    public override void StopRecord(float startTime, float endTime, int? recordIdx)
+    {
+        if (m_RecordSection != null)
+        {
+            m_RecordSection.RecoredTotal(endTime);
+            m_RecordSection.EndTime = endTime;
+        }
+
+        if (ClipOffset == null)
+        {
+            ClipOffset = startTime;
+        }
+
+        if (m_RecordSectionList.Count > 0)
+        {
+            FillTimeline(Slate.CutsceneEditor.current.cutscene, recordIdx);
+        }
+    }
+
+    private void FillTimeline(Slate.Cutscene cutscene, int? recordIdx = null)
+    {
+        if (m_RecordSectionList.Count == 0)
+        {
+            return;
+        }
+
+        Slate.CameraTrack cameraTrack = cutscene.cameraTrack;
+        if (cameraTrack == null || cameraTrack.isActive == false)
+        {
+#if UNITY_EDITOR
+            cameraTrack = cutscene.directorGroup.AddTrack<Slate.CameraTrack>();
+            cameraTrack.name = "RecordCamera:" + System.DateTime.Now.ToString("MMddHHmmssfff");
+            cameraTrack.RecordIdx = recordIdx;
+#endif
+        }
+
+        Camera current = null;
+        
+        for (int m= 0; m < m_RecordSectionList.Count; m++)
+        {
+            var section = m_RecordSectionList[m];
+            if (section.FrameList.Count == 0)
+            {
+                continue;
+            }
+            
+            current = section.Camera.Camera;
+            
+            Slate.ActionClips.StoryEngineClip.StoryCameraClip clip = cameraTrack.AddAction<Slate.ActionClips.StoryEngineClip.StoryCameraClip>(section.StartTime - ClipOffset.Value);
+            clip.length = section.EndTime - section.StartTime;
+            int currentCnt = m+1;
+            int nameIdx = cutscene.name.IndexOf("_Cut_") + ("_Cut_".Length);
+            var splitName = cutscene.name.Substring(nameIdx);
+            clip.showName = string.Format("{0}{1:D2}", splitName, currentCnt);
+           
+            clip.targetShot = Slate.ShotCamera.Create(clip.root.context.transform);
+            clip.targetShot.cam.transform.position = current.transform.position;
+            clip.targetShot.cam.transform.rotation = current.transform.rotation;
+            clip.targetShot.cam.fieldOfView = current.fieldOfView;
+            clip.targetShot.cam.nearClipPlane = current.nearClipPlane;
+            clip.targetShot.cam.farClipPlane = current.farClipPlane;
+            clip.targetShot.cam.orthographic = current.orthographic;
+            clip.targetShot.cam.orthographicSize = current.orthographicSize;
+
+            if (!section.Camera.IsDynamic)
+            {
+                continue;
+            }
+
+            Slate.AnimatedParameter posParamter = clip.animationData.GetParameterOfName("Position");
+            Slate.AnimatedParameter rotParamter = clip.animationData.GetParameterOfName("Rotation");
+
+            section.SavePositionParameter(posParamter);
+            section.SaveRotationParameter(rotParamter);
+
+            if (section.Camera.IsFixed || !section.Camera.AutoSmooth)
+            {
+                continue;
+            }
+
+            if (m != m_RecordSectionList.Count - 1)
+            {
+                continue;
+            }
+            
+            float filterFrequency = EditorPrefs.GetFloat("CameraSmoothFrequency", 120f);
+            float filterMinCutoff = EditorPrefs.GetFloat("CameraSmoothMinCutoff", 1.0f);
+            float filterBeta = EditorPrefs.GetFloat("CameraSmoothBeta", 0.01f); ;
+            float filterDcutoff = EditorPrefs.GetFloat("CameraSmoothDcutoff", 1.0f);
+            int smoothType = EditorPrefs.GetInt("SmoothType", 0);
+            int smoothFrames = EditorPrefs.GetInt("SmoothFrames", 10);
+            SmoothCamera.StartSmooth(smoothFrames);
+            var CloneTrackName = string.Format("Smooth CamTrack_{0}_{1}_{2}", filterMinCutoff, filterBeta, filterDcutoff);
+            if (smoothType == (int)Slate.CurveSmooth.SmoothType.kalMan)
+            {
+                CloneTrackName = string.Format("Smooth CamTrack_{0}", "KalMan");
+            }
+            if (smoothType == (int)Slate.CurveSmooth.SmoothType.average)
+            {
+                CloneTrackName = string.Format("Smooth CamTrack_F{0}", smoothFrames);
+            }
+            var group = cameraTrack.parent as Slate.DirectorGroup;
+            
+            var CloneTrack = group.CloneTrack(cameraTrack);
+            cameraTrack.isActive = false;
+            CloneTrack.name = CloneTrackName;
+            
+            for (int i = 0; i < CloneTrack.actions.Count; i++)
+            {
+                var clipDummy = CloneTrack.actions[i] as Slate.ActionClips.StoryEngineClip.StoryCameraClip;               
+                Slate.AnimatedParameter AP = clipDummy.animationData.GetParameterOfName("Rotation");
+                List<Vector3> rotations = new List<Vector3>();
+                
+                int frameCount = AP.GetCurves()[0].length;
+                var frame_x_s = AP.GetCurves()[0].keys;
+                var frame_y_s = AP.GetCurves()[1].keys;
+                var frame_z_s = AP.GetCurves()[2].keys;
+
+                for (int j = 0; j < frameCount; j++)
+                {
+                    Vector3 vec = new Vector3(frame_x_s[j].value, frame_y_s[j].value, frame_z_s[j].value);
+                    rotations.Add(vec);
+                }
+                if (rotations.Count > 0)
+                {
+                    if (smoothType == (int)Slate.CurveSmooth.SmoothType.average)
+                    {
+                        List<Quaternion> qa = Slate.CurveSmooth.SmoothRotationTQ(rotations, smoothType);
+                        for (int a = 0; a < frameCount; a++)
+                        {
+                            Vector3 rot = qa[a].eulerAngles;
+
+                            AP.GetCurves()[0].RemoveKey(a);
+                            AP.GetCurves()[1].RemoveKey(a);
+                            AP.GetCurves()[2].RemoveKey(a);
+
+                            AP.GetCurves()[0].AddKey(new Keyframe(frame_x_s[a].time, rot.x, float.PositiveInfinity, float.PositiveInfinity));
+                            AP.GetCurves()[1].AddKey(new Keyframe(frame_y_s[a].time, rot.y, float.PositiveInfinity, float.PositiveInfinity));
+                            AP.GetCurves()[2].AddKey(new Keyframe(frame_z_s[a].time, rot.z, float.PositiveInfinity, float.PositiveInfinity));
+                        }
+                    }
+                    else 
+                    {
+                        Slate.CurveSmooth.SetSmoothParam(filterFrequency, filterBeta, filterMinCutoff, filterDcutoff);
+                        List<Vector3> qaVec = Slate.CurveSmooth.SmoothRotationVectorTQ(rotations, smoothType);
+                        for (int a = 0; a < frameCount; a++)
+                        {
+                            Vector3 rot = qaVec[a];
+
+                            AP.GetCurves()[0].RemoveKey(a);
+                            AP.GetCurves()[1].RemoveKey(a);
+                            AP.GetCurves()[2].RemoveKey(a);
+
+                            AP.GetCurves()[0].AddKey(new Keyframe(frame_x_s[a].time, rot.x, float.PositiveInfinity, float.PositiveInfinity));
+                            AP.GetCurves()[1].AddKey(new Keyframe(frame_y_s[a].time, rot.y, float.PositiveInfinity, float.PositiveInfinity));
+                            AP.GetCurves()[2].AddKey(new Keyframe(frame_z_s[a].time, rot.z, float.PositiveInfinity, float.PositiveInfinity));
+                        }
+                    }
+                }
+            }
+            ///
+
+        }
+        
+        m_RecordSectionList.Clear();
+    }
+
+
+    public override void Record(float currentTime, float totalTime)
+    {
+        if (m_RecordSection == null)
+        {
+            if (DirectorRoomRecorderManager.Instance.SelectedInstance != null)
+            {
+                CreateSection(currentTime);
+            }
+        }
+        else
+        {
+            if (DirectorRoomRecorderManager.Instance.SelectedInstance == null)
+            {
+                m_RecordSection.EndTime = totalTime;
+                m_RecordSection = null;
+            }
+            else if (m_RecordSection.Camera != DirectorRoomRecorderManager.Instance.SelectedInstance)
+            {
+                m_RecordSection.EndTime = totalTime;
+                CreateSection(totalTime);
+            }
+        }
+
+        if (m_RecordSection != null)
+        {
+            m_RecordSection.RecoredTotal(totalTime);
+        }
+    }
+}

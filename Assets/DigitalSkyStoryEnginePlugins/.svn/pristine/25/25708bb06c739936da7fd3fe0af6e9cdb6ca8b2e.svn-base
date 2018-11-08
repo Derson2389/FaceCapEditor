@@ -1,0 +1,424 @@
+﻿using DigitalSky.Recorder;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+ 
+public class DirectorRoomRecorderManager : RecorderManager
+{
+    
+    private int m_SaveSceneCount = 0;
+    private Scene m_SaveScene;
+    private GameObject m_MarkerCameraRoot;
+    private List<CameraMarkerDirectorInstance> m_CameraMarkerDirectorList = new List<CameraMarkerDirectorInstance>();
+    private GameObject m_GateCameraRoot;
+    private List<CameraGateDirectorInstance> m_CameraGateDirectorList = new List<CameraGateDirectorInstance>();
+    private CameraDirectorInstance m_SelectedInstance = null;
+    private int m_MaxOrder = 0;
+    private DirectorRoomServer m_Server = null;
+
+    /// <summary>
+    /// cofing params
+    /// </summary>
+    private static float m_CameraSmoothFrequency = 120f;
+    private static float m_CameraSmoothBeta = 0.01f;  
+    private static float m_CameraSmoothMinCutoff = 1.0f;
+    private static float m_CameraSmoothDcutoff = 1.0f;
+    private static int m_SmoothType = 0;
+    private static int m_SmoothFrames = 10;
+
+    public List<CameraMarkerDirectorInstance> CameraMarkerDirectorList
+    {
+        get
+        {
+            return m_CameraMarkerDirectorList;
+        }
+    }
+
+    public new static DirectorRoomRecorderManager Instance
+    {
+        get 
+        {
+            RecorderManager instance = null;  
+            if(Slate.SlateExtensions.Instance!= null && Slate.SlateExtensions.Instance.RecordUtility!= null)
+                instance = Slate.SlateExtensions.Instance.RecordUtility.GetRecorderManager(typeof(DirectorRoomRecorderManager));
+            if (instance != null) 
+            {   
+                return (DirectorRoomRecorderManager)instance;    
+            }
+            else
+            {
+                return Singleton<DirectorRoomRecorderManager>.Instance;
+            }
+        }
+    }
+
+    public List<CameraGateDirectorInstance> CameraGateDirectorList
+    {
+        get
+        {
+            return m_CameraGateDirectorList;
+        }
+    }
+
+    public CameraDirectorInstance SelectedInstance
+    {
+        get
+        {
+            return m_SelectedInstance;
+        }
+
+        set
+        {
+            m_SelectedInstance = value;
+        }
+    }
+
+    
+
+    public void Enable()
+    {
+        EditorApplication.update -= OnSyncUpdate;
+        EditorApplication.update += OnSyncUpdate;
+    }
+
+    public void Disable()
+    {
+        Cleanup();
+        EditorApplication.update -= OnSyncUpdate;
+    }
+
+    private void CleanupMarkerCamera()
+    {
+        while ((m_MarkerCameraRoot = GameObject.Find("Camera Marker Director Root")) != null)
+        {
+            GameObject.DestroyImmediate(m_MarkerCameraRoot);
+            m_MarkerCameraRoot = null;
+        }
+        m_CameraMarkerDirectorList.Clear();
+    }
+
+    private void CleanupDynamicCamera()
+    {
+        if (m_Server != null)
+        {
+            m_Server.StopListen();
+            m_Server = null;
+        }
+        
+        CleanupGateCamera();
+    }
+    
+    private void CleanupGateCamera()
+    {
+        while ((m_GateCameraRoot = GameObject.Find("Camera Gate Director Root")) != null)
+        {
+            GameObject.DestroyImmediate(m_GateCameraRoot);
+            m_GateCameraRoot = null;
+        }
+        m_CameraGateDirectorList.Clear();
+    }
+
+    public override void Cleanup()
+    {
+        m_SelectedInstance = null;
+
+        CleanupMarkerCamera();
+        CleanupDynamicCamera();
+    }
+
+    private void OnSyncUpdate()
+    {
+        if (CheckRefresh())
+        {
+            RefreshData();
+        }
+
+
+        {
+            for (int i = 0; i < m_CameraGateDirectorList.Count; i++)
+            {
+                m_CameraGateDirectorList[i].SyncCamera();
+                m_CameraGateDirectorList[i].UpdateDirector();
+            }
+        }
+    }
+
+    public void RefreshMarkerCameraData()
+    {
+        CleanupMarkerCamera();
+
+        m_MarkerCameraRoot = new GameObject("Camera Marker Director Root");
+        m_MarkerCameraRoot.hideFlags = HideFlags.DontSave;
+
+        CameraDirectorMarker[] markerList = GameObject.FindObjectsOfType<CameraDirectorMarker>();
+        if (markerList.Length == 0)
+        {
+            return;
+        }
+        Array.Sort(markerList, (c1, c2) =>
+        {
+            if (c1.Order == c2.Order)
+                return string.Compare(c1.name, c2.name);
+            else
+                return c1.Order - c2.Order;
+        }
+        );
+
+        m_MaxOrder = markerList.Length;
+        for (int i = 0; i < markerList.Length; i++)
+        {
+            CameraDirectorMarker marker = markerList[i];
+            marker.Order = i;
+            Camera fixedCamera = marker.GetComponent<Camera>();
+            if (fixedCamera == null)
+            {
+                continue;
+            }
+
+            DynamicAddNew(marker, fixedCamera);
+        }
+    }
+
+    private void RefreshGateCameraData()
+    {
+        CleanupGateCamera();
+
+        m_GateCameraRoot = new GameObject("Camera Gate Director Root");
+        m_GateCameraRoot.hideFlags = HideFlags.DontSave;
+
+//         foreach(var pair in m_GateCameraCatcher.Client.NodeList)
+//         {
+//             DynamicAddNew(pair.Key, pair.Value);
+//         }
+    }
+
+    private void RefreshDynamicCameraData()
+    {
+        RefreshGateCameraData();
+
+//         if (m_GateCameraCatcher.Client.NodeList.Count > 0)
+//         {
+//             m_Server = new DirectorRoomServer();
+//             m_Server.BeginListen();
+//         }
+    }
+
+    public void RefreshData()
+    {
+        RefreshMarkerCameraData();
+        RefreshDynamicCameraData();
+    }
+
+    public void ConnectGateCameraData()
+    {
+        RefreshGateCameraData();
+    }
+
+    private bool CheckRefresh()
+    {
+        int count = UnityEngine.SceneManagement.SceneManager.sceneCount;
+        Scene scene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+
+        if (m_SaveSceneCount != count || m_SaveScene != scene)
+        {
+            m_SaveSceneCount = count;
+            m_SaveScene = scene;
+            return true;
+        }
+
+        if(m_CameraMarkerDirectorList.Count > 0 && m_CameraMarkerDirectorList[0].Camera == null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public void DynamicAddNew(int id, GateNodeInfo nodeInfo)
+    {
+        GameObject obj = new GameObject(nodeInfo.Name);
+
+        Camera camera = obj.AddComponent<Camera>();
+        if (Camera.main != null)
+        {
+            camera.CopyFrom(Camera.main);
+        }
+
+        camera.depth = 0;
+        camera.targetTexture = new RenderTexture(1024, 576, 24);
+        camera.transform.parent = m_GateCameraRoot.transform;
+        camera.enabled = false;
+
+        CameraGateDirectorInstance director = obj.AddComponent<CameraGateDirectorInstance>();
+        director.InitData(id, camera, nodeInfo);
+        m_CameraGateDirectorList.Add(director);
+    }
+
+    public void DynamicAddNew(CameraDirectorMarker marker, Camera fixedCamera, bool addOrder = false)
+    {
+        GameObject obj = new GameObject(marker.name);
+
+        if(addOrder)
+        {
+            marker.Order = ++m_MaxOrder;
+        }
+
+        if(m_MarkerCameraRoot == null)
+        {
+            m_MarkerCameraRoot = new GameObject("Camera Marker Director Root");
+            m_MarkerCameraRoot.hideFlags = HideFlags.DontSave;
+        }
+
+        Camera camera = obj.AddComponent<Camera>();
+        camera.CopyFrom(fixedCamera);
+        camera.targetTexture = new RenderTexture(1024, 576, 24);
+        camera.transform.parent = m_MarkerCameraRoot.transform;
+        camera.enabled = false;
+
+        CameraMarkerDirectorInstance director = obj.AddComponent<CameraMarkerDirectorInstance>();
+        director.InitData(marker, camera, fixedCamera);
+        m_CameraMarkerDirectorList.Add(director);
+    }
+
+    public void DynamicDelete(CameraDirectorInstance instance)
+    {
+        CameraMarkerDirectorInstance markerInstance = instance as CameraMarkerDirectorInstance;
+
+        if(markerInstance != null)
+        {
+            m_CameraMarkerDirectorList.Remove(markerInstance);
+            if (markerInstance != null)
+            {
+                markerInstance.DelectMapper();
+                GameObject.DestroyImmediate(markerInstance.gameObject);
+            }
+        }
+    }
+
+    private void OnGateConnectChanged()
+    {
+        RefreshDynamicCameraData();
+    }
+
+    public override void RenderGeneraConifg(Color color, Color buttonColor)
+    {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("虚拟相机平滑类型：");
+        bool saveConfig = false;
+        List<string> SMtypeNames = new List<string>() { "OnEuro", "Average", "Kalman" };
+        int newSmoothType = EditorGUILayout.Popup(m_SmoothType, SMtypeNames.ToArray());
+        if (newSmoothType != m_SmoothType)
+        {
+            m_SmoothType = newSmoothType;
+            saveConfig = true;
+        }
+        GUILayout.EndHorizontal();
+
+        GUILayout.BeginVertical();
+
+        if (m_SmoothType == (int)Slate.CurveSmooth.SmoothType.oneEuro)
+        {
+            GUILayout.Label("摄像机平滑参数: ", GUILayout.Width(90.0f));
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Frequency: ", GUILayout.Width(85.0f));
+            {
+                float value = Mathf.Max(0.0f, GUILayout.TextField(string.Format("{0:N3}", m_CameraSmoothFrequency), GUILayout.Width(60.0f)).ToFloat());
+                if (m_CameraSmoothFrequency != value)
+                {
+                    m_CameraSmoothFrequency = value;
+                    saveConfig = true;
+                }
+            }
+
+            GUILayout.Label("Beta: ", GUILayout.Width(70.0f));
+            {
+                float value = Mathf.Max(0, GUILayout.TextField(string.Format("{0:N5}", m_CameraSmoothBeta), GUILayout.Width(60.0f)).ToFloat());
+                if (m_CameraSmoothBeta != value)
+                {
+                    m_CameraSmoothBeta = value;
+                    saveConfig = true;
+                }
+            }
+           // GUILayout.EndHorizontal();
+            //GUILayout.BeginHorizontal();
+            GUILayout.Label("Min Cutoff: ", GUILayout.Width(85.0f));
+            {
+                float value = Mathf.Max(0, GUILayout.TextField(string.Format("{0:N5}", m_CameraSmoothMinCutoff), GUILayout.Width(60.0f)).ToFloat());
+                if (m_CameraSmoothMinCutoff != value)
+                {
+                    m_CameraSmoothMinCutoff = value;
+                    saveConfig = true;
+                }
+            }
+
+            GUILayout.Label("D Cutoff: ", GUILayout.Width(70.0f));
+            {
+                float value = Mathf.Max(0, GUILayout.TextField(string.Format("{0:N5}", m_CameraSmoothDcutoff), GUILayout.Width(60.0f)).ToFloat());
+                if (m_CameraSmoothDcutoff != value)
+                {
+                    m_CameraSmoothDcutoff = value;
+                    saveConfig = true;
+                }
+            }
+            GUILayout.EndHorizontal();
+        }
+        else if (m_SmoothType == (int)Slate.CurveSmooth.SmoothType.average)
+        {
+            GUILayout.Label("摄像机平滑参数: ", GUILayout.Width(90.0f));
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Smooth Frames: ", GUILayout.Width(150.0f));
+            {
+                int value = GUILayout.TextField(string.Format("{0}", m_SmoothFrames), GUILayout.Width(60.0f)).ToInt32();
+                if (m_SmoothFrames != value)
+                {
+                    m_SmoothFrames = value;
+                    saveConfig = true;
+                }
+            }
+            GUILayout.EndHorizontal();
+        }
+
+        if (saveConfig)
+        {
+            SaveConfig();
+        }
+
+        GUILayout.EndVertical();
+
+    }
+
+    public override void Init()
+    {
+        LoadConfig();
+    }
+
+    public override void SaveConfig()
+    {
+        EditorPrefs.SetFloat("CameraSmoothFrequency", m_CameraSmoothFrequency);
+        EditorPrefs.SetFloat("CameraSmoothBeta", m_CameraSmoothBeta);
+        EditorPrefs.SetFloat("CameraSmoothMinCutoff", m_CameraSmoothMinCutoff);
+        EditorPrefs.SetFloat("CameraSmoothDcutoff", m_CameraSmoothDcutoff);
+        EditorPrefs.SetInt("SmoothType", m_SmoothType);
+        EditorPrefs.SetInt("SmoothFrames", m_SmoothFrames);
+    }
+
+    public override void LoadConfig()
+    {
+        m_CameraSmoothFrequency = EditorPrefs.GetFloat("CameraSmoothFrequency", 120f);
+        m_CameraSmoothBeta = EditorPrefs.GetFloat("CameraSmoothBeta", 0.01f); ;
+        m_CameraSmoothMinCutoff = EditorPrefs.GetFloat("CameraSmoothMinCutoff", 1.0f);
+        m_CameraSmoothDcutoff = EditorPrefs.GetFloat("CameraSmoothDcutoff", 1.0f);
+        m_SmoothType = EditorPrefs.GetInt("SmoothType", 0);
+        m_SmoothFrames = EditorPrefs.GetInt("SmoothFrames", 10);
+    }
+
+    public override bool CanRecord()
+    {
+        return true;
+    }
+
+    
+}

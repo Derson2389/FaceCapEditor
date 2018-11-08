@@ -1,0 +1,604 @@
+﻿using DigitalSky.Recorder;
+using Slate;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+
+public class SlateRecordUtility
+{
+    public enum ERecordState
+    {
+        Waitting,
+        RecordWhenPlay,
+        CountDown,
+        Recording,
+    }
+
+    private List<SlateRecorderGroup> m_SlateRecorderGroupList = new List<SlateRecorderGroup>();
+    private List<RecorderManager> m_RecorderManagerList = new List<RecorderManager>();
+    private ERecordState m_RecordState = ERecordState.Waitting;
+
+    private static float s_CountDownTime = 4.0F;
+    private float m_CountDownTime = s_CountDownTime;
+    private float m_LastUpdateTime;
+    private float m_RecordTime;
+    private float m_StartTime;
+
+    private float m_CutsceneLength;
+
+    private bool m_IsRecordActive = false;
+
+    private CutsceneCountDown m_CutsceneCountDownComp = null;
+    private CutsceneRecordTime m_CutsceneRecordTimeComp = null;
+
+    public bool IsRecordActive
+    {
+        get
+        {
+            return m_IsRecordActive;
+        }
+    }
+
+    public float CountDownTime
+    {
+        get
+        {
+            return m_CountDownTime;
+        }
+    }
+
+    public void SetRecordActive(bool active, Cutscene cutscene)
+    {
+        cutscene.WillShowCutsceneTime = active;
+        if (m_IsRecordActive != active)
+        {
+            m_IsRecordActive = active;
+            if (m_IsRecordActive)
+            {
+                Refresh();
+            }
+            else
+            {
+                Cleanup();
+            }
+        }
+    }
+
+
+    public bool IsWaittingRecordState
+    {
+        get
+        {
+            return m_RecordState == ERecordState.Waitting;
+        }
+    }
+
+    public bool IsCountDownRecordState
+    {
+        get
+        {
+            return m_RecordState == ERecordState.CountDown;
+        }
+    }
+
+    public bool IsRecording
+    {
+        get
+        {
+            return m_RecordState == ERecordState.Recording;
+        }
+    }
+
+    public SlateRecordUtility()
+    {
+        foreach (System.Type type in ReflectionTools.GetDerivedTypesOf(typeof(SlateRecorderGroup)))
+        {
+            if (type.GetCustomAttributes(typeof(System.ObsoleteAttribute), true).FirstOrDefault() != null)
+            {
+                continue;
+            }
+
+            m_SlateRecorderGroupList.Add((SlateRecorderGroup)System.Activator.CreateInstance(type));    
+        }
+                  
+        foreach (System.Type type in ReflectionTools.GetDerivedTypesOf(typeof(RecorderManager)))
+        { 
+            if (type.GetCustomAttributes(typeof(System.ObsoleteAttribute), true).FirstOrDefault() != null)
+            {
+                continue;
+            }          
+            m_RecorderManagerList.Add((RecorderManager)System.Activator.CreateInstance(type));     
+        }
+    }
+
+    public RecorderManager GetRecorderManager(Type type)
+    {
+        RecorderManager var = null;
+        for (int i = 0; i < m_RecorderManagerList.Count; i++)
+        {
+            if (m_RecorderManagerList[i].GetType().Name == type.Name)
+            {
+                var = m_RecorderManagerList[i];
+            }
+        }
+        return var;
+    }
+
+    public List<SlateRecorderGroup> GetAllSupportRecorder()
+    {
+        return m_SlateRecorderGroupList;
+    }
+
+    public List<RecorderManager> GetAllRecorderManager()
+    {
+
+        return m_RecorderManagerList;
+    }
+
+    public void StartCountDown(Slate.Cutscene cutscene)
+    {
+        m_CutsceneLength = cutscene.length;
+        cutscene.length = Mathf.Max(m_CutsceneLength, 600.0f);
+
+        m_CountDownTime = s_CountDownTime;
+        m_LastUpdateTime = Time.realtimeSinceStartup;
+        m_StartTime = cutscene.currentTime;
+        m_RecordTime = 0.0f;
+        m_RecordState = ERecordState.CountDown;
+
+        m_CutsceneCountDownComp = cutscene.gameObject.GetAddComponent<CutsceneCountDown>();
+        m_CutsceneCountDownComp.OnCountDownGUICallBack -= StaticShowRecordInfo;
+        m_CutsceneCountDownComp.OnCountDownGUICallBack += StaticShowRecordInfo;
+
+        m_CutsceneRecordTimeComp = cutscene.gameObject.GetAddComponent<CutsceneRecordTime>();
+        m_CutsceneRecordTimeComp.CurrentTime = 0.0f;
+        cutscene.ShowCutsceneTime = false;
+    }
+
+    public static void StaticShowRecordInfo()
+    {
+        SlateExtensions.Instance.RecordUtility.ShowRecordInfo();
+    }
+
+    public Cutscene StopAutoCreateSub(Slate.Cutscene cutscene, bool isSubSub = false)
+    {
+        Cutscene autoCreateSubCut = Cutscene.Create();
+
+        ///auto take number
+        UnityEngine.SceneManagement.Scene scene = cutscene.gameObject.scene;
+        List<Slate.Cutscene> trackCutsenceList = new List<Slate.Cutscene>();
+       
+        string containStr = string.Format("Take{0}", cutscene.CutRecord);
+        if (isSubSub)
+        {           
+            containStr = containStr + "_SubCut_";
+        }
+        else
+        {           
+            containStr = containStr + "_Cut_";
+        }
+
+        GameObject[] gos = scene.GetRootGameObjects();
+        foreach (GameObject go in gos)
+        {
+            Slate.Cutscene result = null;
+            if (go.name.Contains("_group") && go.name.Contains("_Cut_") && go.name.Contains("Take"))
+            {
+                var results = go.GetComponentsInChildren<Slate.Cutscene>();
+                for (int i = 0; i < results.Length; i++)
+                {
+                    var resultDummy = results[i];
+                    if (!resultDummy.name.Contains(containStr))
+                        continue;
+                    trackCutsenceList.Add(resultDummy);
+                }
+            }
+
+            if (go.name.Contains("_group") && !go.name.Contains("_Cut_") && go.name.Contains("Take"))
+            {
+                var results = go.GetComponentsInChildren<Slate.Cutscene>();
+                for (int i = 0; i < results.Length; i++)
+                {
+                    var resultDummy = results[i];
+                    if (!resultDummy.name.Contains(containStr))
+                        continue;
+                    trackCutsenceList.Add(resultDummy);
+                }
+            }
+
+            if (go.activeSelf)
+            {
+                result = go.GetComponent<Slate.Cutscene>();
+            }
+            if (result == null)
+                continue;
+            if (!result.name.Contains(containStr))
+                continue;
+            trackCutsenceList.Add(result);
+        }
+        ///end
+
+        string fileName = string.Format("{0}{1:D3}{2:D2}", cutscene.name, cutscene.CutRecord*5, trackCutsenceList.Count + 1);
+        if (isSubSub)
+        {
+            autoCreateSubCut.name = string.Format("Take{0}_SubCut_{1}", cutscene.CutRecord, fileName);
+        }
+        else
+        {
+            autoCreateSubCut.name = string.Format("Take{0}_Cut_{1}", cutscene.CutRecord, fileName);
+        }
+        
+        if (autoCreateSubCut.cameraTrack != null)
+        {
+            autoCreateSubCut.DeleteCameraTrack();
+        }
+        if (isSubSub)
+        {
+            var groupName = cutscene.name + "_group";
+            GameObject groupObj = GameObject.Find(groupName);
+            if (groupObj == null)
+            {
+                groupObj = new GameObject();
+                groupObj.name = groupName;
+            }
+
+            EditorSceneManager.MoveGameObjectToScene(groupObj.gameObject, cutscene.gameObject.scene);
+            autoCreateSubCut.transform.SetParent(groupObj.gameObject.transform);
+        }
+        else
+        {
+            var takeGroupName = string.Format("Take_group_{0}", cutscene.CutRecord);
+            GameObject takeGroup = GameObject.Find(takeGroupName);
+            if (takeGroup == null)
+            {
+                takeGroup = new GameObject();
+                takeGroup.name = takeGroupName;
+            }
+            EditorSceneManager.MoveGameObjectToScene(takeGroup.gameObject, cutscene.gameObject.scene);
+            autoCreateSubCut.transform.SetParent(takeGroup.gameObject.transform);
+        }     
+        return autoCreateSubCut;
+    }
+
+    public void StopRecord(Slate.Cutscene cutscene)
+    {
+        if (IsWaittingRecordState)
+        {
+            return;
+        }
+
+        bool isSubcutRecord = cutscene.PrevCutscene != null && cutscene.name.Contains("Take") && cutscene.name.Contains("_Cut_");
+        
+        m_RecordState = ERecordState.Waitting;
+        
+        cutscene.CurrentRecordTime = cutscene.CurrentRecordTime + 1;
+
+        var createSubDummy = StopAutoCreateSub(cutscene, isSubcutRecord);
+        
+        foreach (SlateRecorderGroup recorder in m_SlateRecorderGroupList)
+        {
+            if (recorder is INeedStartTime)
+            {
+                //CutsceneEditor.current.cutscene = cutscene;
+                recorder.StopRecord(m_StartTime, m_StartTime + m_RecordTime, cutscene.CurrentRecordTime);
+            }
+            else
+            {
+                CutsceneEditor.current.cutscene = createSubDummy;
+                recorder.StopRecord(0, 0 + m_RecordTime, cutscene.CurrentRecordTime);
+            }           
+        }
+        
+        createSubDummy.length = m_RecordTime;
+        cutscene.length = m_StartTime + m_RecordTime;
+        SetRecordActive(false, cutscene);
+        /// @modify slate sequencer
+        /// @TQ       
+        ///start 生成subcutsence的clip
+        ///
+        
+        var autoTrackName = "SubCut_Take" + cutscene.CutRecord;
+        if (isSubcutRecord)
+        {
+            autoTrackName = "SubSubCut_Take" + cutscene.CutRecord;
+        }
+        var alreadyTrack = cutscene.GetTrackByName(autoTrackName);
+        Slate.DirectorActionTrack subCutsenceTrack = null;
+        if (alreadyTrack == null)
+        {
+            subCutsenceTrack = cutscene.directorGroup.AddTrack<Slate.DirectorActionTrack>(autoTrackName);
+        }
+        else
+        {
+            subCutsenceTrack = alreadyTrack as Slate.DirectorActionTrack;
+            if (subCutsenceTrack != null)
+            {
+
+                if (isSubcutRecord)
+                {
+                    var sbCut = subCutsenceTrack.actions.Find(t => (t.info.Contains("Take" + cutscene.CutRecord + "_SubCut_"))) as Slate.ActionClips.SubCutscene;
+                    subCutsenceTrack.WrapDeleteAction(sbCut);
+                }
+                else
+                {
+                    var sbCut = subCutsenceTrack.actions.Find(t => (t.info.Contains("Take" + cutscene.CutRecord + "_Cut_"))) as Slate.ActionClips.SubCutscene;
+                    subCutsenceTrack.WrapDeleteAction(sbCut);
+                }
+            }
+
+        }
+            
+        Slate.ActionClips.SubCutscene subCutscene = subCutsenceTrack.AddAction<Slate.ActionClips.SubCutscene>(m_StartTime);
+        subCutsenceTrack.name = autoTrackName;
+        subCutscene.cutscene = createSubDummy;
+        subCutscene.startTime = m_StartTime;
+        subCutscene.length = createSubDummy.length;
+        ///end
+        ///temp to do
+        ///
+        if(createSubDummy.cameraTrack!= null)
+        {     
+            List<ActionClip> subCameraClips = createSubDummy.cameraTrack.actions;
+
+            ///  检查是已经存在和此关联的camera数据 
+            List<ActionClip> allClips = cutscene.cameraTrackCustom.actions;
+            List<ActionClip> linkClips = new List<ActionClip>();
+
+            foreach (var clip in allClips)
+            {
+                Slate.ActionClips.StoryEngineClip.StoryCameraClip cur = clip as Slate.ActionClips.StoryEngineClip.StoryCameraClip;
+                if (cur != null && cur.fromCutsence != null && ReferenceEquals(cur.fromCutsence, subCutscene.cutscene)
+                    && cur.linkClip != null && ReferenceEquals(cur.linkClip, subCutscene))
+                {
+                    linkClips.Add(clip);
+                }
+            }
+            foreach (var act in linkClips)
+            {
+                cutscene.cameraTrackCustom.DeleteAction(act);
+                CutsceneEditor.current.OutInitClipWrappers();
+            }
+
+            for (int i = 0; i < subCameraClips.Count; i++)
+            {
+                var copyJson = JsonUtility.ToJson(subCameraClips[i]);
+                var copyType = subCameraClips[i].GetType();
+                if (copyType != null)
+                {
+                    var newAction = cutscene.cameraTrackCustom.AddAction(copyType, subCameraClips[i].startTime);
+                    JsonUtility.FromJsonOverwrite(copyJson, newAction);
+                    newAction.startTime = subCutscene.startTime + subCameraClips[i].startTime;
+                    if (newAction.endTime > (subCutscene.startTime + subCutscene.length))
+                    {
+                        newAction.endTime = subCutscene.startTime + subCutscene.length;
+                    }
+
+                    Slate.ActionClips.StoryEngineClip.StoryCameraClip camAction = newAction as Slate.ActionClips.StoryEngineClip.StoryCameraClip;
+                    if (camAction != null)
+                    {
+                        camAction.fromCutsence = subCutscene.cutscene;
+                        camAction.linkClip = subCutscene;
+                        subCutscene.linkID = subCutscene.GetInstanceID().ToString();
+                        camAction.linkID = subCutscene.GetInstanceID().ToString();
+                    }
+                }
+            }
+        }
+        ///
+        ///start 默认设置为满屏
+        CutsceneEditor.current.viewTimeMin = 0;
+        CutsceneEditor.current.viewTimeMax = cutscene.length;
+        ///end
+        CutsceneEditor.current.DisableRecordTrackByTimes(cutscene.CurrentRecordTime);
+        CutsceneEditor.current.cutscene = cutscene;
+        Selection.activeObject = cutscene;
+        EditorGUIUtility.PingObject(cutscene);
+        //end
+///end
+///
+
+        if(m_CutsceneRecordTimeComp != null)
+        {
+            GameObject.DestroyImmediate(m_CutsceneRecordTimeComp);
+            m_CutsceneRecordTimeComp = null;
+        }
+        cutscene.ShowCutsceneTime = true;
+
+        EditorSceneManager.SaveOpenScenes();
+    }
+
+    void StartRecord()
+    {
+        m_RecordTime = 0.0f;
+        m_RecordState = ERecordState.Recording;
+
+        foreach (SlateRecorderGroup recorder in m_SlateRecorderGroupList)
+        {
+            recorder.StartRecord(m_StartTime);
+        }
+    }
+
+    public ERecordState RecordState
+    {
+        get
+        {
+            return m_RecordState;
+        }
+    }
+
+    public bool IsRecordWhenPlay
+    {
+        get
+        {
+            return m_RecordState == ERecordState.RecordWhenPlay;
+        }
+        set
+        {
+            m_RecordState = value ? ERecordState.RecordWhenPlay : ERecordState.Waitting;
+        }
+    }
+
+    public float GetStartTime()
+    {
+        return m_StartTime;
+    }
+
+    public float GetRecordTime()
+    {
+        return m_RecordTime;
+    }
+
+    public float GetTotalTime()
+    {
+        return m_StartTime + m_RecordTime;
+    }
+
+    public bool IsRecordEnable()
+    {
+        if (m_IsRecordActive == false)
+        {
+            return false;
+        }
+
+        foreach (SlateRecorderGroup recorder in m_SlateRecorderGroupList)
+        {
+            if (recorder.CurrentRecorder != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void Refresh()
+    {
+        Cleanup();
+
+        foreach (SlateRecorderGroup recorder in m_SlateRecorderGroupList)
+        {
+            recorder.Refresh();
+        }
+    }
+
+    public void Cleanup()
+    {
+        foreach (SlateRecorderGroup recorder in m_SlateRecorderGroupList)
+        {
+            recorder.Cleanup();
+        }
+
+        //新版本将clone对象提前到从编辑器选择录制对象时， 所以Refresh里的代码调用Cleanup会引起清除clone对象的错误
+        //SlateRecorderCache.Instance.DestroyAll();
+    }
+
+    public void InterceptInput()
+    {
+        if (IsCountDownRecordState == false)
+        {
+            return;
+        }
+
+        var e = Event.current;
+        if (e.isMouse || e.isKey)
+        {
+            e.Use();
+        }
+    }
+
+    public void ShowRecordInfo()
+    {
+        if (IsCountDownRecordState)
+        {
+            ShowCountDown();
+        }
+    }
+
+    void ShowCountDown()
+    {
+
+        int saveFontSize = GUI.skin.label.fontSize;
+        Rect rc = new Rect(0, 0, Screen.width, Screen.height);
+
+        GUI.skin.label.fontSize = 100;
+        GUI.skin.label.alignment = TextAnchor.MiddleCenter;
+
+        GUI.color = new Color(0.3F, 0.3F, 0.3F, 0.3F);
+        GUI.DrawTexture(rc, Styles.whiteTexture);
+
+        GUI.color = Color.white * 10;
+
+        GUILayout.BeginArea(rc);
+
+        GUILayout.BeginVertical();
+
+        GUILayout.FlexibleSpace();
+        int count = Mathf.FloorToInt(m_CountDownTime);
+        if (count == 0)
+        {
+            GUILayout.Label("Action!!", GUILayout.Height(Screen.height));
+        }
+        else
+        {
+            GUILayout.Label(count.ToString(), GUILayout.Height(Screen.height));
+        }
+
+        GUILayout.FlexibleSpace();
+        GUILayout.EndVertical();
+        GUILayout.EndArea();
+
+        GUI.skin.label.fontSize = saveFontSize;
+        GUI.color = Color.white;
+    }
+
+    public void Update()
+    {
+        if (m_IsRecordActive == false)
+        {
+            return;
+        }
+
+        foreach (SlateRecorderGroup recorder in m_SlateRecorderGroupList)
+        {
+            recorder.UpdateRecord();
+        }
+
+        var delta = (Time.realtimeSinceStartup - this.m_LastUpdateTime) * Time.timeScale;
+        m_LastUpdateTime = Time.realtimeSinceStartup;
+
+        if (m_RecordState == ERecordState.CountDown)
+        {
+            m_CountDownTime -= delta;
+            if (m_CountDownTime <= 0.0f)
+            {
+                if(m_CutsceneCountDownComp != null)
+                {
+                    m_CutsceneCountDownComp.OnCountDownGUICallBack -= StaticShowRecordInfo;
+                    GameObject.DestroyImmediate(m_CutsceneCountDownComp);
+                }
+                
+                StartRecord();
+            }
+        }
+        else if (m_RecordState == ERecordState.Recording)
+        {
+            m_RecordTime += delta;
+
+            m_CutsceneRecordTimeComp.CurrentTime = m_RecordTime;
+
+            foreach (SlateRecorderGroup recorder in m_SlateRecorderGroupList)
+            {
+                recorder.Record(m_RecordTime, m_StartTime + m_RecordTime);
+            }
+        }
+
+        foreach (SlateRecorderGroup recorder in m_SlateRecorderGroupList)
+        {
+            recorder.PostRecord();
+        }
+    }
+}

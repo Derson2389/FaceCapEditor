@@ -1,0 +1,63 @@
+﻿using UnityEngine;
+using UnityEditor;
+
+public class CutsceneCreateProje : EditorWindow
+{
+    private string mInputProjNameText = string.Empty;
+    private string mInputProjProducer = string.Empty;
+    private bool needClose = false;
+    private System.Action<string, string> mAction;
+
+    public static CutsceneCreateProje ShowWindow(System.Action<string,string> callback)
+    {
+        CutsceneCreateProje window = EditorWindow.GetWindow<CutsceneCreateProje>(true, "项目名称");
+        window.mAction = callback;
+        window.minSize = window.maxSize = new Vector2(320, 150);
+        window.Show();
+
+        return window;
+    }
+
+    private void OnGUI()
+    {
+        GUILayout.Space(24);
+        GUILayout.Label("新建项目名称：");
+
+        EditorGUILayout.BeginHorizontal();
+        {
+            EditorGUILayout.BeginVertical();
+            mInputProjNameText = EditorGUILayout.TextField(mInputProjNameText);
+            EditorGUILayout.Space();
+            GUILayout.Label("项目负责人：");
+            EditorGUILayout.Space();
+            mInputProjProducer = EditorGUILayout.TextField(mInputProjProducer);
+            EditorGUILayout.Space();
+            GUI.enabled = !string.IsNullOrEmpty(mInputProjNameText) && !string.IsNullOrEmpty(mInputProjProducer);
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("确定", EditorStyles.miniButton, GUILayout.Width(48)))
+            {
+                if (mAction != null)
+                {
+                    mAction(mInputProjNameText, mInputProjProducer);
+                }
+                needClose = true;
+            }
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.EndHorizontal();
+            GUI.enabled = true;
+        }
+        EditorGUILayout.EndHorizontal();
+
+        if (needClose)
+        {
+            this.Close();
+        }
+    }
+
+    private void OnLostFocus()
+    {
+        needClose = true;
+    }
+}

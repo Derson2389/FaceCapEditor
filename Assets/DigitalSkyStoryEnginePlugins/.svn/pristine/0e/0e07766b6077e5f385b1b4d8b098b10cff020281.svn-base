@@ -1,0 +1,360 @@
+﻿using Slate;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+using UnityEngine;
+
+public class DavinciRecorderSync : MonoBehaviour
+{
+    private MBRootNodeInfo m_MBRNode;
+    private GameObject m_SynObject = null;
+    private GameObject m_OriObj;
+    private GameObject m_TargetObject;
+    private RecordNodeInfo m_RecordRootNode;
+    private SkinnedMeshCollider[] m_ColliCheckerList = null;
+    private int m_SynDashIndex = -1;
+    private string m_SynDashSekFile = string.Empty;
+    private SynBinder m_SynBinder = null;
+    private Transform[] m_Transforms = null;
+    private Dictionary<Transform, BipBoneHelper.BipBone> m_BipBoneCache = new Dictionary<Transform, BipBoneHelper.BipBone>();
+    private Dictionary<BipBoneHelper.BipBone, GameObject> m_BipBoneMapping = new Dictionary<BipBoneHelper.BipBone, GameObject>();
+
+    public Vector3 LocationOffset = Vector3.zero;
+
+    public GameObject Target
+    {
+        get
+        {
+            return m_TargetObject;
+        }
+    }
+
+    public void Cleanup()
+    {
+        if (m_SynObject != null)
+        {
+            GameObject.DestroyImmediate(m_SynObject);
+            m_SynObject = null;
+        }
+
+        if (m_SynBinder != null)
+        {
+            SynBinderCache.Instance.RemoveSynBinder(m_SynDashIndex);
+            m_SynBinder = null;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        Cleanup();
+    }
+
+    public static GameObject FindObjectInChildren(GameObject tag, string name)
+    {
+        if (tag == null)
+        {
+            return null;
+        }
+
+        if (tag.name == name)
+        {
+            return tag;
+        }
+
+        GameObject result = null;
+        for (int i = 0; i < tag.transform.childCount; i++)
+        {
+            result = FindObjectInChildren(tag.transform.GetChild(i).gameObject, name);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    public void Config(GameObject ori, MBRootNodeInfo nodeInfo, string name, int synDashIndex, string synDashSekFile)
+    {
+        m_BipBoneCache.Clear();
+        m_OriObj = ori;
+        m_MBRNode = nodeInfo;
+        m_TargetObject = string.IsNullOrEmpty(name) ? gameObject : FindObjectInChildren(gameObject, name);
+        m_SynDashIndex = synDashIndex;
+        m_SynDashSekFile = synDashSekFile;
+
+        m_RecordRootNode = new RecordNodeInfo(gameObject.transform, m_TargetObject.transform);
+
+        if (synDashIndex >= 0)
+        {
+            m_SynBinder = SynBinderCache.Instance.CreateSynBinder(synDashIndex, synDashSekFile);
+            if(m_SynBinder != null)
+            {
+                m_SynObject = m_SynBinder.BuildSkeleton();
+
+                m_Transforms = new Transform[(int)BipBoneHelper.BipBone.BoneCount];
+                for (int i = 0; i < (int)BipBoneHelper.BipBone.BoneCount; i++)
+                {
+                    m_Transforms[i] = BipBoneHelper.FindBipBoneTransform(m_TargetObject.transform, (BipBoneHelper.BipBone)i);
+                    if(m_Transforms[i] != null)
+                    {
+                        m_BipBoneCache.Add(m_Transforms[i], (BipBoneHelper.BipBone)i);
+                    }
+                }
+                ConfigDefualtBones(m_Transforms);
+            }
+        }
+    }
+
+    private void AddBipBoneToMap(BipBoneHelper.BipBone bipBone, Transform[] mapping)
+    {
+        Transform trans = mapping[(int)bipBone];
+
+        if(trans != null)
+        {
+            m_BipBoneMapping.Add(bipBone, trans.gameObject);
+        }
+    }
+
+    private void ConfigDefualtBones(Transform[] mapping)
+    {
+        m_BipBoneMapping.Clear();
+        if (m_SynBinder.Skel == null)
+        {
+            return;
+        }
+        
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandIndex1, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandIndex2, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandIndex3, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandMiddle1, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandMiddle2, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandMiddle3, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandPinky1, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandPinky2, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandPinky3, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandRing1, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandRing2, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandRing3, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandThumb1, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandThumb2, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.LeftHandThumb3, mapping);
+        
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandIndex1, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandIndex2, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandIndex3, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandMiddle1, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandMiddle2, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandMiddle3, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandPinky1, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandPinky2, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandPinky3, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandRing1, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandRing2, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandRing3, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandThumb1, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandThumb2, mapping);
+        AddBipBoneToMap(BipBoneHelper.BipBone.RightHandThumb3, mapping);
+    }
+
+    Quaternion GetCubeLocalRotation(GameObject cube)
+    {
+        string name = cube.name;
+        Vector3 v3 = cube.transform.localRotation.eulerAngles;
+        float x = v3.x;
+        float y = v3.y;
+        float z = v3.z;
+
+        if (!name.Contains("1") && !name.Contains("Thumb"))
+        {
+            z = 0;
+            x = 0;
+        }
+
+        Quaternion q = Quaternion.identity;
+        if (name.Contains("LeftHand"))
+        {
+            q = Q(new Vector3(-z, 0, 0)) * Q(new Vector3(0, -x, 0)) * Q(new Vector3(0, 0, y));
+        }
+        else if (name.Contains("RightHand"))
+        {
+            q = Q(new Vector3(z, 0, 0)) * Q(new Vector3(0, x, 0)) * Q(new Vector3(0, 0, -y));
+        }
+
+        return q;
+    }
+
+    Quaternion Q(Vector3 eulerAngle)
+    {
+        return Quaternion.Euler(eulerAngle);
+    }
+
+    private void UpdateMBObject(MBNodeInfo nodeParent, Transform objectParent)
+    {
+        if(nodeParent == null)
+        {
+            return;
+        }
+
+        objectParent.transform.position = nodeParent.GetReceivePosition();
+        objectParent.transform.rotation = nodeParent.GetReceivedRotation();
+
+        MBNodeInfo info = null;
+        Transform child = null;
+        for (int i = 0; i < objectParent.childCount; i++)
+        {
+            child = objectParent.GetChild(i);
+            info = nodeParent.GetChild(child.name);
+
+            if (info == null)
+            {
+                continue;
+            }
+
+            UpdateMBObject(info, child);
+        }
+    }
+
+    private void UpdateSynDash(Transform trans)
+    {
+        if(m_SynBinder == null)
+        {
+            return;
+        }
+        
+        BipBoneHelper.BipBone bipBone;
+        if(m_BipBoneCache.TryGetValue(trans, out bipBone) && m_BipBoneMapping.ContainsKey(bipBone))
+        {
+            string synSkelName;
+            if (m_SynBinder.SynSkelMapping.TryGetValue(bipBone, out synSkelName))
+            {
+                GameObject bone = m_SynBinder.GetCubeBoneFromName(synSkelName);
+                trans.localRotation = GetCubeLocalRotation(bone);
+            }
+        }
+        
+        for (int i=0; i<trans.childCount; i++)
+        {
+            UpdateSynDash(trans.GetChild(i));
+        }
+    }
+
+    public void UpdateRecorder()
+    {
+        if (gameObject.activeSelf != m_OriObj.activeSelf)
+        {
+            gameObject.SetActive(m_OriObj.activeSelf);
+        }
+
+        if (m_SynBinder != null)
+        {
+            m_SynBinder.UpdateMocapFrame();
+        }
+
+        {
+            UpdateMBObject(m_MBRNode, m_TargetObject.transform);
+            UpdateSynDash(m_TargetObject.transform);
+        }
+    }
+
+    public void StartRecord()
+    {
+        if(m_MBRNode != null)
+        {
+            m_MBRNode.StartRecord();
+        }
+    }
+
+    public void Record(float time)
+    {
+    }
+
+    public void StopRecord(Slate.Cutscene cutscene, float startTime, int? recordIdx = null)
+    {
+#if UNITY_EDITOR
+        if (m_RecordRootNode == null)
+        {
+            m_MBRNode.StopRecord();
+            return;
+        }
+
+        GameObject obj = m_OriObj;
+        List<Transform> rootList = new List<Transform>();
+        Transform root = m_RecordRootNode.Target.parent;
+        while(root != null)
+        {
+            rootList.Add(root);
+            root = root.parent;
+        }
+
+        MBNodeInfo nodeInfo = null;
+        MBNodeInfo rootExtend = null;
+        for (int i = rootList.Count - 2; i >= 0; i--)
+        {
+            nodeInfo = new MBNodeInfo(nodeInfo);
+            nodeInfo.NodeName = rootList[i].name;
+        }
+
+        rootExtend = nodeInfo;
+        if(rootExtend != null)
+        {
+            while(rootExtend.Parent != null)
+            {
+                rootExtend = rootExtend.Parent;
+            }
+        }
+
+        string fileName = DateTime.Now.ToString("MMddHHmmssfff");
+        string filePath = "Assets/" + GateRecorderManagerBrage.RecordSavePath + obj.name + "_" + fileName + ".fbx";
+        Vector3 offset = LocationOffset * 100.0f;
+        offset.x = -offset.x;
+        m_MBRNode.SaveToFBX(System.IO.Path.GetFullPath(filePath), Vector3.zero, rootExtend);
+
+        m_MBRNode.StopRecord();
+        AssetDatabase.Refresh();
+
+        ModelImporter fbxImporter = AssetImporter.GetAtPath(filePath) as ModelImporter;
+        if(fbxImporter == null)
+        {
+            return;
+        }
+        fbxImporter.animationType = ModelImporterAnimationType.Legacy;
+        fbxImporter.importMaterials = false;
+        fbxImporter.importAnimation = true;
+        fbxImporter.animationCompression = ModelImporterAnimationCompression.Off;
+        fbxImporter.SaveAndReimport();
+
+        AnimationClip clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(filePath);
+        if (clip == null)
+        {
+            return;
+        }
+
+        Slate.CutsceneGroup group = null;
+
+        group = cutscene.groups.Find(g => g.actor == obj);
+        if (group == null)
+        {
+            group = cutscene.AddGroup<Slate.ActorGroup>(obj);
+            group.name = obj.name;
+        }
+
+        Slate.AnimationTrack animationTrack = null;
+
+        obj.GetAddComponent<Animation>();
+
+        if (animationTrack == null)
+        {
+            animationTrack = group.AddTrack<Slate.AnimationTrack>("Animation Track " + fileName);
+            animationTrack.RecordIdx = recordIdx;
+        }
+
+        Slate.ActionClips.PlayAnimationClip playAnimationClip = animationTrack.AddAction<Slate.ActionClips.PlayAnimationClip>(startTime);
+        playAnimationClip.animationClip = clip;
+        playAnimationClip.length = playAnimationClip.animationClip.length / playAnimationClip.playbackSpeed;
+#endif
+    }
+}

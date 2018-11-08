@@ -1,0 +1,189 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraGateDirectorInstance : CameraDirectorInstance
+{
+    private Camera m_Owner = null;
+    private MBRootNodeInfo m_Target = null;
+    private string m_CameraName = string.Empty;
+    private Vector3 m_CameraOffset = Vector3.zero;
+    private Vector3 m_CameraRotation = Vector3.zero;
+    private RenderTexture m_RenderTarget = null;
+    public long m_CameraTime = 0;
+    private byte[] m_CameraData = null;
+    private long m_LastUpdataTime = 0;
+    private static readonly long kCameraDataFrameInterval = 10000000 / 24;
+
+    public string CameraName
+    {
+        get
+        {
+            return m_CameraName;
+        }
+    }
+
+    public override byte[] CameraData
+    {
+        get
+        {
+            return m_CameraData;
+        }
+    }
+
+    public override long CameraTime
+    {
+        get
+        {
+            return m_CameraTime;
+        }
+    }
+
+    public override Camera Camera
+    {
+        get
+        {
+            return m_Owner;
+        }
+    }
+
+    public Vector3 CameraOffset
+    {
+        get
+        {
+            return m_CameraOffset;
+        }
+    }
+
+    public Vector3 CameraRotation
+    {
+        get
+        {
+            return m_CameraRotation;
+        }
+    }
+
+    public override bool IsFixed
+    {
+        get
+        {
+            return false;
+        }
+    }
+
+    public override bool AutoSmooth
+    {
+        get
+        {
+            return true;
+        }
+    }
+
+    public void InitData(Camera owner, MBRootNodeInfo nodeInfo)
+    {
+        m_Owner = owner;
+        m_Target = nodeInfo;
+        m_CameraName = nodeInfo.NodeName;
+        m_RenderTarget = new RenderTexture(1024, 576, 24);
+        m_LastUpdataTime = System.DateTime.Now.Ticks;
+    }
+
+    public override void Save()
+    {
+
+    }
+
+    public override void Reset()
+    {
+        m_CameraOffset = Vector3.zero;
+        m_CameraRotation = Vector3.zero;
+    }
+
+    public override void Up(float speed)
+    {
+        m_CameraOffset += transform.up * speed;
+    }
+
+    public override void Forward(float speed)
+    {
+        m_CameraOffset += transform.forward * speed;
+    }
+
+    public override void Right(float speed)
+    {
+        m_CameraOffset += transform.right * speed;
+    }
+
+    public override void Yaw(float speed)
+    {
+        m_CameraRotation.y += speed;
+    }
+
+    public override void Pitch(float speed)
+    {
+        m_CameraRotation.x += speed;
+    }
+
+    public override void Roll(float speed)
+    {
+        m_CameraRotation.z += speed;
+    }
+
+    public void RenderImage()
+    {
+        RenderTexture rt = Camera.targetTexture;
+        Camera.targetTexture = m_RenderTarget;
+        Camera.Render();
+        m_CameraData = SaveRenderTextureToJPG(m_RenderTarget);
+        m_CameraTime = System.DateTime.Now.Ticks;
+        Camera.targetTexture = rt;
+    }
+
+    private byte[] SaveRenderTextureToJPG(RenderTexture rt)
+    {
+        RenderTexture prev = RenderTexture.active;
+        RenderTexture.active = rt;
+        Texture2D jpg = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
+        jpg.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        byte[] data = jpg.EncodeToJPG();
+#if UNITY_EDITOR
+        UnityEngine.Object.DestroyImmediate(jpg);
+#else
+             UnityEngine.Object.Destroy(jpg);
+#endif
+        return data;
+
+    }
+
+    public void SyncCamera()
+    {
+        if(m_Target != null)
+        {
+            Vector3 angleRot = m_Target.GetReceivedRotation().eulerAngles;
+            Quaternion rot = Quaternion.AngleAxis(-90.0f, Vector3.up) * Quaternion.Euler(angleRot.x, angleRot.y, angleRot.z);
+            angleRot = rot.eulerAngles;
+            gameObject.transform.localRotation = Quaternion.Euler(angleRot.z, angleRot.y, angleRot.x);
+
+            gameObject.transform.localPosition = m_Target.GetReceivePosition() + (m_CameraOffset + GateRecorderManagerBrage.SceneOffset);
+            gameObject.transform.localEulerAngles += m_CameraRotation;
+        }
+    }
+
+    public override void UpdateDirector()
+    {
+        {
+            long currentTime = System.DateTime.Now.Ticks;
+            int recordCount = 0;
+            while ((currentTime - m_LastUpdataTime) > kCameraDataFrameInterval)
+            {
+                recordCount++;
+                m_LastUpdataTime += kCameraDataFrameInterval;
+            }
+
+            if (recordCount > 0)
+            {
+                RenderImage();
+            }
+        }
+    }
+}
