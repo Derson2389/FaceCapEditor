@@ -15007,7 +15007,7 @@ MonoBehaviour:
     weight: 0
   - blendableIndex: 68
     blendableName: facial_blendShape.r_cheek_out
-    weight: 76.78571
+    weight: 0
   - blendableIndex: 69
     blendableName: facial_blendShape.r_cheek_in
     weight: 0
@@ -15291,6 +15291,8 @@ SkinnedMeshRenderer:
   - 0
   - 0
   - 0
+  - 25.641027
+  - 28.20513
   - 0
   - 0
   - 0
@@ -15324,6 +15326,7 @@ SkinnedMeshRenderer:
   - 0
   - 0
   - 0
+  - 3.571429
   - 0
   - 0
   - 0
@@ -15368,7 +15371,9 @@ SkinnedMeshRenderer:
   - 0
   - 0
   - 0
+  - 35.897438
   - 0
+  - 5.1282053
   - 0
   - 0
   - 0
@@ -15385,12 +15390,7 @@ SkinnedMeshRenderer:
   - 0
   - 0
   - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
+  - 73.21429
   - 0
   - 0
   - 0
