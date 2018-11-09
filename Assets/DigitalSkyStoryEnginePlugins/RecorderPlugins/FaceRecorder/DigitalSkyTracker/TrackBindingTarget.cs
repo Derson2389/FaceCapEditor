@@ -138,7 +138,7 @@ namespace DigitalSky.Tracker
             return "";
         }
 
-        public void Apply()
+        public void Apply(PrevizCtrlHandler ctrlHandler = null)
         {
             if (_renderer && _blendshapeIndex >= 0)
                 _renderer.SetBlendShapeWeight(_blendshapeIndex, _blendshapeWeight);
@@ -147,6 +147,12 @@ namespace DigitalSky.Tracker
             {
                 _boneTransform.localRotation = Quaternion.Euler(_localRotation);
                 _boneTransform.localPosition = _localPosition;
+
+                /// to set blend shape by Controller pos x or pos y
+                if (ctrlHandler != null)
+                {
+                    ctrlHandler.SetBlenderShapeByCtrlName(_boneTransform.gameObject.name, _boneTransform);
+                }
             }
         }
 

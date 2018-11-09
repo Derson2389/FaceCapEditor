@@ -151,7 +151,7 @@ public class PrevizCtrlHandler
     }
 
     public List<float> _weights = new List<float>();
-    public void SetBlenderShapeByCtrlName(string ctrlName,  Transform trans, GameObject gameObject)
+    public void SetBlenderShapeByCtrlName(string ctrlName,  Transform trans)
     {
         ///var faceCtrlComponent = gameObject.GetComponentInChildren<FaceControllerComponent>();
         if (faceCtrlComponent != null)
@@ -172,7 +172,7 @@ public class PrevizCtrlHandler
 
             if (ctrl.ctrlType == 1)//Y Controller
             {             
-                float valueY = trans.position.y;
+                float valueY = trans.localPosition.y;
                 var top = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendXIdx.left].blendableIndex;
                 var bottom = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendXIdx.right].blendableIndex;
                                
@@ -223,7 +223,7 @@ public class PrevizCtrlHandler
             }
             else if (ctrl.ctrlType == 0)// X Ctrl
             {
-                float valueX = trans.position.x;
+                float valueX = trans.localPosition.x;
                 var left = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendXIdx.left].blendableIndex;
                 var right = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendXIdx.right].blendableIndex;
                 float[] _weights = new float[ctrl.ctrlBlendShapes.Count];
@@ -270,7 +270,7 @@ public class PrevizCtrlHandler
             }
             else if (ctrl.ctrlType == 2)//XY Ctrl
             {
-                Vector2 normalizedPos = new Vector2(trans.position.x, trans.position.y);
+                Vector2 normalizedPos = new Vector2(trans.localPosition.x, trans.localPosition.y);
 
                 var top = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.top].blendableIndex;
                 var bottom = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.down].blendableIndex;

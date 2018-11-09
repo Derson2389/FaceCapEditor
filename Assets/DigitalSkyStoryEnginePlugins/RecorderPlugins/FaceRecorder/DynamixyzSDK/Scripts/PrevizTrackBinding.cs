@@ -18,6 +18,9 @@ namespace dxyz
         public Type type = Type.INVALID;
         public int ecsCoeffIndex = -1;
 
+        public PrevizCtrlHandler _ctrlHander = null;
+
+
         public PrevizTrackBinding(): base()
         {
             
@@ -70,7 +73,7 @@ namespace dxyz
                 }
             }
 
-            target.Apply();
+            target.Apply(_ctrlHander);
         }
     }
 }

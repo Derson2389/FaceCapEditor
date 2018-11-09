@@ -344,16 +344,21 @@ namespace dxyz
             {
                 CtrHandler = null;
             }
-
-            PrevizBindingData bingingData = (PrevizBindingData)bindingData;
-            mTrackBindings = ParseESCandAllocateBuffers(bingingData.data, bingingData.size);
             TextAsset data = controllerConfiguration;
             if (data != null)
             {
                 CtrHandler = new PrevizCtrlHandler();
-                CtrHandler.LoadConfig(data ,this.gameObject);
+                CtrHandler.LoadConfig(data, this.gameObject);
             }
-            
+            else
+            {
+                Debug.LogError("[PrevizRetargeter.CreateTrackBinding] -> 控制器配置文件丢失 ");
+                return false;
+            }
+
+            PrevizBindingData bingingData = (PrevizBindingData)bindingData;
+            mTrackBindings = ParseESCandAllocateBuffers(bingingData.data, bingingData.size);
+                        
             if (mTrackBindings == null || mTrackBindings.Count <= 0)
             {
                 Debug.LogError("[PrevizRetargeter.CreateTrackBinding] -> 创建绑定关系失败, target: " + target.name);
@@ -545,6 +550,10 @@ namespace dxyz
                     // NOTA: this code is not used currently, but might be in
                     // future.
                     // Parsing default position for bones.
+                    if (CtrHandler != null)
+                    {
+                        binding._ctrlHander = CtrHandler;
+                    }
                     bindings.Add(binding);
                 }
             }
