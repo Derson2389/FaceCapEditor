@@ -42,7 +42,7 @@ namespace DigitalSky.Tracker
         {
             Vector3 pos = _bindTarget.GetLocalPosition();
             _boneCurves[animProperties[0]].AddKey(new Keyframe(time, pos.x, float.PositiveInfinity, float.PositiveInfinity));
-            _boneCurves[animProperties[1]].AddKey(new Keyframe(time, 11, float.PositiveInfinity, float.PositiveInfinity));
+            _boneCurves[animProperties[1]].AddKey(new Keyframe(time, pos.y, float.PositiveInfinity, float.PositiveInfinity));
 
             ///_boneCurves[animProperties[2]].AddKey(new Keyframe(time, pos.z, float.PositiveInfinity, float.PositiveInfinity));
 
