@@ -71,19 +71,19 @@ namespace FaceCapEditor
         }
 
 
-        public void Update()
+        public override void Update(bool focus)
         {
             if (noseSliderPanelLeft != null)
-                noseSliderPanelLeft.OnUpdate(false);
+                noseSliderPanelLeft.OnUpdate(focus);
             if (noseSliderPanelRight != null)
-                noseSliderPanelRight.OnUpdate(false);
+                noseSliderPanelRight.OnUpdate(focus);
             if (cheekSliderPanelLeft != null)
-                cheekSliderPanelLeft.OnUpdate(false);
+                cheekSliderPanelLeft.OnUpdate(focus);
             if (cheekSliderPanelRight != null)
-                cheekSliderPanelRight.OnUpdate(false);
+                cheekSliderPanelRight.OnUpdate(focus);
 
             if (noseController != null)
-                noseController.OnUpdate(true);
+                noseController.OnUpdate(focus);
         }
 
         public override void OnDraw()

@@ -148,39 +148,39 @@ namespace FaceCapEditor
             base.OnPanelDisable();          
         }
 
-        public void Update()
+        public override void Update(bool focus)
         {        
             if (eyeLidSliedLeftCtrl != null)
-                eyeLidSliedLeftCtrl.OnUpdate(false);
+                eyeLidSliedLeftCtrl.OnUpdate(focus);
             if(eyeLidSliedRightCtrl != null)
-                eyeLidSliedRightCtrl.OnUpdate(false);
+                eyeLidSliedRightCtrl.OnUpdate(focus);
             if (eyeLeftCtrl1 != null)
-                eyeLeftCtrl1.OnUpdate(false);
+                eyeLeftCtrl1.OnUpdate(focus);
             if (eyeLeftCtrl2 != null)
-                eyeLeftCtrl2.OnUpdate(false);
+                eyeLeftCtrl2.OnUpdate(focus);
             if (eyeRightCtrl1 != null)
-                eyeRightCtrl1.OnUpdate(false);
+                eyeRightCtrl1.OnUpdate(focus);
             if (eyeRightCtrl2 != null)
-                eyeRightCtrl2.OnUpdate(false);
+                eyeRightCtrl2.OnUpdate(focus);
 
             if (eyeLidLeftUpController != null)
-                eyeLidLeftUpController.OnUpdate(true);
+                eyeLidLeftUpController.OnUpdate(focus);
 
             if (eyeLidRightUpController != null)
-                eyeLidRightUpController.OnUpdate(true);
+                eyeLidRightUpController.OnUpdate(focus);
             if (eyeLidLeftDownController != null)
-                eyeLidLeftDownController.OnUpdate(true);
+                eyeLidLeftDownController.OnUpdate(focus);
             if (eyeLidRightDownController != null)
-                eyeLidRightDownController.OnUpdate(true);
+                eyeLidRightDownController.OnUpdate(focus);
 
             if (eyeLeftUpController != null)
-                eyeLeftUpController.OnUpdate(true);
+                eyeLeftUpController.OnUpdate(focus);
             if (eyeRightUpController != null)
-                eyeRightUpController.OnUpdate(true);
+                eyeRightUpController.OnUpdate(focus);
             if (eyeLeftDownController != null)
-                eyeLeftDownController.OnUpdate(true);
+                eyeLeftDownController.OnUpdate(focus);
             if (eyeRightDownController != null)
-                eyeRightDownController.OnUpdate(true);
+                eyeRightDownController.OnUpdate(focus);
         }
 
 

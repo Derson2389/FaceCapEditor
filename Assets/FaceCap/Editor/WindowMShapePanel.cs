@@ -84,27 +84,27 @@ namespace FaceCapEditor
             base.OnPanelDisable();
         }
 
-        public void Update()
+        public override void Update(bool focus)
         {
             if (BlenderShapesManager.controllerList.Count <= 0)
             {
                 return;
             }
             if (controllerPanelA != null)
-                controllerPanelA.OnUpdate(false);
+                controllerPanelA.OnUpdate(focus);
             if (controllerPanelE != null)
-                controllerPanelE.OnUpdate(false);
+                controllerPanelE.OnUpdate(focus);
             if (controllerPanelI != null)
-                controllerPanelI.OnUpdate(false);
+                controllerPanelI.OnUpdate(focus);
             if (controllerPanelO != null)
-                controllerPanelO.OnUpdate(false);
+                controllerPanelO.OnUpdate(focus);
             if (controllerPanelU != null)
-                controllerPanelU.OnUpdate(false);
+                controllerPanelU.OnUpdate(focus);
 
             if (controllerPanelF != null)
-                controllerPanelF.OnUpdate(false);
+                controllerPanelF.OnUpdate(focus);
             if (controllerPanelM != null)
-                controllerPanelM.OnUpdate(false);
+                controllerPanelM.OnUpdate(focus);
             
         }
 

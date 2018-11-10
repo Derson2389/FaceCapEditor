@@ -151,7 +151,7 @@ namespace DigitalSky.Tracker
                 /// to set blend shape by Controller pos x or pos y
                 if (ctrlHandler != null)
                 {
-                    ctrlHandler.SetBlenderShapeByCtrlName(_boneTransform.gameObject.name, _boneTransform);
+                    ctrlHandler.SetBlenderShapeByCtrlName(_boneTransform.gameObject.name, new Vector2(_boneTransform.localPosition.x, _boneTransform.localPosition.y));
                 }
             }
         }

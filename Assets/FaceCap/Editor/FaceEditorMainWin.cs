@@ -16,8 +16,11 @@ namespace FaceCapEditor
         private FaceControllerComponent _faceCtrlComp = null;
         public FaceControllerComponent FaceCtrlComp
         {
-            get { return _faceCtrlComp; }
+            get { return _faceCtrlComp;  }
+            set { _faceCtrlComp = value; }
         }
+
+        private bool _onFocus = false;
 
         public const float topBarHeight = 20f;
         /// <summary>
@@ -45,6 +48,13 @@ namespace FaceCapEditor
         private Rect _topResizerRect;
         private bool _topIsResizing;
         private float _topResizerSize = 2f;
+
+        private BlendShapeCtrlClip.BSEditKey _editKey = null;
+        public BlendShapeCtrlClip.BSEditKey editKey
+        {
+            get { return _editKey;  } 
+            set { _editKey = value; }
+        }
 
 
         /// <summary>
@@ -145,12 +155,14 @@ namespace FaceCapEditor
             get { return (WindowMouthPanel)_mouthPanel; }
         }
         [MenuItem("剧情工具/表情编辑", false, 1)]
-        public static void OpenEditorMainWin()
+        public static void OpenEditorMainWin(FaceControllerComponent comp, BlendShapeCtrlClip.BSEditKey newEditKey)
         {
             window = EditorWindow.GetWindow<FaceEditorMainWin>(false, "表情编辑器", true);
             window.minSize = new Vector2(760 , 680);
             window.Show();
             // OnInit is called after OnPanelEnable
+            window.FaceCtrlComp = comp;
+            window.editKey = newEditKey;
             window.Init();
         }
 
@@ -216,6 +228,8 @@ namespace FaceCapEditor
             mouthPanel.OnPanelEnable();
             otherPanel.OnPanelEnable();
             mShapePanel.OnPanelEnable();
+
+            Slate.CutsceneUtility.onSelectionChange += OnCutsceneSelectChanged;
         }
 
         private void OnDisable()
@@ -227,21 +241,24 @@ namespace FaceCapEditor
             otherPanel.OnPanelDisable();
             mShapePanel.OnPanelDisable();
             topbarPanel.OnPanelDisable();
+
+            Slate.CutsceneUtility.onSelectionChange -= OnCutsceneSelectChanged;
         }
 
-        
+
+        void OnCutsceneSelectChanged(Slate.IDirectable target)
+        {
+            if (target is BlendShapeCtrlClip)
+            {
+                BlendShapeCtrlClip clip = (BlendShapeCtrlClip)target;
+                clip.EditKeyable(0);
+            }
+        }
+
+
 
         private void OnSelectionChange()
         {
-
-            if (Selection.activeGameObject != null)
-            {
-                var shapesCtrl = Selection.activeGameObject.GetComponent<FaceControllerComponent>();
-                if (shapesCtrl != null && shapesCtrl != FaceCtrlComp)
-                {
-                    ResetFaceCompoent(shapesCtrl);
-                }
-            }
 
             browPanel.OnPanelSelectionChange();
             cheekPanel.OnPanelSelectionChange();
@@ -364,6 +381,16 @@ namespace FaceCapEditor
             EditorGUIUtility.AddCursorRect(_eyeResizerRect, MouseCursor.ResizeHorizontal);
         }
 
+        void OnFocus()
+        {
+            _onFocus = true;           
+        }
+
+        void OnLostFocus()
+        {
+            _onFocus = false;
+        }
+
 
         private void ProcessEvents(Event e)
         {
@@ -440,31 +467,31 @@ namespace FaceCapEditor
            
             if (window!= null && window.browPanel != null)
             {
-                window.browPanel.Update();
+                window.browPanel.Update(_onFocus);
             }
 
             if (window != null && window.mShapePanel != null)
             {
-                window.mShapePanel.Update();
+                window.mShapePanel.Update(_onFocus);
             }
 
             if (window != null && window.otherPanel != null)
             {
-                window.otherPanel.Update();
+                window.otherPanel.Update(_onFocus);
             }
             if (window != null && window.otherPanel != null)
             {
-                window.eyePanel.Update();
+                window.eyePanel.Update(_onFocus);
             }
 
             if (window != null && window.mouthPanel != null)
             {
-                window.mouthPanel.Update();
+                window.mouthPanel.Update(_onFocus);
             }
 
             if (window != null && window.cheekPanel != null)
             {
-                window.cheekPanel.Update();
+                window.cheekPanel.Update(_onFocus);
             }
 
         }

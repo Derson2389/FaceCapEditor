@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class BlenderShapesManager  {
 
-    public static string ConfigTxt = string.Empty;
+    public static TextAsset ConfigTxt = null;
     public static List<BlenderShapeCtrl> controllerList = new List<BlenderShapeCtrl>();
 
     public class BlenderShapeCtrl
@@ -55,107 +55,107 @@ public static class BlenderShapesManager  {
             return;
         }
         controllerList.Clear();
-        string finalPath = Application.dataPath + ConfigTxt.Replace("Assets","");
+        ///string finalPath = Application.dataPath + ConfigTxt.Replace("Assets", "");
 
-        if (File.Exists(finalPath))
+        string text = ConfigTxt.text;
+        string[] lines = text.Split(new[] { "\n" }, System.StringSplitOptions.RemoveEmptyEntries);
+        foreach (string line in lines)
         {
-            StreamReader sr = new StreamReader(finalPath);
-            while (!sr.EndOfStream)
+            if (string.IsNullOrEmpty(line) || line == "\r")
             {
-                string text = sr.ReadLine();
-                if (!string.IsNullOrEmpty(text))
-                {
-                    string[] parseStr = text.Split(',');
-                    string ctrName = parseStr[0];
-                    string type = parseStr[1];
-                    int intType = 0;
-                    if (type == "Y")
-                    {
-                        intType = 1;
-
-                        BlenderShapeCtrl addDummy = new BlenderShapeCtrl();
-                        addDummy.ctrlName = ctrName;
-                        addDummy.ctrlType = intType;
-                        string[] bs1 = parseStr[2].Split('|');
-                        addDummy.upValue = float.Parse(bs1[1]);
-                        BlendShape newBs1 = new BlendShape();
-                        newBs1.blendableName = bs1[0];
-                        newBs1.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs1.blendableName).blendableIndex;
-
-                        addDummy.ctrlBlendShapes.Add(newBs1);
-                        string[] bs2 = parseStr[3].Split('|');
-                        addDummy.downValue = float.Parse(bs2[1]);
-                        BlendShape newBs2 = new BlendShape();
-                        newBs2.blendableName = bs2[0];
-                        newBs2.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs2.blendableName).blendableIndex;
-
-                        addDummy.ctrlBlendShapes.Add(newBs2);
-                        controllerList.Add(addDummy);
-                    }
-                    else if (type == "X")
-                    {
-                        intType = 0;
-                        BlenderShapeCtrl addDummy = new BlenderShapeCtrl();
-                        addDummy.ctrlName = ctrName;
-                        addDummy.ctrlType = intType;
-                        string[] bs1 = parseStr[2].Split('|');
-                        addDummy.rightValue = float.Parse(bs1[1]);
-                        BlendShape newBs1 = new BlendShape();
-                        newBs1.blendableName = bs1[0];
-                        newBs1.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs1.blendableName).blendableIndex;
-                        addDummy.ctrlBlendShapes.Add(newBs1);
-
-                        string[] bs2 = parseStr[3].Split('|');
-                        addDummy.leftValue = float.Parse(bs2[1]);
-                        BlendShape newBs2 = new BlendShape();
-                        newBs2.blendableName = bs2[0];
-                        newBs2.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs2.blendableName).blendableIndex;
-
-                        addDummy.ctrlBlendShapes.Add(newBs2);
-                        controllerList.Add(addDummy);
-
-                    }
-                    else if (type == "XY")
-                    {
-                        intType = 2;
-                        BlenderShapeCtrl addDummy = new BlenderShapeCtrl();
-                        addDummy.ctrlName = ctrName;
-                        addDummy.ctrlType = intType;
-                        string[] bs1 = parseStr[2].Split('|');
-                        addDummy.rightValue = float.Parse(bs1[1]);
-                        BlendShape newBs1 = new BlendShape();
-                        newBs1.blendableName = bs1[0];
-                        newBs1.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs1.blendableName).blendableIndex;
-                        addDummy.ctrlBlendShapes.Add(newBs1);
-
-                        string[] bs2 = parseStr[3].Split('|');
-                        addDummy.leftValue = float.Parse(bs2[1]);
-                        BlendShape newBs2 = new BlendShape();
-                        newBs2.blendableName = bs2[0];
-                        newBs2.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs2.blendableName).blendableIndex;
-                        addDummy.ctrlBlendShapes.Add(newBs2);
-
-                        string[] bs3 = parseStr[4].Split('|');
-                        addDummy.upValue = float.Parse(bs3[1]);
-                        BlendShape newBs3 = new BlendShape();
-                        newBs3.blendableName = bs3[0];
-                        newBs3.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs3.blendableName).blendableIndex;
-                        addDummy.ctrlBlendShapes.Add(newBs3);
-
-                        string[] bs4 = parseStr[5].Split('|');
-                        addDummy.downValue = float.Parse(bs4[1]);
-                        BlendShape newBs4 = new BlendShape();
-                        newBs4.blendableName = bs4[0];
-                        newBs4.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs4.blendableName).blendableIndex;
-
-                        addDummy.ctrlBlendShapes.Add(newBs4);
-                        controllerList.Add(addDummy);
-                    }
-                }
+                continue;
             }
-            sr.Close();
+            string[] parseStr = line.Split(',');
+            string ctrName = parseStr[0];
+            string type = parseStr[1];
+            int intType = 0;
+            if (type == "Y")
+            {
+                intType = 1;
+
+                BlenderShapeCtrl addDummy = new BlenderShapeCtrl();
+                addDummy.ctrlName = ctrName;
+                addDummy.ctrlType = intType;
+                string[] bs1 = parseStr[2].Split('|');
+                addDummy.upValue = float.Parse(bs1[1]);
+                BlendShape newBs1 = new BlendShape();
+                newBs1.blendableName = bs1[0];
+                newBs1.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs1.blendableName).blendableIndex;
+
+                addDummy.ctrlBlendShapes.Add(newBs1);
+                string[] bs2 = parseStr[3].Split('|');
+                addDummy.downValue = float.Parse(bs2[1]);
+                BlendShape newBs2 = new BlendShape();
+                newBs2.blendableName = bs2[0];
+                newBs2.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs2.blendableName).blendableIndex;
+
+                addDummy.ctrlBlendShapes.Add(newBs2);
+                controllerList.Add(addDummy);
+            }
+            else if (type == "X")
+            {
+                intType = 0;
+                BlenderShapeCtrl addDummy = new BlenderShapeCtrl();
+                addDummy.ctrlName = ctrName;
+                addDummy.ctrlType = intType;
+                string[] bs1 = parseStr[2].Split('|');
+                addDummy.rightValue = float.Parse(bs1[1]);
+                BlendShape newBs1 = new BlendShape();
+                newBs1.blendableName = bs1[0];
+                newBs1.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs1.blendableName).blendableIndex;
+                addDummy.ctrlBlendShapes.Add(newBs1);
+
+                string[] bs2 = parseStr[3].Split('|');
+                addDummy.leftValue = float.Parse(bs2[1]);
+                BlendShape newBs2 = new BlendShape();
+                newBs2.blendableName = bs2[0];
+                newBs2.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs2.blendableName).blendableIndex;
+
+                addDummy.ctrlBlendShapes.Add(newBs2);
+                controllerList.Add(addDummy);
+
+            }
+            else if (type == "XY")
+            {
+                intType = 2;
+                BlenderShapeCtrl addDummy = new BlenderShapeCtrl();
+                addDummy.ctrlName = ctrName;
+                addDummy.ctrlType = intType;
+                string[] bs1 = parseStr[2].Split('|');
+                addDummy.rightValue = float.Parse(bs1[1]);
+                BlendShape newBs1 = new BlendShape();
+                newBs1.blendableName = bs1[0];
+                newBs1.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs1.blendableName).blendableIndex;
+                addDummy.ctrlBlendShapes.Add(newBs1);
+
+                string[] bs2 = parseStr[3].Split('|');
+                addDummy.leftValue = float.Parse(bs2[1]);
+                BlendShape newBs2 = new BlendShape();
+                newBs2.blendableName = bs2[0];
+                newBs2.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs2.blendableName).blendableIndex;
+                addDummy.ctrlBlendShapes.Add(newBs2);
+
+                string[] bs3 = parseStr[4].Split('|');
+                addDummy.upValue = float.Parse(bs3[1]);
+                BlendShape newBs3 = new BlendShape();
+                newBs3.blendableName = bs3[0];
+                newBs3.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs3.blendableName).blendableIndex;
+                addDummy.ctrlBlendShapes.Add(newBs3);
+
+                string[] bs4 = parseStr[5].Split('|');
+                addDummy.downValue = float.Parse(bs4[1]);
+                BlendShape newBs4 = new BlendShape();
+                newBs4.blendableName = bs4[0];
+                newBs4.blendableIndex = faceCtrlComponent.GetBlendShapeIdxByName(newBs4.blendableName).blendableIndex;
+
+                addDummy.ctrlBlendShapes.Add(newBs4);
+                controllerList.Add(addDummy);
+            }
         }
-    }
+            
+      }      
+        
+    
 
     public static BlendGridController CreateBlendGridCtrl(string name, int width, int height, int posX, int posY)
     {

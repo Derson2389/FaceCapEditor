@@ -173,49 +173,49 @@ namespace FaceCapEditor
             base.OnPanelDisable();          
         }
 
-        public void Update()
+        public override void Update(bool focus)
         {
             if (togueController != null)
-                togueController.OnUpdate(true);
+                togueController.OnUpdate(focus);
 
             if (jawController != null)
-                jawController.OnUpdate(true);
+                jawController.OnUpdate(focus);
 
             //Mouth
             if (mouthLeftController != null)
-                mouthLeftController.OnUpdate(true);
+                mouthLeftController.OnUpdate(focus);
             if (mouthRightController != null)
-                mouthRightController.OnUpdate(true);
+                mouthRightController.OnUpdate(focus);
             if (mouthUpController != null)
-                mouthUpController.OnUpdate(true);
+                mouthUpController.OnUpdate(focus);
             if (mouthDownController != null)
-                mouthDownController.OnUpdate(true);
+                mouthDownController.OnUpdate(focus);
             if (mouthCenterController != null)
-                mouthCenterController.OnUpdate(true);
+                mouthCenterController.OnUpdate(focus);
 
             //slide left up
             if (mouthLeftUpPanel1 != null)
-                mouthLeftUpPanel1.OnUpdate(true);
+                mouthLeftUpPanel1.OnUpdate(focus);
             if (mouthLeftUpPanel2 != null)
-                mouthLeftUpPanel2.OnUpdate(true);
+                mouthLeftUpPanel2.OnUpdate(focus);
             //slide right up
             if (mouthRightUpPanel1 != null)
-                mouthRightUpPanel1.OnUpdate(true);
+                mouthRightUpPanel1.OnUpdate(focus);
             if (mouthRightUpPanel2 != null)
-                mouthRightUpPanel2.OnUpdate(true);
+                mouthRightUpPanel2.OnUpdate(focus);
             //slide left down
             if (mouthLeftDownPanel1 != null)
-                mouthLeftDownPanel1.OnUpdate(true);
+                mouthLeftDownPanel1.OnUpdate(focus);
             if (mouthLeftDownPanel2 != null)
-                mouthLeftDownPanel2.OnUpdate(true);
+                mouthLeftDownPanel2.OnUpdate(focus);
             //slide right down
             if (mouthRightDownPanel1 != null)
-                mouthRightDownPanel1.OnUpdate(true);
+                mouthRightDownPanel1.OnUpdate(focus);
             if (mouthRightDownPanel2 != null)
-                mouthRightDownPanel2.OnUpdate(true);
+                mouthRightDownPanel2.OnUpdate(focus);
             //slide center down
             if (mouthCenterDownPanel != null)
-                mouthCenterDownPanel.OnUpdate(true);
+                mouthCenterDownPanel.OnUpdate(focus);
 
     }
 

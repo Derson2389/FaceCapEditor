@@ -9,8 +9,8 @@ public class FaceControllerComponent : MonoBehaviour {
     private SkinnedMeshRenderer SkinMesh = null;
     public List<BlendShape> blendShapeList = new List<BlendShape>();
 
-    [SerializeField]
-    private string configPath;
+    //[SerializeField]
+    //private string configPath;
     [SerializeField]
     public List<string> controllerList = new List<string>();
 

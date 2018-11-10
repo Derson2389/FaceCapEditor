@@ -41,6 +41,9 @@ namespace FaceCapEditor
         /// </summary>
         public virtual void OnPanelDestory() { }
 
+        public virtual void Update(bool focus) { }
+   
+        
         /// <summary>
         /// Init
         /// </summary>

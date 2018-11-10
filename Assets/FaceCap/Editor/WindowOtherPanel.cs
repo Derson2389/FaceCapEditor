@@ -79,29 +79,29 @@ namespace FaceCapEditor
             base.OnPanelDisable();          
         }
 
-        public void Update()
+        public override void Update(bool focus)
         {
             if (controllerPanelAdd1 != null)
             {
-                controllerPanelAdd1.OnUpdate(false);
+                controllerPanelAdd1.OnUpdate(focus);
             }
             if (controllerPanelAdd2 != null)
             {
-                controllerPanelAdd2.OnUpdate(false);
+                controllerPanelAdd2.OnUpdate(focus);
             }            
             if (controllerPanelAdd3 != null)
             {
-                controllerPanelAdd3.OnUpdate(false);
+                controllerPanelAdd3.OnUpdate(focus);
             }
             if (controllerPanelAdd4 != null)
             {
-                controllerPanelAdd4.OnUpdate(false);
+                controllerPanelAdd4.OnUpdate(focus);
             }
 
             if (teethControllerUp != null)
-                teethControllerUp.OnUpdate(true);
+                teethControllerUp.OnUpdate(focus);
             if (teethControllerDown != null)
-                teethControllerDown.OnUpdate(true);
+                teethControllerDown.OnUpdate(focus);
         }
 
 

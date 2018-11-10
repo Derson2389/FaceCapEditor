@@ -128,7 +128,7 @@ namespace FaceCapEditor
                 rightSlider3.OnUpdate(false);
         }
 
-        public void Update()
+        public override void Update(bool focus)
         {
             if (BlenderShapesManager.controllerList.Count <= 0)
             {

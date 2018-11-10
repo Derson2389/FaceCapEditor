@@ -5416,8 +5416,24 @@ namespace Slate{
 				DopeSheetEditor.DrawDopeSheet(action.animationData, action, dopeRect, 0, action.length, false);
 			}
 
-			//CONTEXT
-			void DoClipContextMenu(){
+       
+            public void OnEditBlendClipKey(BlendShapeCtrlClip clip, float time)
+            {
+                if (clip.FaceCtr != null)
+                {
+                    BlenderShapesManager.ConfigTxt = clip.CtrlConfigDataFile;
+                    BlenderShapesManager.LoadConfig(clip.FaceCtr);
+                    FaceCapEditor.FaceEditorMainWin.OpenEditorMainWin(clip.FaceCtr, clip.editKey);
+                }
+                else
+                {
+                    Debug.LogWarning(" must have a FaceCtr actor");
+                }
+            }
+
+
+            //CONTEXT
+            void DoClipContextMenu(){
 
 				var menu = new GenericMenu();
 
@@ -5472,9 +5488,20 @@ namespace Slate{
 					e.Use();
 					return;
 				}
-/// @modify slate sequencer
-/// add by TQ
-/// 
+                /// @modify slate sequencer
+                /// add by TQ
+                /// 
+
+                if (action is BlendShapeCtrlClip)
+                {
+                    var act = action as BlendShapeCtrlClip;
+                    if (act.onEditKeyAction == null)
+                    {
+                        act.onEditKeyAction = OnEditBlendClipKey;
+                    }                    
+                    menu.AddItem(new GUIContent("Open Blend Controller Window"), false, () => { action.EditKeyable(0); });
+                }
+
                 if (action is SubCutscene)
                 {
                     var actionTrackName = action.parent.name;
