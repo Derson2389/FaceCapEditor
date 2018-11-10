@@ -21,6 +21,8 @@ namespace FaceCapEditor
         }
 
         private bool _onFocus = false;
+        private float _panelEditTime = 0;
+
 
         public const float topBarHeight = 20f;
         /// <summary>
@@ -243,6 +245,7 @@ namespace FaceCapEditor
             topbarPanel.OnPanelDisable();
 
             Slate.CutsceneUtility.onSelectionChange -= OnCutsceneSelectChanged;
+            editKey = null;
         }
 
 
@@ -328,9 +331,6 @@ namespace FaceCapEditor
                 GUILayout.FlexibleSpace();
                 GUILayout.EndVertical();
             }
-
-
-            
 
             ProcessEvents(Event.current);
             if (GUI.changed)
@@ -456,25 +456,43 @@ namespace FaceCapEditor
 
         public void Update()
         {
-            if (FaceCtrlComp == null && Selection.activeGameObject != null)               
+
+            if (editKey != null)
             {
-                var shapesCtrl = Selection.activeGameObject.GetComponent<FaceControllerComponent>();
-                if (shapesCtrl != null && shapesCtrl != FaceCtrlComp)
+                // 如果Timeline未进入当前编辑clip, 则不进行更新
+                if (!editKey.HasEnterEditClip())
+                    return;
+
+                // 判断是否更新了编辑时间点
+                if (Mathf.Abs(_panelEditTime - editKey.GetCurrentTime()) > FaceEditHelper.PROXIMITY_TOLERANCE)
                 {
-                    ResetFaceCompoent(shapesCtrl);
+                    _panelEditTime = editKey.GetCurrentTime();
+                   
+
+                   /// _willRepaint = true;
                 }
+                _selfUpdate(_onFocus);
+
             }
-           
-            if (window!= null && window.browPanel != null)
+            else
+            {
+                // 更新模型预览效果
+                _selfUpdate(_onFocus);
+            }
+            
+        }
+
+        public void _selfUpdate(bool _onFocus)
+        {
+
+            if (window != null && window.browPanel != null)
             {
                 window.browPanel.Update(_onFocus);
             }
-
             if (window != null && window.mShapePanel != null)
             {
                 window.mShapePanel.Update(_onFocus);
             }
-
             if (window != null && window.otherPanel != null)
             {
                 window.otherPanel.Update(_onFocus);
@@ -488,13 +506,10 @@ namespace FaceCapEditor
             {
                 window.mouthPanel.Update(_onFocus);
             }
-
             if (window != null && window.cheekPanel != null)
             {
                 window.cheekPanel.Update(_onFocus);
             }
-
         }
-
-    }
+    } 
 }

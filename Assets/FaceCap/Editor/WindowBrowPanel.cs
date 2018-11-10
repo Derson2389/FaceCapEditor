@@ -135,22 +135,22 @@ namespace FaceCapEditor
                 return;
             }
             if (leftController != null)
-                leftController.OnUpdate(true);
+                leftController.OnUpdate(focus);
             if (rightController != null)
-                rightController.OnUpdate(true);
+                rightController.OnUpdate(focus);
             if (leftSlider1 != null)
-                leftSlider1.OnUpdate(false);
+                leftSlider1.OnUpdate(focus);
             if (leftSlider2 != null)
-                leftSlider2.OnUpdate(false);
+                leftSlider2.OnUpdate(focus);
             if (leftSlider3 != null)
-                leftSlider3.OnUpdate(false);
+                leftSlider3.OnUpdate(focus);
 
             if (rightSlider1 != null)
-                rightSlider1.OnUpdate(false);
+                rightSlider1.OnUpdate(focus);
             if (rightSlider2 != null)
-                rightSlider2.OnUpdate(false);
+                rightSlider2.OnUpdate(focus);
             if (rightSlider3 != null)
-                rightSlider3.OnUpdate(false);
+                rightSlider3.OnUpdate(focus);
         }
 
         public override void OnDraw()

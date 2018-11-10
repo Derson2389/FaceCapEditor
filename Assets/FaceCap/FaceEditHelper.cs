@@ -6,8 +6,10 @@ using System.Text;
 
 public static class FaceEditHelper
 {
-	
-	public static string[] facial_list =
+
+    public static float PROXIMITY_TOLERANCE = 0.001f;
+
+    public static string[] facial_list =
 	{
 		"brow_list",
 		"eye_list",

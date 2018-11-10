@@ -104,33 +104,34 @@ namespace FaceCapEditor
                 _resizeVerPressed = false;
             }
 
-            //if (/*parent.editKey != null*/ false)
-            //{
-            //    // 编辑关键帧模式下
-            //    if (_dragButtonPressed == false && onfocus == false)
-            //    {
-            //        // 如果未进行拖拽并且需要更新控制点位置， 未进入动画区域的话，则不更新
-            //        /*if (!parent.editKey.HasEnterAnimatableRange())
-            //            return;*/
+            if (FaceEditorMainWin.window.editKey != null)
+            {
+                // 编辑关键帧模式下
+                if (_dragButtonPressed == false && onfocus == false)
+                {
+                    // 如果未进行拖拽并且需要更新控制点位置， 未进入动画区域的话，则不更新
+                    /*if (!parent.editKey.HasEnterAnimatableRange())
+                        return;*/
 
-            //        Vector2 pos = parent.editKey.GetControllerParamValue(blendController.controllerIndex);
-            //        if (!float.IsPositiveInfinity(pos.x) || !float.IsPositiveInfinity(pos.y))
-            //            _dragButtonRect.center = GetWindowPosFromNormalizedPos(pos);
+                    Vector2 pos = FaceEditorMainWin.window.editKey.GetControllerParamValue(blendController.controllerName);
+                    if (!float.IsPositiveInfinity(pos.x) || !float.IsPositiveInfinity(pos.y))
+                        _dragButtonRect.center = GetWindowPosFromNormalizedPos(pos);
 
-            //        //PreviewBlendController();
-            //    }
-            //    else
-            //    {
-            //        PreviewBlendController();
-            //    }
-            //}
-            //else
-            //{
-            //    // 编辑模板模式下
-            //    PreviewBlendController();
-            //}
+                    
+                }
+                else
+                {
+                    PreviewBlendController();
+                   
+                }
+            }
+            else
+            {
+                // 编辑模板模式下
+                PreviewBlendController();
+            }
 
-            PreviewBlendController();
+            
         }
 
         public void OnDraw()
@@ -475,15 +476,8 @@ namespace FaceCapEditor
 
                     //// 对于PositiveInfinity值，使用原始shape里面的weight
                     if (float.IsPositiveInfinity(_weights[i]))
-                        weight = /*FaceEditorMainWin.window.FaceCtrlComp.getBlendShapePreValue(blendShapeIndex)*/0;
+                        weight = 0;
 
-                    //// 对于编辑关键帧模式， 如果是PositiveInfinity的话，还需要乘以marker的强度系数
-                    //if (parent.editKey != null && float.IsPositiveInfinity(_weights[i]))
-                    //{
-                    //    weight = weight * parent.editKey.marker.intensity;
-                    //}
-
-                    //parent.lipSync.blendSystem.SetBlendableValue(parent.shape.blendShapes[blendShapeIndex].blendableIndex, weight);
                     if (FaceEditorMainWin.window.FaceCtrlComp != null )
                         FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(FaceEditorMainWin.window.FaceCtrlComp.blendShapeList[blendShapeIndex].blendableIndex, weight);
                 }

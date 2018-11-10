@@ -30,6 +30,13 @@ namespace FaceCapEditor
         // blend controller map button, from top, left, bottom, right 
         private Rect[] _controlBtnRect;
 
+
+        private bool _dragButtonPressed = false;
+        public bool dragButtonPressed
+        {
+            get { return _dragButtonPressed; }
+        }
+
         private BlendXController _blendControllerX;
         public BlendXController blendControllerX
         {
@@ -137,7 +144,44 @@ namespace FaceCapEditor
        
         public void OnUpdate(bool onfocus)
         {
-             PreviewBlendController();
+
+            if (FaceEditorMainWin.window.editKey != null)
+            {
+                // 编辑关键帧模式下
+                if (_dragButtonPressed == false && onfocus == false)
+                {
+                    // 如果未进行拖拽并且需要更新控制点位置， 未进入动画区域的话，则不更新
+                    /*if (!parent.editKey.HasEnterAnimatableRange())
+                        return;*/
+
+                    if (blendControllerX != null)
+                    {
+                        Vector2 pos = FaceEditorMainWin.window.editKey.GetControllerParamValue(blendControllerX.controllerName);
+                        if (!float.IsPositiveInfinity(pos.x))
+                            HorizontalSliderValue = pos.x;
+
+                    }
+                    else if (blendControllerY != null)
+                    {
+                        Vector2 pos = FaceEditorMainWin.window.editKey.GetControllerParamValue(blendControllerY.controllerName);
+                        if (!float.IsPositiveInfinity(pos.y))
+                            VerticalSliderValue = pos.y;
+                    }
+                    Debug.LogError("编辑关键帧模式下");
+                }
+                else
+                {
+                    PreviewBlendController();
+                    Debug.LogError("非非菲菲菲菲姐覅减肥");
+                }
+            }
+            else
+            {
+                // 编辑模板模式下
+                PreviewBlendController();
+            }
+
+            
         }
 
         public void OnDraw(Vector2 size)
@@ -153,9 +197,10 @@ namespace FaceCapEditor
                 VerticalSliderValue = GUILayout.VerticalSlider(VerticalSliderValue, _upValue, _downValue, GUILayout.Width(size.x), GUILayout.Height(size.y));
             }
 
-           
+            ProcessResizeEvent();
+            ProcessDragEvents();
         }
-       
+
         void ProcessResizeEvent()
         {
             switch (Event.current.type)
@@ -169,7 +214,7 @@ namespace FaceCapEditor
                         //Debug.Log("_resize BottomRect MouseDown");
                         _resizeVerPressed = true;
                         _resizeHorPressed = false;
-                       
+                        _dragButtonPressed = false;
                         //Event.current.Use();
                     }
                     else if (Event.current.button == 0 && _resizeRightRect.Contains(Event.current.mousePosition))
@@ -177,7 +222,7 @@ namespace FaceCapEditor
                         //Debug.Log("_resize RightRect MouseDown");
                         _resizeHorPressed = true;
                         _resizeVerPressed = false;
-                        
+                        _dragButtonPressed = false;
                         // Event.current.Use();
                     }
                     break;
@@ -186,7 +231,7 @@ namespace FaceCapEditor
                     //Debug.Log("_resize MouseUp");
                     _resizeHorPressed = false;
                     _resizeVerPressed = false;
-                    
+                    _dragButtonPressed = false;
                     break;
 
                 case EventType.MouseDrag:
@@ -218,7 +263,7 @@ namespace FaceCapEditor
                     if (Event.current.button == 0 && _dragButtonRect.Contains(Event.current.mousePosition))
                     {
                         //Debug.Log("mousue down: " + Event.current.mousePosition);
-                        //_dragButtonPressed = true;
+                        _dragButtonPressed = true;
                         _resizeHorPressed = false;
                         _resizeVerPressed = false;
                         //Event.current.Use();
@@ -226,7 +271,7 @@ namespace FaceCapEditor
                     break;
 
                 case EventType.MouseUp:
-                    //_dragButtonPressed = false;
+                    _dragButtonPressed = false;
                     _resizeHorPressed = false;
                     _resizeVerPressed = false;
                     break;

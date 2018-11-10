@@ -22,6 +22,7 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
     [HideInInspector]
     private float _blendOut = 0f;
     [SerializeField]
+    [Required]
     public TextAsset CtrlConfigDataFile;
 
     public PrevizCtrlHandler CtrlHandler = null;
@@ -183,7 +184,7 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
 
     public override bool isValid
     {
-        get { return FaceCtr != null; }
+        get { return FaceCtr != null && CtrlConfigDataFile!= null; }
     }
         
     public override float length
@@ -398,8 +399,9 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
 
                 string paramName = animParam.parameterName.ToLower();
                 controllerParams.Add(paramName, animParam);
+               
             }
-            Debug.LogWarning("+++++++");
+
         }
 
         public float GetCurrentTime()
@@ -409,9 +411,13 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
 
         public Vector2 GetControllerParamValue(string controllerName)
         {
-            if (controllerParams.ContainsKey(controllerName))
+            AnimatedParameter param ;
+           
+
+
+            if (controllerParams.TryGetValue(controllerName.ToLower(), out param))
             {
-                return (Vector2)controllerParams[controllerName].GetCurrentValue();
+                return (Vector2)param.GetCurrentValue();
             }
 
             return new Vector2(float.PositiveInfinity, float.PositiveInfinity);
@@ -419,11 +425,11 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
 
         public void SetControllerParamValue(string controllerName, Vector2 value)
         {
-            if (!controllerParams.ContainsKey(controllerName))
+            if (!controllerParams.ContainsKey(controllerName.ToLower()))
                 return;
 
             ////Debug.Log("[BSEditKey.SetControllerParamValue] -> name: " + controllerParams[controllerName].parameterName + " value: " + value);
-            controllerParams[controllerName].SetCurrentValue(value);
+            controllerParams[controllerName.ToLower()].SetCurrentValue(value);
         }
 
         public bool HasEnterEditClip()
