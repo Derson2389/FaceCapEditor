@@ -47,6 +47,7 @@ namespace FaceCapEditor
             {
                 leftController = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
                 leftController.Init();
+                leftController.isSelected = true;
             }
 
             BlendGridController controllerRight = BlenderShapesManager.CreateBlendGridCtrl("l_brow_move_facialControl", panelSize, panelSize, 20, 10);
@@ -184,12 +185,15 @@ namespace FaceCapEditor
             GUILayout.BeginArea(newRect);         
             {
                 GUILayout.BeginHorizontal();
+                GUILayout.Space(15);
                 if(leftSlider1 != null)
-                    leftSlider1.OnDraw(new Vector2(30, panelRect.height - 36));
+                    leftSlider1.OnDraw(new Vector2(10, panelRect.height - 36));
+                GUILayout.Space(15);
                 if (leftSlider2 != null)
-                    leftSlider2.OnDraw(new Vector2(30, panelRect.height - 36));
+                    leftSlider2.OnDraw(new Vector2(10, panelRect.height - 36));
+                GUILayout.Space(15);
                 if (leftSlider3 != null)
-                    leftSlider3.OnDraw(new Vector2(30, panelRect.height - 36));
+                    leftSlider3.OnDraw(new Vector2(10, panelRect.height - 36));
                 GUILayout.EndHorizontal();
             }
             GUILayout.EndArea();
@@ -199,12 +203,15 @@ namespace FaceCapEditor
             {
                 GUILayout.BeginHorizontal();
 
+                GUILayout.Space(15);
                 if (leftSlider1 != null)
-                    rightSlider1.OnDraw(new Vector2(30, panelRect.height - 36));
+                    rightSlider1.OnDraw(new Vector2(10, panelRect.height - 36));
+                GUILayout.Space(15);
                 if (rightSlider2 != null)
-                    rightSlider2.OnDraw(new Vector2(30, panelRect.height - 36));
+                    rightSlider2.OnDraw(new Vector2(10, panelRect.height - 36));
+                GUILayout.Space(15);
                 if (rightSlider3 != null)
-                    rightSlider3.OnDraw(new Vector2(30, panelRect.height - 36));
+                    rightSlider3.OnDraw(new Vector2(10, panelRect.height - 36));
                 GUILayout.EndHorizontal();
                 
             }
@@ -226,6 +233,7 @@ namespace FaceCapEditor
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();
             GUILayout.EndArea();
+
         }
     }
 }

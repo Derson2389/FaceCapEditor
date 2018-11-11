@@ -22,7 +22,8 @@ public class PrevizCtrlHandler
             top,
             down,
             right,
-            left
+            left,
+                   
         }
 
         public enum blendYIdx
@@ -278,7 +279,6 @@ public class PrevizCtrlHandler
                 var bottom = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.down].blendableIndex;
                 var left = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.left].blendableIndex;
                 var right = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.right].blendableIndex;
-                float[] _weights = new float[ctrl.ctrlBlendShapes.Count];
                 
                 if (top != -1)
                 {
@@ -328,7 +328,6 @@ public class PrevizCtrlHandler
         Count
     }
 
-
     public enum ControllerDirectionY
     {
         Top = 0,
@@ -339,11 +338,9 @@ public class PrevizCtrlHandler
     public enum ControllerDirectionXY
     {
         Top = 0,
-        Left,
         Bottom,
         Right,
-        Count
-
+        Left,
     }
 
 
@@ -399,7 +396,6 @@ public class PrevizCtrlHandler
     {
         float value = 0f;
 
-        // 当不在象限里面，统统返回PositiveInfinity， 对于值为PositiveInfinity的，应该忽略掉，使用原始shape里面的数值
         switch (dir)
         {
             case ControllerDirectionXY.Top:

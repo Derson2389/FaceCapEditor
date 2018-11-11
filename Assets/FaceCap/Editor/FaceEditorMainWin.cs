@@ -22,7 +22,9 @@ namespace FaceCapEditor
 
         private bool _onFocus = false;
         private float _panelEditTime = 0;
-
+        private List<BlendControllerPanel> _panelList;
+        private List<BlendControllerPanel> _selections;
+        private Vector2 _mousePos;
 
         public const float topBarHeight = 20f;
         /// <summary>
@@ -176,7 +178,13 @@ namespace FaceCapEditor
             window.cheekPanel.OnInit();
             window.mShapePanel.OnInit();
             window.mouthPanel.OnInit();
-            window.otherPanel.OnInit();           
+            window.otherPanel.OnInit();
+
+            if (editKey != null)
+            {
+                _panelEditTime = editKey.GetCurrentTime();
+            }
+
         }
 
 
@@ -232,6 +240,7 @@ namespace FaceCapEditor
             mShapePanel.OnPanelEnable();
 
             Slate.CutsceneUtility.onSelectionChange += OnCutsceneSelectChanged;
+            _selections = new List<BlendControllerPanel>();
         }
 
         private void OnDisable()
@@ -246,6 +255,8 @@ namespace FaceCapEditor
 
             Slate.CutsceneUtility.onSelectionChange -= OnCutsceneSelectChanged;
             editKey = null;
+            _selections.Clear();
+            _selections = null;
         }
 
 
@@ -331,6 +342,7 @@ namespace FaceCapEditor
                 GUILayout.FlexibleSpace();
                 GUILayout.EndVertical();
             }
+
 
             ProcessEvents(Event.current);
             if (GUI.changed)

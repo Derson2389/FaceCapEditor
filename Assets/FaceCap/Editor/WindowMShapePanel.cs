@@ -124,59 +124,58 @@ namespace FaceCapEditor
             myStyle.normal.textColor = Color.white;
             GUILayout.Label("A", myStyle); 
             if(controllerPanelA != null)
-                controllerPanelA.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
-            GUILayout.FlexibleSpace();
-
+                controllerPanelA.OnDraw(new Vector2(panelRect.width - 45, 10));
+            GUILayout.FlexibleSpace();            
             GUILayout.EndHorizontal();
-
+            GUILayout.Space(20);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("E", myStyle);   
             if(controllerPanelE!=null)
-                controllerPanelE.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+                controllerPanelE.OnDraw(new Vector2(panelRect.width - 45, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-
+            GUILayout.Space(20);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("I", myStyle);
             if (controllerPanelI != null)
-                controllerPanelI.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+                controllerPanelI.OnDraw(new Vector2(panelRect.width - 45, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-
+            GUILayout.Space(20);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("O", myStyle);
             if (controllerPanelO != null)
-                controllerPanelO.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+                controllerPanelO.OnDraw(new Vector2(panelRect.width - 45, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-
+            GUILayout.Space(20);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("U", myStyle);
             if (controllerPanelU != null)
-                controllerPanelU.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+                controllerPanelU.OnDraw(new Vector2(panelRect.width - 45, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-
+            GUILayout.Space(20);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("F", myStyle);
             if (controllerPanelF != null)
-                controllerPanelF.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+                controllerPanelF.OnDraw(new Vector2(panelRect.width - 45, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-
+            GUILayout.Space(20);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.Label("M", myStyle);
             if (controllerPanelM != null)
-                controllerPanelM.OnDraw(new Vector2(panelRect.width - 45, defaultHeight));
+                controllerPanelM.OnDraw(new Vector2(panelRect.width - 45, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
-
+            GUILayout.Space(20);
             GUILayout.EndVertical();
             GUILayout.EndArea();
         }

@@ -7,10 +7,12 @@ namespace FaceCapEditor
     {
         public const int panelPadding = 6;
         public const int dragButtonSize = 10;
-
         public Rect centerPanel;
         public WindowPanel parent;
-
+        public Color highlighColor
+        {
+            get { return EditorGUIUtility.isProSkin ? new Color(0.65f, 0.65f, 1,0.3f) : new Color(0.1f, 0.1f, 0.1f, 0.3f); }
+        }
         // 是否当前被选中
         public bool isSelected = false;
         private GUIStyle _boxStyle = null;
@@ -184,10 +186,27 @@ namespace FaceCapEditor
             //    }
             //}
 
+     
+
             DrawDragButton();
             DrawSelectionBtns();
 
+
+            //draw selected rect
+            if (isSelected || true)
+            {
+                var selRect = new Rect(_validDragRect.x + 3, _validDragRect.y+3, _validDragRect.width + 5, _validDragRect.height + 5);
+                ///
+
+                GUI.color = highlighColor;
+                GUI.DrawTexture(selRect, Slate.Styles.whiteTexture);
+                GUI.color = Color.white;
+            }
+
             GUILayout.EndArea();
+
+            
+
         }
 
         void DrawResizer()

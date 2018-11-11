@@ -291,20 +291,24 @@ namespace FaceCapEditor
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
 
-                    var newRect1 = new Rect(110, 48, newRect.width - 110, 100);
+                    var newRect1 = new Rect(110, 48, newRect.width - 130, 100);
                     GUILayout.BeginArea(newRect1);
                     {
                         GUILayout.BeginHorizontal();
+                        GUILayout.Space(10);
                         if (mouthLeftUpPanel1 != null)
-                            mouthLeftUpPanel1.OnDraw(new Vector2(30, 80));
+                            mouthLeftUpPanel1.OnDraw(new Vector2(10, 80));
+                        GUILayout.Space(10);
                         if (mouthLeftUpPanel2 != null)
-                            mouthLeftUpPanel2.OnDraw(new Vector2(30, 80));
+                            mouthLeftUpPanel2.OnDraw(new Vector2(10, 80));
                         GUILayout.FlexibleSpace();
-
+                        GUILayout.Space(10);
                         if (mouthRightUpPanel1 != null)
-                            mouthRightUpPanel1.OnDraw(new Vector2(30, 80));
+                            mouthRightUpPanel1.OnDraw(new Vector2(10, 80));
+                        GUILayout.Space(10);
                         if (mouthRightUpPanel2 != null)
-                            mouthRightUpPanel2.OnDraw(new Vector2(30, 80));
+                            mouthRightUpPanel2.OnDraw(new Vector2(10, 80));
+                        GUILayout.Space(10);
 
                         GUILayout.EndHorizontal();
 
@@ -339,33 +343,37 @@ namespace FaceCapEditor
                     }
                     GUILayout.EndArea();
 
-                    var newRect3 = new Rect(110, 258, newRect.width - 110, 135);
+                    var newRect3 = new Rect(110, 258, newRect.width - 130, 135);
                     GUILayout.BeginArea(newRect3);
                     {
                         GUILayout.BeginVertical();
                         GUILayout.BeginHorizontal();
-
+                        GUILayout.Space(10);
                         if (mouthLeftDownPanel1 != null)
-                            mouthLeftDownPanel1.OnDraw(new Vector2(30, 80));
+                            mouthLeftDownPanel1.OnDraw(new Vector2(10, 80));
+                        GUILayout.Space(10);
                         if (mouthLeftDownPanel2 != null)
-                            mouthLeftDownPanel2.OnDraw(new Vector2(30, 80));
+                            mouthLeftDownPanel2.OnDraw(new Vector2(10, 80));
 
-                        GUILayout.FlexibleSpace();
-                        if (mouthRightDownPanel1 != null)
-                            mouthRightDownPanel1.OnDraw(new Vector2(30, 80));
-                        if (mouthRightDownPanel2 != null)
-                            mouthRightDownPanel2.OnDraw(new Vector2(30, 80));
-                        GUILayout.EndHorizontal();
                         GUILayout.FlexibleSpace();
                         GUILayout.Space(10);
+                        if (mouthRightDownPanel1 != null)
+                            mouthRightDownPanel1.OnDraw(new Vector2(10, 80));
+                        GUILayout.Space(10);
+                        if (mouthRightDownPanel2 != null)
+                            mouthRightDownPanel2.OnDraw(new Vector2(10, 80));
+                        GUILayout.Space(10);
+                        GUILayout.EndHorizontal();
+                        GUILayout.FlexibleSpace();
+
                         GUILayout.BeginHorizontal();
                         GUILayout.FlexibleSpace();
-                        ///GUILayout.HorizontalSlider(0, -1.00f, 1.00f, GUILayout.Width(80), GUILayout.Height(30));
                         if (mouthCenterDownPanel != null)
-                            mouthCenterDownPanel.OnDraw(new Vector2(80, 30));
+                            mouthCenterDownPanel.OnDraw(new Vector2(80, 10));
                         GUILayout.Space(20);
                         GUILayout.FlexibleSpace();
                         GUILayout.EndHorizontal();
+                        GUILayout.Space(10);
                         GUILayout.EndVertical();
 
                         if (mouthDownController != null)

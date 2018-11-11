@@ -13,6 +13,11 @@ namespace FaceCapEditor
         public float _upValue = 1f;
         public float _downValue = -1f;
 
+        public Color highlighColor
+        {
+            get { return EditorGUIUtility.isProSkin ? new Color(0.65f, 0.65f, 1, 0.3f) : new Color(0.1f, 0.1f, 0.1f, 0.3f); }
+        }
+        // 是否当前被选中
 
         public Rect centerPanel;
         public WindowPanel parent;
@@ -167,12 +172,12 @@ namespace FaceCapEditor
                         if (!float.IsPositiveInfinity(pos.y))
                             VerticalSliderValue = pos.y;
                     }
-                    Debug.LogError("编辑关键帧模式下");
+                   // Debug.LogError("编辑关键帧模式下");
                 }
                 else
                 {
                     PreviewBlendController();
-                    Debug.LogError("非非菲菲菲菲姐覅减肥");
+                    //Debug.LogError("非编辑关键帧模式下");
                 }
             }
             else
@@ -196,6 +201,29 @@ namespace FaceCapEditor
             {              
                 VerticalSliderValue = GUILayout.VerticalSlider(VerticalSliderValue, _upValue, _downValue, GUILayout.Width(size.x), GUILayout.Height(size.y));
             }
+
+            //draw selected rect
+            if (isSelected || true)
+            {
+                var lastRect = GUILayoutUtility.GetLastRect();
+                var selRect = new Rect(lastRect.x-5, lastRect.y -5, lastRect.width +10, lastRect.height +5); 
+                var selXRect = new Rect(lastRect.x , lastRect.y , lastRect.width + 2, lastRect.height + 10);
+                GUI.color = highlighColor;
+                if (blendControllerY != null)
+                {
+                    GUI.DrawTexture(selRect, Slate.Styles.whiteTexture);
+                    GUI.color = Color.white;
+                    EditorGUIUtility.AddCursorRect(selRect, MouseCursor.Link);
+                }
+                if (blendControllerX != null)
+                {
+                    GUI.DrawTexture(selXRect, Slate.Styles.whiteTexture);
+                    GUI.color = Color.white;
+                    EditorGUIUtility.AddCursorRect(selXRect, MouseCursor.Link);
+                }
+                
+            }
+
 
             ProcessResizeEvent();
             ProcessDragEvents();

@@ -96,7 +96,7 @@ namespace FaceCapEditor
             GUILayout.Space(20);
             //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(120));
             if(noseSliderPanelLeft!= null)
-                noseSliderPanelLeft.OnDraw(new Vector2(30, 120));
+                noseSliderPanelLeft.OnDraw(new Vector2(10, 120));
             GUILayout.FlexibleSpace();
             newRect = new Rect(panelRect.width / 4 - panelSizeMax / 2 - 20, 0, 260, panelRect.height);
             GUILayout.BeginArea(newRect);
@@ -106,7 +106,7 @@ namespace FaceCapEditor
             GUILayout.FlexibleSpace();
             //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(120));
             if (noseSliderPanelRight != null)
-                noseSliderPanelRight.OnDraw(new Vector2(30, 120));
+                noseSliderPanelRight.OnDraw(new Vector2(10, 120));
             GUILayout.Space(20);
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
@@ -127,10 +127,10 @@ namespace FaceCapEditor
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             if (cheekSliderPanelLeft != null)
-                cheekSliderPanelLeft.OnDraw(new Vector2(120, 20));
+                cheekSliderPanelLeft.OnDraw(new Vector2(120, 10));
             GUILayout.Space(6);
             if (cheekSliderPanelRight != null)
-                cheekSliderPanelRight.OnDraw(new Vector2(120, 20));
+                cheekSliderPanelRight.OnDraw(new Vector2(120, 10));
             GUILayout.EndHorizontal();
             GUILayout.FlexibleSpace();
             GUILayout.EndVertical();

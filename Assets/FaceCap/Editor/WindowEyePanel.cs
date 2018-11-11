@@ -196,12 +196,12 @@ namespace FaceCapEditor
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(180));
-                    if(eyeLidSliedLeftCtrl!= null)
-                        eyeLidSliedLeftCtrl.OnDraw(new Vector2(30,180));
-                    //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(30), GUILayout.Height(180));
-                    if(eyeLidSliedRightCtrl!= null)
-                        eyeLidSliedRightCtrl.OnDraw(new Vector2(30, 180));
+                    GUILayout.Space(10);
+                    if (eyeLidSliedLeftCtrl!= null)
+                        eyeLidSliedLeftCtrl.OnDraw(new Vector2(10,180));
+                    GUILayout.Space(10);
+                    if (eyeLidSliedRightCtrl!= null)
+                        eyeLidSliedRightCtrl.OnDraw(new Vector2(10, 180));
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
@@ -241,7 +241,7 @@ namespace FaceCapEditor
                 GUILayout.EndArea();
             }
 
-            newRect = new Rect(panelRect.width - 240, offset_y, 360, panelRect.height);
+            newRect = new Rect(panelRect.width - 260, offset_y, 360, panelRect.height);
             GUILayout.BeginArea(newRect);
             {
                 GUILayout.BeginHorizontal();
@@ -272,18 +272,20 @@ namespace FaceCapEditor
 
                     GUILayout.EndHorizontal();
                 }
-                var newRect1 = new Rect(-56, 120, 160, 100);
+
+                var newRect1 = new Rect(-60, 120, 160, 100);
                 GUILayout.BeginArea(newRect1);
                 {
                     GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
-                    //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
-                    //GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
+                    GUILayout.Space(10);
+                    GUILayout.FlexibleSpace(); 
                     if (eyeLeftCtrl1 != null)
-                        eyeLeftCtrl1.OnDraw(new Vector2(15, 80));
+                        eyeLeftCtrl1.OnDraw(new Vector2(10, 80));
+                    GUILayout.Space(10);
                     if (eyeLeftCtrl2 != null)
-                        eyeLeftCtrl2.OnDraw(new Vector2(15, 80));
+                        eyeLeftCtrl2.OnDraw(new Vector2(10, 80));
                     GUILayout.FlexibleSpace();
+                    GUILayout.Space(10);
                     GUILayout.EndHorizontal();
                     GUILayout.EndArea();
                 }
@@ -293,12 +295,12 @@ namespace FaceCapEditor
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.FlexibleSpace();
-                    // GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
-                    // GUILayout.VerticalSlider(0, -1.00f, 1.00f, GUILayout.Width(15), GUILayout.Height(80));
+                    GUILayout.Space(10);
                     if (eyeRightCtrl1 != null)
-                        eyeRightCtrl1.OnDraw(new Vector2(15, 80));
+                        eyeRightCtrl1.OnDraw(new Vector2(10, 80));
+                    GUILayout.Space(10);
                     if (eyeRightCtrl2 != null)
-                        eyeRightCtrl2.OnDraw(new Vector2(15, 80));
+                        eyeRightCtrl2.OnDraw(new Vector2(10, 80));
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                     GUILayout.EndArea();

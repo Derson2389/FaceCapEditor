@@ -151,37 +151,37 @@ namespace FaceCapEditor
                 ///GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
                 if (controllerPanelAdd1 != null)
                 {
-                    controllerPanelAdd1.OnDraw(new Vector2(120, 20));
+                    controllerPanelAdd1.OnDraw(new Vector2(120, 10));
                 }
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
-
+                GUILayout.Space(15);
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
                 ///GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
                 if (controllerPanelAdd2 != null)
                 {
-                    controllerPanelAdd2.OnDraw(new Vector2(120, 20));
+                    controllerPanelAdd2.OnDraw(new Vector2(120, 10));
                 }
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
-
+                GUILayout.Space(15);
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
                 ///GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
                 if (controllerPanelAdd3 != null)
                 {
-                    controllerPanelAdd3.OnDraw(new Vector2(120, 20));
+                    controllerPanelAdd3.OnDraw(new Vector2(120, 10));
                 }
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
-
+                GUILayout.Space(15);
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
                 //GUILayout.HorizontalSlider(0, 0, 1.00f, GUILayout.Width(120), GUILayout.Height(20));
                 if (controllerPanelAdd4 != null)
                 {
-                    controllerPanelAdd4.OnDraw(new Vector2(120, 20));
+                    controllerPanelAdd4.OnDraw(new Vector2(120, 10));
                 }
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
