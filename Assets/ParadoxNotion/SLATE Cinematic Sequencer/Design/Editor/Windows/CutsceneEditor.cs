@@ -5499,7 +5499,7 @@ namespace Slate{
                     {
                         act.onEditKeyAction = OnEditBlendClipKey;
                     }                    
-                    menu.AddItem(new GUIContent("Open Blend Controller Window"), false, () => { action.EditKeyable(0); });
+                    menu.AddItem(new GUIContent("Open Blend Controller Window"), false, () => { action.EditKeyable(current.cutscene.currentTime - act.startTime); });
                 }
 
                 if (action is SubCutscene)
