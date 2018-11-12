@@ -12,13 +12,15 @@ namespace FaceCapEditor
     public class FaceEditorMainWin : EditorWindow
     {
 
-        public static FaceEditorMainWin window;
+        public static FaceEditorMainWin _window;
         private FaceControllerComponent _faceCtrlComp = null;
         public FaceControllerComponent FaceCtrlComp
         {
             get { return _faceCtrlComp;  }
             set { _faceCtrlComp = value; }
         }
+
+        public BlendShapeCtrlClip Clip = null;
 
         private bool _onFocus = false;
         private float _panelEditTime = 0;
@@ -60,7 +62,8 @@ namespace FaceCapEditor
             set { _editKey = value; }
         }
 
-
+        public bool isAllSelected = false;
+        
         /// <summary>
         /// brow resizer
         /// </summary>
@@ -105,7 +108,6 @@ namespace FaceCapEditor
         private float _otherResizerSize = 2f;
 
 
-        private float _browWidth = minBrowWidth;
         private float _mShapeWidth = 260;
           
         private const float _brawHeight = 160;
@@ -153,21 +155,39 @@ namespace FaceCapEditor
             get { return (WindowOtherPanel)_otherPanel; }
         }
 
+
         private WindowPanel _mouthPanel;
         public WindowMouthPanel mouthPanel
         {
             get { return (WindowMouthPanel)_mouthPanel; }
         }
         [MenuItem("剧情工具/表情编辑", false, 1)]
-        public static void OpenEditorMainWin(FaceControllerComponent comp, BlendShapeCtrlClip.BSEditKey newEditKey)
+        public static void OpenEditorMainWin(BlendShapeCtrlClip clip, BlendShapeCtrlClip.BSEditKey newEditKey)
         {
-            window = EditorWindow.GetWindow<FaceEditorMainWin>(false, "表情编辑器", true);
-            window.minSize = new Vector2(760 , 680);
-            window.Show();
+            _window = EditorWindow.GetWindow<FaceEditorMainWin>(false, "表情编辑器", true);
+            _window.minSize = new Vector2(760 , 680);
+            _window.Show();
             // OnInit is called after OnPanelEnable
-            window.FaceCtrlComp = comp;
-            window.editKey = newEditKey;
-            window.Init();
+            BlenderShapesManager.ConfigTxt = clip.CtrlConfigDataFile;
+            BlenderShapesManager.LoadConfig(clip.FaceCtr);
+            _window.Clip = clip;
+            _window.FaceCtrlComp = clip.FaceCtr;
+            _window.editKey = newEditKey;
+            _window.Init();   
+            Debug.LogWarning("Init");   
+        }
+
+        public static FaceEditorMainWin window
+        {
+            get
+            {
+                if (_window == null)   
+                {
+                    _window = EditorWindow.GetWindow<FaceEditorMainWin>();   
+                } 
+
+                return _window;
+            }
         }
 
         public void InserPanelList(IAddKeyEnable panel)
@@ -197,8 +217,6 @@ namespace FaceCapEditor
                 _panelEditTime = editKey.GetCurrentTime();
             }
 
-            
-
         }
 
 
@@ -224,6 +242,13 @@ namespace FaceCapEditor
         
         private void OnEnable()
         {
+            Debug.LogWarning("OnEnable");   
+
+            if (Clip != null)
+            {
+                BlenderShapesManager.ConfigTxt = Clip.CtrlConfigDataFile;
+                BlenderShapesManager.LoadConfig(Clip.FaceCtr);
+            }
             Rect rect = new Rect();
             _topbarPanel = new WindowTopPanel(this, rect);
             _browPanel = new WindowBrowPanel(this, rect);
@@ -251,14 +276,15 @@ namespace FaceCapEditor
             eyePanel.OnPanelEnable();
             mouthPanel.OnPanelEnable();
             otherPanel.OnPanelEnable();
-            mShapePanel.OnPanelEnable();
+            mShapePanel.OnPanelEnable();    
 
             Slate.CutsceneUtility.onSelectionChange += OnCutsceneSelectChanged;
             _selections = new List<BlendControllerPanel>();
-        }
+        }   
 
         private void OnDisable()
         {
+            Debug.LogWarning("OnDisable");
             browPanel.OnPanelDisable();
             cheekPanel.OnPanelDisable();
             eyePanel.OnPanelDisable();
@@ -287,7 +313,7 @@ namespace FaceCapEditor
 
         private void OnSelectionChange()
         {
-
+            Debug.LogWarning("OnSelectionChange");
             browPanel.OnPanelSelectionChange();
             cheekPanel.OnPanelSelectionChange();
             eyePanel.OnPanelSelectionChange();
@@ -299,6 +325,7 @@ namespace FaceCapEditor
 
         private void OnDestroy()
         {
+            Debug.LogWarning("OnDestroy");
             browPanel.OnPanelDestory();
             cheekPanel.OnPanelDestory();
             eyePanel.OnPanelDestory();
@@ -340,6 +367,7 @@ namespace FaceCapEditor
                 if (mShapePanel != null)
                     mShapePanel.OnDraw();
 
+                ProcessShortKey();
                 DrawResizer();
                 Repaint();
 
@@ -357,10 +385,23 @@ namespace FaceCapEditor
                 GUILayout.EndVertical();
             }
 
-
-            ProcessEvents(Event.current);
             if (GUI.changed)
                 Repaint();
+        }
+
+
+        void ProcessShortKey()
+        {
+            var e = Event.current;
+            if (e.type == EventType.KeyDown)
+            {
+
+                if (e.keyCode == KeyCode.S)
+                {
+                    AddKeyframe();
+                    e.Use();
+                }
+            }
         }
 
         private void DrawResizer()
@@ -448,39 +489,18 @@ namespace FaceCapEditor
 
         }
 
-
-
-        private void ProcessEvents(Event e)
+        public void SelectAll()
         {
-            switch (e.type)
+            isAllSelected = !isAllSelected;
+            for (int i = 0; i < _panelList.Count;i++)
             {
-                case EventType.MouseDown:
-                    {
-                        //if (e.button == 0 && _subCutResizerRect.Contains(e.mousePosition))
-                        //{
-                        //    _subCutIsResizing = true;
-                        //}
-                        //else if (e.button == 0 && _timelineResizerRect.Contains(e.mousePosition))
-                        //{
-                        //    _timelineIsResizing = true;
-                        //}
-                        //else if (e.button == 0 && _resourceResizerRect.Contains(e.mousePosition))
-                        //{
-                        //    _resourceIsResizing = true;
-                        //}
-                    }
-                    break;
-
-                case EventType.MouseUp:
-                    //_subCutIsResizing = false;
-                    //_timelineIsResizing = false;
-                    //_resourceIsResizing = false;
-                    break;
+                _panelList[i].GetIsSelect = isAllSelected;
+                editKey.ChangeAnimParamState(_panelList[i].GetPanelControllerName(), !isAllSelected);
             }
-
             
         }
 
+    
        
         public void Update()
         {

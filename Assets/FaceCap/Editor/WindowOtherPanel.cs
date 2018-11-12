@@ -27,6 +27,13 @@ namespace FaceCapEditor
 
         }
 
+        public override void OnInit()
+        {
+            base.OnInit();
+            OnPanelEnable();
+        }
+
+
         public override void OnPanelEnable()
         {
             base.OnPanelEnable();

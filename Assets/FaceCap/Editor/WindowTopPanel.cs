@@ -29,9 +29,9 @@ namespace FaceCapEditor
             GUILayout.BeginArea(panelRect, EditorStyles.toolbar);
             GUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button(new GUIContent("Select All"), EditorStyles.toolbarButton, GUILayout.Width(145)))
+            if (GUILayout.Button(new GUIContent(FaceEditorMainWin.window.isAllSelected ? "Select None":"Select All"), EditorStyles.toolbarButton, GUILayout.Width(145)))
             {
-
+                FaceEditorMainWin.window.SelectAll();
             }
 
             if (GUILayout.Button(new GUIContent("表情编辑器"), EditorStyles.toolbarButton, GUILayout.Width(145)))

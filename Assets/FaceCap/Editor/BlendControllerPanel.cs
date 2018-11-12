@@ -187,8 +187,9 @@ namespace FaceCapEditor
             {
                 if (rect.Contains(Event.current.mousePosition))
                 {
-                    FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendController.GetControllerName(), blendController.GetIsSelect);
+           
                     blendController.GetIsSelect = !blendController.GetIsSelect;
+                    FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendController.GetControllerName(), !blendController.GetIsSelect);
                     Event.current.Use();
                     
                 }
@@ -484,7 +485,7 @@ namespace FaceCapEditor
                         weight = 0;
 
                     if (FaceEditorMainWin.window.FaceCtrlComp != null )
-                        FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(FaceEditorMainWin.window.FaceCtrlComp.blendShapeList[blendShapeIndex].blendableIndex, weight);
+                        FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(blendShapeIndex, weight);
                 }
             }
         }

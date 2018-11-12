@@ -52,6 +52,7 @@ public class BlendXController: IController
     public BlendXController()
     {
         blendShapeIndexs.AddRange(new int[2] { -1, -1 });
+        GetIsSelect = false;
     }
 
     public int left

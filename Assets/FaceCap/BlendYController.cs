@@ -51,6 +51,7 @@ public class BlendYController:IController
     public BlendYController()
     {
         blendShapeIndexs.AddRange(new int[2] { -1, -1});
+        GetIsSelect = false;
     }
 
     public int top

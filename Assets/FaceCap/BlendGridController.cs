@@ -50,6 +50,7 @@ public class BlendGridController: IController
     public BlendGridController()
     {
         blendShapeIndexs.AddRange(new int[4] { -1, -1, -1, -1 });
+        GetIsSelect = false;
     }
 
     public int top

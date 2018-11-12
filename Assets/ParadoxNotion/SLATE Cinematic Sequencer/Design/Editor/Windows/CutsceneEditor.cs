@@ -5227,7 +5227,7 @@ namespace Slate{
 						CutsceneUtility.selectedObject = action;
 						if (multiSelection != null && !multiSelection.Select(cw => cw.action).Contains(action)){
 							multiSelection = null;
-						}
+						}  
 					}
 
 					if (e.clickCount == 2){
@@ -5421,11 +5421,10 @@ namespace Slate{
             {
                 if (clip.FaceCtr != null)
                 {
-                    BlenderShapesManager.ConfigTxt = clip.CtrlConfigDataFile;
-                    BlenderShapesManager.LoadConfig(clip.FaceCtr);
-                    FaceCapEditor.FaceEditorMainWin.OpenEditorMainWin(clip.FaceCtr, clip.editKey);
+
+                    FaceCapEditor.FaceEditorMainWin.OpenEditorMainWin(clip, clip.editKey);
                 }
-                else
+                else 
                 {
                     Debug.LogWarning(" must have a FaceCtr actor");
                 }

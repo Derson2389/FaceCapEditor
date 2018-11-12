@@ -7,7 +7,6 @@ namespace FaceCapEditor
 {
     public class WindowMShapePanel : WindowPanel
     {
-
         private BlendSlideControllerPanel controllerPanelA;
         private BlendSlideControllerPanel controllerPanelE;
         private BlendSlideControllerPanel controllerPanelI;
