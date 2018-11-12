@@ -28,6 +28,13 @@ namespace FaceCapEditor
            
         }
 
+        public override void OnInit()
+        {
+            base.OnInit();
+            OnPanelEnable();
+        }
+
+
         public override void OnPanelEnable()
         {
             base.OnPanelEnable();
@@ -41,12 +48,12 @@ namespace FaceCapEditor
             setStyle.normal.background = setIcon;
             setStyle.alignment = TextAnchor.MiddleCenter;
 
-
             BlendGridController controllerLeft = BlenderShapesManager.CreateBlendGridCtrl("r_brow_move_facialControl", panelSize, panelSize, 20, 10);
             if (controllerLeft != null)
             {
                 leftController = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
                 leftController.Init();
+                FaceEditorMainWin.window.InserPanelList(leftController);
             }
 
             BlendGridController controllerRight = BlenderShapesManager.CreateBlendGridCtrl("l_brow_move_facialControl", panelSize, panelSize, 20, 10);
@@ -54,6 +61,7 @@ namespace FaceCapEditor
             {
                 rightController = new BlendControllerPanel(this, new Rect(controllerRight.windowPosition, controllerRight.windowSize), controllerRight);
                 rightController.Init();
+                FaceEditorMainWin.window.InserPanelList(rightController);
             }
 
             BlendYController controllerLeft1 = BlenderShapesManager.CreateBlendYCtrl("r_out_brow_facialControl");
@@ -61,6 +69,7 @@ namespace FaceCapEditor
             {
                 leftSlider1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft1);
                 leftSlider1.Init();
+                FaceEditorMainWin.window.InserPanelList(leftSlider1);
             }
             
             BlendYController controllerLeft2 = BlenderShapesManager.CreateBlendYCtrl("r_mid_brow_facialControl");
@@ -68,12 +77,14 @@ namespace FaceCapEditor
             {
                 leftSlider2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft2);
                 leftSlider2.Init();
+                FaceEditorMainWin.window.InserPanelList(leftSlider2);
             }
             BlendYController controllerLeft3 = BlenderShapesManager.CreateBlendYCtrl("r_in_brow_facialControl");
             if (controllerLeft3 != null)
             {
                 leftSlider3 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft3);
                 leftSlider3.Init();
+                FaceEditorMainWin.window.InserPanelList(leftSlider3);
             }
             
             BlendYController controllerRight1 = BlenderShapesManager.CreateBlendYCtrl("l_in_brow_facialControl");
@@ -81,18 +92,21 @@ namespace FaceCapEditor
             {
                 rightSlider1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerRight1);
                 rightSlider1.Init();
+                FaceEditorMainWin.window.InserPanelList(rightSlider1);
             }
             BlendYController controllerRight2 = BlenderShapesManager.CreateBlendYCtrl("l_mid_brow_facialControl");
             if (controllerRight2 != null)
             {
                 rightSlider2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerRight2);
                 rightSlider2.Init();
+                FaceEditorMainWin.window.InserPanelList(rightSlider2);
             }
             BlendYController controllerRight3 = BlenderShapesManager.CreateBlendYCtrl("l_out_brow_facialControl");
             if (controllerRight3 != null)
             {
                 rightSlider3 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerRight3);
                 rightSlider3.Init();
+                FaceEditorMainWin.window.InserPanelList(rightSlider3);
             }
 
         }

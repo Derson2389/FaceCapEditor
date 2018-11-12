@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FaceCapEditor
 {
-    public class BlendSlideControllerPanel
+    public class BlendSlideControllerPanel:IAddKeyEnable
     {
         public const int panelPadding = 6;
         public const int dragButtonSize = 10;
@@ -87,6 +87,35 @@ namespace FaceCapEditor
             get { return _resizeHorPressed || _resizeVerPressed; }
         }
 
+        public bool GetIsSelect
+        {
+            get
+            {
+                if (blendControllerX != null)
+                {
+                    return blendControllerX.GetIsSelect;
+
+                }
+                else if (blendControllerY != null)
+                {
+                    return blendControllerY.GetIsSelect;
+                }
+                return false;
+             }
+            set
+            {
+                if (blendControllerX != null)
+                {
+                     blendControllerX.GetIsSelect = value;
+
+                }
+                else if (blendControllerY != null)
+                {
+                    blendControllerY.GetIsSelect = value;
+                }
+            }
+        }
+
         public BlendSlideControllerPanel(WindowPanel parent, Rect rect, BlendXController blendControllerX = null, BlendYController blendControllerY = null)
         {
             this.parent = parent;
@@ -148,7 +177,25 @@ namespace FaceCapEditor
                 _weights = new float[_blendControllerY.blendShapeIndexs.Count];
             }
         }
-       
+
+        public Vector2 GetNormalizedPos()
+        {
+            if (blendControllerY != null)
+            {
+                float x = 0;
+                float y = VerticalSliderValue;
+                return new Vector2(x, y);
+            }
+            if (blendControllerX != null)
+            {
+                float x = HorizontalSliderValue;
+                float y = 0;
+                return new Vector2(x, y);
+            }
+            return Vector2.zero;
+        }
+
+
         public void OnUpdate(bool onfocus)
         {
 
@@ -520,6 +567,20 @@ namespace FaceCapEditor
         public void Reset()
         {            
             PreviewBlendController();
+        }
+
+        public string GetPanelControllerName()
+        {
+
+            if (blendControllerY != null)
+            {
+                return blendControllerY.controllerName;
+            }
+            if (blendControllerX != null)
+            {
+                return blendControllerX.controllerName;
+            }
+            return string.Empty;
         }
     }
 

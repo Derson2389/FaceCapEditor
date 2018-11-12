@@ -23,6 +23,12 @@ namespace FaceCapEditor
 
         }
 
+        public override void OnInit()
+        {
+            base.OnInit();
+            OnPanelEnable();
+        }
+
         public override void OnPanelEnable()
         {
             base.OnPanelEnable();
@@ -32,6 +38,7 @@ namespace FaceCapEditor
             {
                 noseController = new BlendControllerPanel(this, new Rect(_noseController.windowPosition, _noseController.windowSize), _noseController);
                 noseController.Init();
+                FaceEditorMainWin.window.InserPanelList(noseController);
             }
 
 
@@ -40,6 +47,7 @@ namespace FaceCapEditor
             {
                 noseSliderPanelLeft = new BlendSlideControllerPanel(this, Rect.zero, null, controllerNoseL);
                 noseSliderPanelLeft.Init();
+                FaceEditorMainWin.window.InserPanelList(noseSliderPanelLeft);
             }
 
             BlendYController controllerNose1R = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.CheekListCtrlName[(int)FaceEditHelper.CheekListCtrl.l_nose_facialControl]);
@@ -47,6 +55,7 @@ namespace FaceCapEditor
             {
                 noseSliderPanelRight = new BlendSlideControllerPanel(this, Rect.zero, null, controllerNose1R);
                 noseSliderPanelRight.Init();
+                FaceEditorMainWin.window.InserPanelList(noseSliderPanelRight);
             }
 
             BlendXController controllerCheekLeft = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.CheekListCtrlName[(int)FaceEditHelper.CheekListCtrl.r_cheek_facialControl]);
@@ -54,12 +63,14 @@ namespace FaceCapEditor
             {
                 cheekSliderPanelLeft = new BlendSlideControllerPanel(this, Rect.zero, controllerCheekLeft, null);
                 cheekSliderPanelLeft.Init();
+                FaceEditorMainWin.window.InserPanelList(cheekSliderPanelLeft);
             }
             BlendXController controllerCheekRight = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.CheekListCtrlName[(int)FaceEditHelper.CheekListCtrl.l_cheek_facialControl]);
             if (controllerCheekRight != null)
             {
                 cheekSliderPanelRight = new BlendSlideControllerPanel(this, Rect.zero, controllerCheekRight, null);
                 cheekSliderPanelRight.Init();
+                FaceEditorMainWin.window.InserPanelList(cheekSliderPanelRight);
             }
         }
 

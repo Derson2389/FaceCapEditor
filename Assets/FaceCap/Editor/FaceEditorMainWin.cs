@@ -22,7 +22,7 @@ namespace FaceCapEditor
 
         private bool _onFocus = false;
         private float _panelEditTime = 0;
-        private List<BlendControllerPanel> _panelList;
+        private List<IAddKeyEnable> _panelList;
         private List<BlendControllerPanel> _selections;
         private Vector2 _mousePos;
 
@@ -170,8 +170,20 @@ namespace FaceCapEditor
             window.Init();
         }
 
+        public void InserPanelList(IAddKeyEnable panel)
+        {
+            if (_panelList != null && !_panelList.Contains(panel))
+            {
+                _panelList.Add(panel);
+            }
+        }
+
         public void Init()
         {
+
+            _panelList = new List<IAddKeyEnable>();
+            _panelList.Clear();
+
             window.topbarPanel.OnInit();
             window.browPanel.OnInit();
             window.eyePanel.OnInit();
@@ -184,6 +196,8 @@ namespace FaceCapEditor
             {
                 _panelEditTime = editKey.GetCurrentTime();
             }
+
+            
 
         }
 
@@ -403,6 +417,38 @@ namespace FaceCapEditor
             _onFocus = false;
         }
 
+        /// <summary>
+        /// 保存编辑后的关键帧数据
+        /// </summary>
+        public void AddKeyframe()
+        {
+            // 编辑模板模式下不能保存关键帧数据
+            if (editKey == null)
+                return;
+
+            // 保存关键帧  
+            for (int i = 0; i < _panelList.Count; i++)
+            {
+                // 保存动画关键帧blendControllerKey数据
+                if (_panelList[i].GetIsSelect && _panelList[i] is BlendControllerPanel)
+                {
+                    var panel = _panelList[i] as BlendControllerPanel;
+                    Vector2 normalizedPos = panel.GetNormalizedPos();
+                    editKey.SetControllerParamValue(panel.GetPanelControllerName(), normalizedPos);
+                }
+                if (_panelList[i].GetIsSelect && _panelList[i] is BlendSlideControllerPanel)
+                {
+                    var panel = _panelList[i] as BlendSlideControllerPanel;
+                    Vector2 normalizedPos = panel.GetNormalizedPos();
+                    editKey.SetControllerParamValue(panel.GetPanelControllerName(), normalizedPos);
+                }
+            }
+
+            editKey.Save();
+
+        }
+
+
 
         private void ProcessEvents(Event e)
         {
@@ -432,40 +478,10 @@ namespace FaceCapEditor
                     break;
             }
 
-            ProcessResizeEvent(e);
+            
         }
 
-        private void ProcessResizeEvent(Event e)
-        {
-            //if (_timelineIsResizing) // handle timeline panel resize event
-            //{
-            //    float scaleHeight = position.height - e.mousePosition.y;
-            //    if (scaleHeight > minTimelineHeight && scaleHeight < position.height - topBarHeight - 50)
-            //    {
-            //        _timelineHeight = scaleHeight;
-            //        Repaint();
-            //    }
-            //}
-            //else if (_subCutIsResizing) // 
-            //{
-            //    float scaleWidth = e.mousePosition.x;
-            //    if (scaleWidth > minSubCutWidth && scaleWidth < minSubCutWidth + 100)
-            //    {
-            //        _subCutWidth = scaleWidth;
-            //        Repaint();
-            //    }
-            //}
-            //else if (_resourceIsResizing) // handle resource panel resize event
-            //{
-            //    float scaleWidth = position.width - e.mousePosition.x;
-            //    if (scaleWidth > minResourceWidth && scaleWidth < minResourceWidth + 200)
-            //    {
-            //        _resourceWidth = scaleWidth;
-            //        Repaint();
-            //    }
-            //}
-        }
-
+       
         public void Update()
         {
 

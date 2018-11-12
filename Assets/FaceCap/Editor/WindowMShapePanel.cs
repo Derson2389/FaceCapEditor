@@ -23,6 +23,13 @@ namespace FaceCapEditor
 
         }
 
+        public override void OnInit()
+        {
+            base.OnInit();
+            OnPanelEnable();
+
+        }
+
         public override void OnPanelEnable()
         {
             base.OnPanelEnable();
@@ -32,7 +39,7 @@ namespace FaceCapEditor
             {
                 controllerPanelA = new BlendSlideControllerPanel(this, Rect.zero, controllerA, null);
                 controllerPanelA.Init();
-
+                FaceEditorMainWin.window.InserPanelList(controllerPanelA);
             }
 
             BlendXController controllerE = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.E_facialControl]);
@@ -40,6 +47,7 @@ namespace FaceCapEditor
             {
                 controllerPanelE = new BlendSlideControllerPanel(this, Rect.zero, controllerE, null);
                 controllerPanelE.Init();
+                FaceEditorMainWin.window.InserPanelList(controllerPanelE);
             }
 
 
@@ -48,6 +56,7 @@ namespace FaceCapEditor
             {
                 controllerPanelI = new BlendSlideControllerPanel(this, Rect.zero, controllerI, null);
                 controllerPanelI.Init();
+                FaceEditorMainWin.window.InserPanelList(controllerPanelI);
             }
 
 
@@ -56,12 +65,14 @@ namespace FaceCapEditor
             {
                 controllerPanelO = new BlendSlideControllerPanel(this, Rect.zero, controllerO, null);
                 controllerPanelO.Init();
+                FaceEditorMainWin.window.InserPanelList(controllerPanelO);
             }
             BlendXController controllerU = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.U_facialControl]);
             if (controllerU != null)
             {
                 controllerPanelU = new BlendSlideControllerPanel(this, Rect.zero, controllerU, null);
                 controllerPanelU.Init();
+                FaceEditorMainWin.window.InserPanelList(controllerPanelU);
             }
 
             BlendXController controllerF = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.F_facialControl]);
@@ -69,6 +80,7 @@ namespace FaceCapEditor
             {
                 controllerPanelF = new BlendSlideControllerPanel(this, Rect.zero, controllerF, null);
                 controllerPanelF.Init();
+                FaceEditorMainWin.window.InserPanelList(controllerPanelF);
             }
 
             BlendXController controllerM = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.M_facialControl]);
@@ -76,6 +88,7 @@ namespace FaceCapEditor
             {
                 controllerPanelM = new BlendSlideControllerPanel(this, Rect.zero, controllerM, null);
                 controllerPanelM.Init();
+                FaceEditorMainWin.window.InserPanelList(controllerPanelM);
             }
         }
 

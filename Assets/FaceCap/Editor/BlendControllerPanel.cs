@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FaceCapEditor
 {
-    public class BlendControllerPanel
+    public class BlendControllerPanel: IAddKeyEnable
     {
         public const int panelPadding = 6;
         public const int dragButtonSize = 10;
@@ -54,6 +54,12 @@ namespace FaceCapEditor
         public bool dragButtonPressed
         {
             get { return _dragButtonPressed; }
+        }
+
+        public bool GetIsSelect
+        {
+            get { return blendController.GetIsSelect;  }
+            set { blendController.GetIsSelect = value; }
         }
 
         public BlendControllerPanel(WindowPanel parent, Rect rect, BlendGridController blendController)
@@ -487,6 +493,11 @@ namespace FaceCapEditor
         {
             _dragButtonRect.center = GetWindowPosFromNormalizedPos(Vector2.zero);
             PreviewBlendController();
+        }
+
+        public string GetPanelControllerName()
+        {
+            return blendController.controllerName;
         }
     }
 

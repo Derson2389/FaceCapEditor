@@ -236,127 +236,7 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
             CtrlHandler.SetBlenderShapeByCtrlName(animParam.parameterName,new Vector2(currentVal.x, currentVal.y));            
         }
     }
-
-
-    //    public void CalculateMaker()
-    //    {
-    //        if (root != null && marker != null)
-    //        {
-    //            marker.blendOutTime = (-_blendOut);
-    //            marker.blendInTime = _blendIn;
-    //            marker.endTime = endTime;
-    //            marker.startTime = startTime;
-
-    //            marker.keys = new List<BlendControllerKey>();
-
-    //            foreach (var animParam in animationData.animatedParameters.ToArray())
-    //            {
-    //                if (!animParam.isValid || !animParam.enabled || animParam.curves == null)
-    //                    continue;
-
-    //                string paramName = animParam.parameterName.ToLower();
-    //                if (!CheckControllerName(paramName))
-    //                    continue;
-
-    //                // 设置所有的关键帧为线性插值
-    //                if (animParam.curves != null)
-    //                {
-    //#if UNITY_EDITOR
-    //                    SetCurveTangentMode(animParam.curves[0]);
-    //                    SetCurveTangentMode(animParam.curves[1]);
-    //#endif
-    //                }
-
-    //                //这里其实有个隐藏bug, 那就是必须要保证x和y具有相同时间的关键帧
-    //                int count = animParam.curves[0].keys.Length;
-    //                for (int i = 0; i < count; i++)
-    //                {
-    //                    Keyframe keyX = animParam.curves[0].keys[i];
-    //                    Keyframe keyY = animParam.curves[1].keys[i];
-
-    //                    ControllerKey controllerKey = new ControllerKey();
-    //                    // 默认以"controller0", "controller1", "controller12"最后的数字为BlendController索引
-    //                    controllerKey.index = Convert.ToInt32(animParam.parameterName.Substring(10));
-    //                    controllerKey.position = new Vector2(keyX.value, keyY.value);
-    //                    controllerKey.inTangant = new Vector2(keyX.inTangent, keyY.inTangent);
-    //                    controllerKey.outTangant = new Vector2(keyX.outTangent, keyY.outTangent);
-
-    //                    BlendControllerKey blendKey = marker.GetBlendControllerKey(keyX.time);
-    //                    if(blendKey == null)
-    //                    {
-    //                        // 如果当前时间点上在marker里面找不到BlendControllerKey， 则创建一个
-    //                        blendKey = new BlendControllerKey(keyX.time);
-    //                        marker.keys.Add(blendKey);
-    //                    }
-
-    //                    blendKey.AddControllerKey(controllerKey);
-    //                }
-    //            }
-
-    //            marker.keys.Sort(EmotionMarker.SortTime);
-    //        }
-    //    }
-
-    //    public void SetMarker(EmotionMarker newMarker)
-    //    {
-    //        if (root != null && newMarker != null)
-    //        {
-    //            _marker = newMarker;
-
-    //            blendIn = marker.blendInTime;
-    //            blendOut = Mathf.Abs(marker.blendOutTime);
-
-    //            for (int i = 0; i < marker.keys.Count; i++)
-    //            {
-    //                BlendControllerKey blendKey = marker.keys[i];
-
-    //                for (int j = 0; j < blendKey.controllerKeys.Count; j++)
-    //                {
-    //                    ControllerKey controllerKey = blendKey.controllerKeys[j];
-    //                    string paramName = "controller" + controllerKey.index;
-
-    //                    // 通过BlendController索引获取AnimatedParameter
-    //                    AnimatedParameter param = GetParameter(paramName);
-    //                    if (param == null)
-    //                        continue;
-
-    //                    SetParameterEnabled(paramName, true);
-
-    //                    // 添加关键帧
-    //                    Keyframe keyX = new Keyframe(blendKey.time, controllerKey.position.x);
-    //                    keyX.inTangent = controllerKey.inTangant.x;
-    //                    keyX.outTangent = controllerKey.outTangant.x;
-    //                    Keyframe keyY = new Keyframe(blendKey.time, controllerKey.position.y); ;
-    //                    keyY.inTangent = controllerKey.inTangant.y;
-    //                    keyY.outTangent = controllerKey.outTangant.y;
-    //                    param.curves[0].AddKey(keyX);
-    //                    param.curves[1].AddKey(keyY);
-    //                }
-    //            }
-
-    //            //Validate();
-    //            SetControllerParams();
-    //        }
-    //    }
-
-    //public void SetControllerParams()
-    //{
-    //    if (lipSync == null || marker == null)
-    //        return;
-
-    //    // 获取emotion shape
-    //    Shape shape = lipSync.GetEmotion(marker.emotion);
-
-    //    // 关闭无效的BlendController曲线参数
-    //    for (int i = 0; i < Shape.BlendControllerCount; i++)
-    //    {
-    //        if (!shape.HasBlendController(i))
-    //        {
-    //            SetParameterEnabled("controller" + i, false);
-    //        }
-    //    }
-    //}
-
+    
     ////////////////////////////////////////
     ///////////GUI AND EDITOR STUFF/////////
     ////////////////////////////////////////
@@ -517,29 +397,19 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
 
                 Vector2 val = (Vector2)animParam.GetCurrentValue();
                 var index0 = animParam.curves[0].AddKey(time, val.x);
-                //animParam.curves[0].UpdateTangentsFromMode();
                 var index1 = animParam.curves[1].AddKey(time, val.y);
-                //animParam.curves[1].UpdateTangentsFromMode();
 
-                // 设置所有的关键帧为线性插值
-                if (animParam.curves != null)
-                {
-                    SetCurveTangentMode(animParam.curves[0]);
-                    SetCurveTangentMode(animParam.curves[1]);
-                }
+                //// 设置所有的关键帧为线性插值
+                //if (animParam.curves != null)
+                //{
+                //    SetCurveTangentMode(animParam.curves[0]);
+                //    SetCurveTangentMode(animParam.curves[1]);
+                //}
             }
 
             //Prefs.defaultTangentMode = mode;
         }
 
-        public void Validate()
-        {
-            //LipSyncCutscene cutscene = (LipSyncCutscene)_clip.root;
-            //if (cutscene.lipSyncGroup == null)
-            //    return;
-
-            //cutscene.lipSyncGroup.ProcessLipSync();
-        }
     }
 
     public override void EditKeyable(float time)
