@@ -382,6 +382,10 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
                 AnimatedParameter animParam = item.Value;
                 //var hasAnyKey = animParam.HasAnyKey();
 
+                if(animParam.hideChecked)
+                {
+                    continue;
+                }
                 // 修改空帧也需要k值
                 /*if(!hasAnyKey)
                 {
