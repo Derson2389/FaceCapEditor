@@ -603,6 +603,11 @@ namespace Slate{
                         if (!Prefs.showChoosenTrack && (animParam.hideChecked))
                             continue;
                     }
+                    if (keyable is ActionClip)
+                    {
+                        if ((animParam.hideChecked))
+                            continue;
+                    }
                     //end
                     var paramRect = new Rect(expansionRect.xMin + 4, proposedHeight, expansionRect.width - 8, PARAMS_LINE_HEIGHT );
 					proposedHeight += PARAMS_LINE_HEIGHT + PARAMS_LINE_MARGIN;
@@ -789,11 +794,12 @@ namespace Slate{
 			var clipsPosRect = Rect.MinMaxRect(posRect.xMin, posRect.yMin, posRect.xMax, posRect.yMin + defaultHeight);
 			DoTrackContextMenu(e, clipsPosRect, cursorTime);
 
-			if (showCurves){
-				var curvesPosRect = Rect.MinMaxRect(posRect.xMin, clipsPosRect.yMax, posRect.xMax, posRect.yMax);
-				DoClipCurves(e, curvesPosRect, timeRect, TimeToPos, CutsceneUtility.selectedObject as IKeyable, null, selectRect);
-			}
-		}
+            if (showCurves)
+            {
+                var curvesPosRect = Rect.MinMaxRect(posRect.xMin, clipsPosRect.yMax, posRect.xMax, posRect.yMax);
+                DoClipCurves(e, curvesPosRect, timeRect, TimeToPos, CutsceneUtility.selectedObject as IKeyable, null, selectRect);
+            }
+        }
 
 
         /// @modify slate sequencer
@@ -978,7 +984,6 @@ namespace Slate{
 				}
 			}
 
-
 			//begin in group and neutralize rect
 			GUI.BeginGroup(finalPosRect);
 			finalPosRect = new Rect(0, 0, finalPosRect.width, finalPosRect.height);
@@ -990,6 +995,11 @@ namespace Slate{
 					/// @modify slate sequencer
                     /// @TQ
                     if (!Prefs.showChoosenTrack && animParam.hideChecked)
+                    {
+                        continue;
+                    }
+
+                    if (keyable is ActionClip && animParam.hideChecked)
                     {
                         continue;
                     }
