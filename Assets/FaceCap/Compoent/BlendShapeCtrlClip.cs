@@ -233,10 +233,8 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
                         continue;
 
             Vector2 currentVal = (Vector2)animParam.GetCurrentValue();
-            CtrlHandler.SetBlenderShapeByCtrlName(animParam.parameterName,new Vector2(currentVal.x, currentVal.y));
+            CtrlHandler.SetBlenderShapeByCtrlName(animParam.parameterName,new Vector2(currentVal.x, currentVal.y));            
         }
-
-
     }
 
 
@@ -399,10 +397,25 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
 
                 string paramName = animParam.parameterName.ToLower();
                 controllerParams.Add(paramName, animParam);
-               
+                animParam.SetHideChecked(true);
+                
             }
-
         }
+
+        public void ChangeAnimParamState(string name, bool state)
+        {
+            AnimatedParameter param;
+            if (controllerParams.TryGetValue(name.ToLower(),out param))
+            {
+                param.SetHideChecked(state);
+            }
+            var track = _clip.parent as ActorActionTrack;
+            if (track != null)
+            {
+                track.InspectedParameterIndex = -1;
+            }
+        }
+
 
         public float GetCurrentTime()
         {

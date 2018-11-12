@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 [System.Serializable]
-public class BlendXController
+public class BlendXController: IController
 {
     public enum ControllerDirection
     {
@@ -22,6 +22,8 @@ public class BlendXController
     [SerializeField]
     public string controllerName = "";
 
+    // 是否当前被选中
+    private bool isSelected = false;
     /// <summary>
     /// the index of this controller
     /// </summary>
@@ -64,6 +66,7 @@ public class BlendXController
         set { blendShapeIndexs[1] = value; }
     }
 
+   
     /// <summary>
     /// get blend controller's weight from a 2D position
     /// </summary>
@@ -97,6 +100,17 @@ public class BlendXController
     public int GetBlendShapeIndex(ControllerDirection dir)
     {
         return blendShapeIndexs[(int)dir];
+    }
+
+    public string GetControllerName()
+    {
+        return controllerName;
+    }
+
+    public bool GetIsSelect
+    {
+        set { isSelected = value; }
+        get { return isSelected;  }
     }
 }
 

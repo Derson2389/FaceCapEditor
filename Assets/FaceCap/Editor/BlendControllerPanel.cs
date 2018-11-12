@@ -14,7 +14,7 @@ namespace FaceCapEditor
             get { return EditorGUIUtility.isProSkin ? new Color(0.65f, 0.65f, 1,0.3f) : new Color(0.1f, 0.1f, 0.1f, 0.3f); }
         }
         // 是否当前被选中
-        public bool isSelected = false;
+        ///public bool isSelected = false;
         private GUIStyle _boxStyle = null;
 
         // dragable area rect
@@ -24,6 +24,7 @@ namespace FaceCapEditor
         // the truely valid drag rect for blend controller's value 
         private Rect _validDragRect;
         // blend controller map button, from top, left, bottom, right 
+        private Rect _selRect;
         private Rect[] _controlBtnRect;
 
         private BlendGridController _blendController;
@@ -72,7 +73,7 @@ namespace FaceCapEditor
             _centerPanelRect = new Rect(panelPadding, panelPadding, centerPanel.width - panelPadding * 2, centerPanel.height - panelPadding * 2);
             _validDragRect = new Rect(_dragButtonRect.width / 2, _dragButtonRect.height / 2, _centerPanelRect.width - _dragButtonRect.width, _centerPanelRect.height - _dragButtonRect.height);
             _dragButtonRect.center = _validDragRect.center;
-
+            _selRect = new Rect(_validDragRect.x + 3, _validDragRect.y + 3, _validDragRect.width + 5, _validDragRect.height + 5);
             // init controller buttons rects
             _controlBtnRect = new Rect[blendController.blendShapeIndexs.Count];
 
@@ -152,61 +153,40 @@ namespace FaceCapEditor
 
             GUILayout.BeginArea(centerPanel, _boxStyle);
 
-            // 编辑模板模式下，才能改变面板名字
-//            if (parent.editKey == null)
-//            {
-//                string newControllerName = GUILayout.TextField(blendController.controllerName, EditorStyles.label, GUILayout.Width(80));
-
-//                if (newControllerName != blendController.controllerName)
-//                {
-//                    blendController.controllerName = newControllerName;
-
-//                    // 保存模板
-//////EditorUtility.SetDirty(parent.lipSync);
-//                }
-//            }
-//            else
-//            {
-//                GUILayout.Label(blendController.controllerIndex + "-" + blendController.controllerName, EditorStyles.label, GUILayout.Width(80));
-//            }
-
-
-            //// 编辑模板模式下，才能拖动窗口大小
-            //if (parent.editKey == null)
-            //{
-            //    DrawResizer();
-
-            //    if (blendController.windowPosition != centerPanel.position || blendController.windowSize != centerPanel.size)
-            //    {
-            //        blendController.windowPosition = centerPanel.position;
-            //        blendController.windowSize = centerPanel.size;
-
-            //        // 保存模板
-            //        EditorUtility.SetDirty(parent.lipSync);
-            //    }
-            //}
-
      
-
             DrawDragButton();
             DrawSelectionBtns();
 
 
             //draw selected rect
-            if (isSelected || true)
-            {
-                var selRect = new Rect(_validDragRect.x + 3, _validDragRect.y+3, _validDragRect.width + 5, _validDragRect.height + 5);
-                ///
-
+            
+            ProcessMouseEvent(_selRect);
+            if (blendController.GetIsSelect)
+            {                     
                 GUI.color = highlighColor;
-                GUI.DrawTexture(selRect, Slate.Styles.whiteTexture);
-                GUI.color = Color.white;
+                GUI.DrawTexture(_selRect, Slate.Styles.whiteTexture);
+                GUI.color = Color.white;                
             }
 
             GUILayout.EndArea();
+           
 
-            
 
+
+        }
+
+        void ProcessMouseEvent(Rect rect)
+        {
+            if (Event.current.type == EventType.MouseDown)
+            {
+                if (rect.Contains(Event.current.mousePosition))
+                {
+                    FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendController.GetControllerName(), blendController.GetIsSelect);
+                    blendController.GetIsSelect = !blendController.GetIsSelect;
+                    Event.current.Use();
+                    
+                }
+            }                    
         }
 
         void DrawResizer()

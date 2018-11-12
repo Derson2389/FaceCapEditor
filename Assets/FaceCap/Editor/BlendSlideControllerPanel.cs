@@ -22,9 +22,11 @@ namespace FaceCapEditor
         public Rect centerPanel;
         public WindowPanel parent;
 
-        // 是否当前被选中
-        public bool isSelected = false;
+       
         private GUIStyle _boxStyle = null;
+
+        private Rect selRect;
+        private Rect selXRect;
 
         // dragable area rect
         private Rect _centerPanelRect;
@@ -203,31 +205,56 @@ namespace FaceCapEditor
             }
 
             //draw selected rect
-            if (isSelected || true)
+            var lastRect = GUILayoutUtility.GetLastRect();
+            selRect = new Rect(lastRect.x - 5, lastRect.y - 5, lastRect.width + 12, lastRect.height + 10);
+            selXRect = new Rect(lastRect.x, lastRect.y - 2, lastRect.width + 5, lastRect.height + 12);
+            if (blendControllerY != null)
             {
-                var lastRect = GUILayoutUtility.GetLastRect();
-                var selRect = new Rect(lastRect.x-5, lastRect.y -5, lastRect.width +10, lastRect.height +5); 
-                var selXRect = new Rect(lastRect.x , lastRect.y , lastRect.width + 2, lastRect.height + 10);
-                GUI.color = highlighColor;
-                if (blendControllerY != null)
-                {
-                    GUI.DrawTexture(selRect, Slate.Styles.whiteTexture);
-                    GUI.color = Color.white;
-                    EditorGUIUtility.AddCursorRect(selRect, MouseCursor.Link);
-                }
-                if (blendControllerX != null)
-                {
-                    GUI.DrawTexture(selXRect, Slate.Styles.whiteTexture);
-                    GUI.color = Color.white;
-                    EditorGUIUtility.AddCursorRect(selXRect, MouseCursor.Link);
-                }
-                
+                ProcessMouseEvent(selRect);
             }
 
+            if (blendControllerX != null)
+            {
+                ProcessMouseEvent(selXRect);
+            }
 
+            if (blendControllerY != null&& blendControllerY.GetIsSelect)
+            {               
+                GUI.color = highlighColor;
+                GUI.DrawTexture(selRect, Slate.Styles.whiteTexture);
+                GUI.color = Color.white;                                     
+            }
+            if (blendControllerX != null && blendControllerX.GetIsSelect)
+            {          
+                GUI.color = highlighColor;
+                GUI.DrawTexture(selXRect, Slate.Styles.whiteTexture);
+                GUI.color = Color.white;
+                EditorGUIUtility.AddCursorRect(selXRect, MouseCursor.Link);
+            }
             ProcessResizeEvent();
             ProcessDragEvents();
         }
+
+        void ProcessMouseEvent(Rect rect)
+        {
+            EditorGUIUtility.AddCursorRect(rect, MouseCursor.Link);
+            if (Event.current.type == EventType.MouseDown)
+            {
+                if (rect.Contains(Event.current.mousePosition)&& blendControllerX!= null)
+                {
+                    FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendControllerX.GetControllerName(), blendControllerX.GetIsSelect);
+                    blendControllerX.GetIsSelect = !blendControllerX.GetIsSelect;
+                    Event.current.Use();                   
+                }
+                if (rect.Contains(Event.current.mousePosition) && blendControllerY != null)
+                {
+                    FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendControllerY.GetControllerName(), blendControllerY.GetIsSelect);
+                    blendControllerY.GetIsSelect = !blendControllerY.GetIsSelect;
+                    Event.current.Use();                   
+                }
+            }
+        }
+
 
         void ProcessResizeEvent()
         {

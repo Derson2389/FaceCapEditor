@@ -47,7 +47,6 @@ namespace FaceCapEditor
             {
                 leftController = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
                 leftController.Init();
-                leftController.isSelected = true;
             }
 
             BlendGridController controllerRight = BlenderShapesManager.CreateBlendGridCtrl("l_brow_move_facialControl", panelSize, panelSize, 20, 10);
