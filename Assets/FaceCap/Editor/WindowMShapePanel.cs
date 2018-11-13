@@ -33,7 +33,7 @@ namespace FaceCapEditor
         {
             base.OnPanelEnable();
 
-            BlendXController controllerA = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.A_facialControl]);
+            BlendXController controllerA = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.A_facialControl]);
             if (controllerA != null)
             {
                 controllerPanelA = new BlendSlideControllerPanel(this, Rect.zero, controllerA, null);
@@ -41,7 +41,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(controllerPanelA);
             }
 
-            BlendXController controllerE = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.E_facialControl]);
+            BlendXController controllerE = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.E_facialControl]);
             if (controllerE != null)
             {
                 controllerPanelE = new BlendSlideControllerPanel(this, Rect.zero, controllerE, null);
@@ -50,7 +50,7 @@ namespace FaceCapEditor
             }
 
 
-            BlendXController controllerI = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.I_facialControl]);
+            BlendXController controllerI = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.I_facialControl]);
             if (controllerI != null)
             {
                 controllerPanelI = new BlendSlideControllerPanel(this, Rect.zero, controllerI, null);
@@ -59,14 +59,14 @@ namespace FaceCapEditor
             }
 
 
-            BlendXController controllerO = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.O_facialControl]);
+            BlendXController controllerO = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.O_facialControl]);
             if (controllerO != null)
             {
                 controllerPanelO = new BlendSlideControllerPanel(this, Rect.zero, controllerO, null);
                 controllerPanelO.Init();
                 FaceEditorMainWin.window.InserPanelList(controllerPanelO);
             }
-            BlendXController controllerU = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.U_facialControl]);
+            BlendXController controllerU = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.U_facialControl]);
             if (controllerU != null)
             {
                 controllerPanelU = new BlendSlideControllerPanel(this, Rect.zero, controllerU, null);
@@ -74,7 +74,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(controllerPanelU);
             }
 
-            BlendXController controllerF = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.F_facialControl]);
+            BlendXController controllerF = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.F_facialControl]);
             if (controllerF != null)
             {
                 controllerPanelF = new BlendSlideControllerPanel(this, Rect.zero, controllerF, null);
@@ -82,7 +82,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(controllerPanelF);
             }
 
-            BlendXController controllerM = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.M_facialControl]);
+            BlendXController controllerM = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.M_facialControl]);
             if (controllerM != null)
             {
                 controllerPanelM = new BlendSlideControllerPanel(this, Rect.zero, controllerM, null);
@@ -96,9 +96,9 @@ namespace FaceCapEditor
             base.OnPanelDisable();
         }
 
-        public override void Update(bool focus)
+        public override void Update(bool focus) 
         {
-            if (BlenderShapesManager.controllerList.Count <= 0)
+            if (FaceEditorMainWin.window!= null && FaceEditorMainWin.window.currentHandler!= null && FaceEditorMainWin.window.currentHandler.controllerList.Count <= 0)
             {
                 return;
             }
@@ -136,7 +136,7 @@ namespace FaceCapEditor
             myStyle.normal.textColor = Color.white;
             GUILayout.Label("A", myStyle); 
             if(controllerPanelA != null)
-                controllerPanelA.OnDraw(new Vector2(panelRect.width - 45, 10));
+                controllerPanelA.OnDraw(new Vector2(panelRect.width - 55, 10));
             GUILayout.FlexibleSpace();            
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
@@ -144,7 +144,7 @@ namespace FaceCapEditor
             GUILayout.FlexibleSpace();
             GUILayout.Label("E", myStyle);   
             if(controllerPanelE!=null)
-                controllerPanelE.OnDraw(new Vector2(panelRect.width - 45, 10));
+                controllerPanelE.OnDraw(new Vector2(panelRect.width - 55, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
@@ -152,7 +152,7 @@ namespace FaceCapEditor
             GUILayout.FlexibleSpace();
             GUILayout.Label("I", myStyle);
             if (controllerPanelI != null)
-                controllerPanelI.OnDraw(new Vector2(panelRect.width - 45, 10));
+                controllerPanelI.OnDraw(new Vector2(panelRect.width - 55, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
@@ -160,7 +160,7 @@ namespace FaceCapEditor
             GUILayout.FlexibleSpace();
             GUILayout.Label("O", myStyle);
             if (controllerPanelO != null)
-                controllerPanelO.OnDraw(new Vector2(panelRect.width - 45, 10));
+                controllerPanelO.OnDraw(new Vector2(panelRect.width - 55, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
@@ -168,7 +168,7 @@ namespace FaceCapEditor
             GUILayout.FlexibleSpace();
             GUILayout.Label("U", myStyle);
             if (controllerPanelU != null)
-                controllerPanelU.OnDraw(new Vector2(panelRect.width - 45, 10));
+                controllerPanelU.OnDraw(new Vector2(panelRect.width - 55, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
@@ -176,7 +176,7 @@ namespace FaceCapEditor
             GUILayout.FlexibleSpace();
             GUILayout.Label("F", myStyle);
             if (controllerPanelF != null)
-                controllerPanelF.OnDraw(new Vector2(panelRect.width - 45, 10));
+                controllerPanelF.OnDraw(new Vector2(panelRect.width - 55, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(20);
@@ -184,7 +184,7 @@ namespace FaceCapEditor
             GUILayout.FlexibleSpace();
             GUILayout.Label("M", myStyle);
             if (controllerPanelM != null)
-                controllerPanelM.OnDraw(new Vector2(panelRect.width - 45, 10));
+                controllerPanelM.OnDraw(new Vector2(panelRect.width - 55, 10));
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUILayout.Space(20);

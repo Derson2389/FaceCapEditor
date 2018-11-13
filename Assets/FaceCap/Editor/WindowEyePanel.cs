@@ -34,15 +34,21 @@ namespace FaceCapEditor
         {
             panelRect = rect;
             panelWindow = window;
-            
-
+           
         }
 
         public override void OnInit()
         {
             base.OnInit();
+            OnPanelEnable();
+        }
+
+
+        public override void OnPanelEnable()
+        {
+            base.OnPanelEnable();
             //Eyelid
-            BlendGridController controllerLeft = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_upper_eyelid_facialControl], panelSizeMax, panelSizeMax, 0, 10);
+            BlendGridController controllerLeft = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_upper_eyelid_facialControl], panelSizeMax, panelSizeMax, 0, 10);
             if (controllerLeft != null)
             {
                 eyeLidLeftUpController = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
@@ -50,7 +56,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(eyeLidLeftUpController);
             }
 
-            BlendGridController controllerRight = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_upper_eyelid_facialControl], panelSizeMax, panelSizeMax, 110, 10);
+            BlendGridController controllerRight = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_upper_eyelid_facialControl], panelSizeMax, panelSizeMax, 110, 10);
             if (controllerRight != null)
             {
                 eyeLidRightUpController = new BlendControllerPanel(this, new Rect(controllerRight.windowPosition, controllerRight.windowSize), controllerRight);
@@ -58,7 +64,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(eyeLidRightUpController);
             }
 
-            BlendGridController controllerLeftDown = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_lower_eyelid_facialControl], panelSizeMax, panelSizeMax, 0, 120);
+            BlendGridController controllerLeftDown = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_lower_eyelid_facialControl], panelSizeMax, panelSizeMax, 0, 120);
             if (controllerLeftDown != null)
             {
                 eyeLidLeftDownController = new BlendControllerPanel(this, new Rect(controllerLeftDown.windowPosition, controllerLeftDown.windowSize), controllerLeftDown);
@@ -66,7 +72,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(eyeLidLeftDownController);
             }
 
-            BlendGridController controllerRightDown = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_lower_eyelid_facialControl], panelSizeMax, panelSizeMax, 110, 120);
+            BlendGridController controllerRightDown = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_lower_eyelid_facialControl], panelSizeMax, panelSizeMax, 110, 120);
             if (controllerRightDown != null)
             {
                 eyeLidRightDownController = new BlendControllerPanel(this, new Rect(controllerRightDown.windowPosition, controllerRightDown.windowSize), controllerRightDown);
@@ -74,14 +80,14 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(eyeLidRightDownController);
             }
 
-            BlendYController controllerEyeLidLeft1 = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_eyelid_blink_facialControl]);
+            BlendYController controllerEyeLidLeft1 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_eyelid_blink_facialControl]);
             if (controllerEyeLidLeft1 != null)
             {
                 eyeLidSliedLeftCtrl = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeLidLeft1);
                 eyeLidSliedLeftCtrl.Init();
                 FaceEditorMainWin.window.InserPanelList(eyeLidSliedLeftCtrl);
             }
-            BlendYController controllerEyeLidLeft2 = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_eyelid_blink_facialControl]);
+            BlendYController controllerEyeLidLeft2 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_eyelid_blink_facialControl]);
             if (controllerEyeLidLeft2 != null)
             {
                 eyeLidSliedRightCtrl = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeLidLeft2);
@@ -91,7 +97,7 @@ namespace FaceCapEditor
 
 
             //Eye
-            BlendGridController eyecontrollerLeft = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_eyeBall_facialControl], panelSizeMax, panelSizeMax, 10, 10);
+            BlendGridController eyecontrollerLeft = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_eyeBall_facialControl], panelSizeMax, panelSizeMax, 10, 10);
             if (eyecontrollerLeft != null)
             {
                 eyeLeftUpController = new BlendControllerPanel(this, new Rect(eyecontrollerLeft.windowPosition, eyecontrollerLeft.windowSize), eyecontrollerLeft);
@@ -99,7 +105,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(eyeLeftUpController);
             }
 
-            BlendGridController eyecontrollerRight = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_eyeBall_facialControl], panelSizeMax, panelSizeMax, 120, 10);
+            BlendGridController eyecontrollerRight = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_eyeBall_facialControl], panelSizeMax, panelSizeMax, 120, 10);
             if (eyecontrollerRight != null)
             {
                 eyeRightUpController = new BlendControllerPanel(this, new Rect(eyecontrollerRight.windowPosition, eyecontrollerRight.windowSize), eyecontrollerRight);
@@ -107,7 +113,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(eyeRightUpController);
             }
 
-            BlendGridController eyecontrollerLeftDown = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_eyeHightLight_move_facialControl], panelSizeMin, panelSizeMin, 40, 120);
+            BlendGridController eyecontrollerLeftDown = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_eyeHightLight_move_facialControl], panelSizeMin, panelSizeMin, 40, 120);
             if (eyecontrollerLeftDown != null)
             {
                 eyeLeftDownController = new BlendControllerPanel(this, new Rect(eyecontrollerLeftDown.windowPosition, eyecontrollerLeftDown.windowSize), eyecontrollerLeftDown);
@@ -115,7 +121,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(eyeLeftDownController);
             }
 
-            BlendGridController eyecontrollerRightDown = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_eyeHightLight_move_facialControl], panelSizeMin, panelSizeMin, 120, 120);
+            BlendGridController eyecontrollerRightDown = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_eyeHightLight_move_facialControl], panelSizeMin, panelSizeMin, 120, 120);
             if (eyecontrollerRightDown != null)
             {
                 eyeRightDownController = new BlendControllerPanel(this, new Rect(eyecontrollerRightDown.windowPosition, eyecontrollerRightDown.windowSize), eyecontrollerRightDown);
@@ -123,7 +129,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(eyeRightDownController);
             }
 
-            BlendYController controllerEyeLeft1 = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_pupil_scale_facialControl]);
+            BlendYController controllerEyeLeft1 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_pupil_scale_facialControl]);
             if (controllerEyeLeft1 != null)
             {
                 eyeLeftCtrl1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeLeft1);
@@ -132,7 +138,7 @@ namespace FaceCapEditor
             }
 
 
-            BlendYController controllerEyeLeft2 = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_pupil_scale_facialControl]);
+            BlendYController controllerEyeLeft2 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_pupil_scale_facialControl]);
             if (controllerEyeLeft2 != null)
             {
                 eyeLeftCtrl2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeLeft2);
@@ -141,7 +147,7 @@ namespace FaceCapEditor
             }
 
 
-            BlendYController controllerEyeRightCtrl1 = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_eyeHightLight_scale_facialControl]);
+            BlendYController controllerEyeRightCtrl1 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_eyeHightLight_scale_facialControl]);
             if (controllerEyeLeft2 != null)
             {
                 eyeRightCtrl1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeRightCtrl1);
@@ -149,19 +155,13 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(eyeRightCtrl1);
             }
 
-            BlendYController controllerEyeRightCtrl2 = BlenderShapesManager.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_eyeHightLight_scale_facialControl]);
+            BlendYController controllerEyeRightCtrl2 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.l_eyeHightLight_scale_facialControl]);
             if (controllerEyeLeft2 != null)
             {
                 eyeRightCtrl2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerEyeRightCtrl2);
                 eyeRightCtrl2.Init();
                 FaceEditorMainWin.window.InserPanelList(eyeRightCtrl2);
             }
-        }
-
-
-        public override void OnPanelEnable()
-        {
-            base.OnPanelEnable();          
         }
 
         public override void OnPanelDisable()

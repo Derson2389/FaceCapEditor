@@ -189,7 +189,10 @@ namespace FaceCapEditor
                 {
            
                     blendController.GetIsSelect = !blendController.GetIsSelect;
-                    FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendController.GetControllerName(), !blendController.GetIsSelect);
+                    if (FaceEditorMainWin.window != null && FaceEditorMainWin.window.editKey != null)
+                    {
+                        FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendController.GetControllerName(), !blendController.GetIsSelect);
+                    }
                     Event.current.Use();
                     
                 }
@@ -470,25 +473,33 @@ namespace FaceCapEditor
         void PreviewBlendController()
         {
             Vector2 normalizedPos = GetNormalizedPosFromWindowPos(_dragButtonRect);
-            CalculateBlendShapeValue(normalizedPos);
-
-            for (int i = 0; i < blendController.blendShapeIndexs.Count; i++)
+            if (FaceEditorMainWin.window.currentHandler != null)
             {
-                int blendShapeIndex = blendController.blendShapeIndexs[i];
-                if (blendShapeIndex != -1)
-                {
-                    // 使用BlendController面板映射的值
-                    float weight = _weights[i];
-
-                    //// 对于PositiveInfinity值，使用原始shape里面的weight
-                    if (float.IsPositiveInfinity(_weights[i]))
-                        weight = 0;
-
-                    if (FaceEditorMainWin.window.FaceCtrlComp != null )
-                        FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(blendShapeIndex, weight);
+                if (blendController != null)
+                {                    
+                    FaceEditorMainWin.window.currentHandler.SetBlenderShapeByCtrlName(blendController.controllerName, normalizedPos);
                 }
             }
-        }
+
+                //CalculateBlendShapeValue(normalizedPos);
+
+                //for (int i = 0; i < blendController.blendShapeIndexs.Count; i++)
+                //{
+                //    int blendShapeIndex = blendController.blendShapeIndexs[i];
+                //    if (blendShapeIndex != -1)
+                //    {
+                //        // 使用BlendController面板映射的值
+                //        float weight = _weights[i];
+
+                //        //// 对于PositiveInfinity值，使用原始shape里面的weight
+                //        if (float.IsPositiveInfinity(_weights[i]))
+                //            weight = 0;
+
+                //        if (FaceEditorMainWin.window.FaceCtrlComp != null )
+                //            FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(blendShapeIndex, weight);
+                //    }
+                //}
+            }
 
         public void Reset()
         {

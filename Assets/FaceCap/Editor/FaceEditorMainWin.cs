@@ -21,11 +21,11 @@ namespace FaceCapEditor
         }
 
         public BlendShapeCtrlClip Clip = null;
+        public PrevizCtrlHandler currentHandler = null;
 
         private bool _onFocus = false;
         private float _panelEditTime = 0;
         private List<IAddKeyEnable> _panelList;
-        private List<BlendControllerPanel> _selections;
         private Vector2 _mousePos;
 
         public const float topBarHeight = 20f;
@@ -168,11 +168,12 @@ namespace FaceCapEditor
             _window.minSize = new Vector2(760 , 680);
             _window.Show();
             // OnInit is called after OnPanelEnable
-            BlenderShapesManager.ConfigTxt = clip.CtrlConfigDataFile;
-            BlenderShapesManager.LoadConfig(clip.FaceCtr);
+            //BlenderShapesManager.ConfigTxt = clip.CtrlConfigDataFile;
+            //BlenderShapesManager.LoadConfig(clip.FaceCtr);
             _window.Clip = clip;
+            _window.currentHandler = clip.CtrlHandler;
             _window.FaceCtrlComp = clip.FaceCtr;
-            _window.editKey = newEditKey;
+            _window.editKey = newEditKey; 
             _window.Init();   
             Debug.LogWarning("Init");   
         }
@@ -218,7 +219,7 @@ namespace FaceCapEditor
             }
 
         }
-
+         
 
         public void ResetFaceCompoent(FaceControllerComponent faceCtrl)
         {
@@ -240,15 +241,11 @@ namespace FaceCapEditor
         }
 
         
-        private void OnEnable()
+        private void OnEnable() 
         {
             Debug.LogWarning("OnEnable");   
 
-            if (Clip != null)
-            {
-                BlenderShapesManager.ConfigTxt = Clip.CtrlConfigDataFile;
-                BlenderShapesManager.LoadConfig(Clip.FaceCtr);
-            }
+          
             Rect rect = new Rect();
             _topbarPanel = new WindowTopPanel(this, rect);
             _browPanel = new WindowBrowPanel(this, rect);
@@ -270,16 +267,26 @@ namespace FaceCapEditor
             mShapePanel.panelRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight, _mShapeWidth, _mShapeHeight);
             otherPanel.panelRect = new Rect(position.width - _mShapeWidth + _mouthResizerSize, topBarHeight + _mShapeHeight, _mShapeWidth, position.height - _mShapeHeight);
 
-            topbarPanel.OnPanelEnable();
-            browPanel.OnPanelEnable();
-            cheekPanel.OnPanelEnable();
-            eyePanel.OnPanelEnable();
-            mouthPanel.OnPanelEnable();
-            otherPanel.OnPanelEnable();
-            mShapePanel.OnPanelEnable();    
-
+            if (Clip != null)
+            {
+                currentHandler = Clip.CtrlHandler;
+                if(Clip.editKey!= null)
+                    editKey = Clip.editKey;
+                else 
+                {
+                    Clip.EditKeyable(0);
+                    editKey = Clip.editKey;
+                } 
+                topbarPanel.OnPanelEnable();          
+                browPanel.OnPanelEnable();
+                cheekPanel.OnPanelEnable(); 
+                eyePanel.OnPanelEnable();
+                mouthPanel.OnPanelEnable();
+                otherPanel.OnPanelEnable();
+                mShapePanel.OnPanelEnable();  
+            }
             Slate.CutsceneUtility.onSelectionChange += OnCutsceneSelectChanged;
-            _selections = new List<BlendControllerPanel>();
+
         }   
 
         private void OnDisable()
@@ -295,8 +302,7 @@ namespace FaceCapEditor
 
             Slate.CutsceneUtility.onSelectionChange -= OnCutsceneSelectChanged;
             editKey = null;
-            _selections.Clear();
-            _selections = null;
+              
         }
 
 
@@ -344,8 +350,8 @@ namespace FaceCapEditor
         }
 
         private void OnGUI()
-        {
-            if (FaceCtrlComp!= null && BlenderShapesManager.controllerList.Count>0)
+        { 
+            if (FaceCtrlComp!= null && FaceEditorMainWin.window != null && FaceEditorMainWin.window.currentHandler != null && FaceEditorMainWin.window.currentHandler.controllerList.Count>0)
             {
                 topbarPanel.panelRect = new Rect(0, 0, position.width, topBarHeight);
                 browPanel.panelRect = new Rect(0, topBarHeight, position.width - _mShapeWidth, _brawHeight);
@@ -504,7 +510,10 @@ namespace FaceCapEditor
        
         public void Update()
         {
-
+            if (EditorApplication.isCompiling)
+            {
+               this.Close();
+            }
             if (editKey != null)
             {
                 // 如果Timeline未进入当前编辑clip, 则不进行更新

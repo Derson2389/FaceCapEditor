@@ -45,10 +45,10 @@ namespace FaceCapEditor
             unsetStyle = new GUIStyle();
             unsetStyle.normal.background = unsetIcon;
             setStyle = new GUIStyle();
-            setStyle.normal.background = setIcon;
-            setStyle.alignment = TextAnchor.MiddleCenter;
+            setStyle.normal.background = setIcon;     
+            setStyle.alignment = TextAnchor.MiddleCenter; 
 
-            BlendGridController controllerLeft = BlenderShapesManager.CreateBlendGridCtrl("r_brow_move_facialControl", panelSize, panelSize, 20, 10);
+            BlendGridController controllerLeft = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl("r_brow_move_facialControl", panelSize, panelSize, 20, 10);
             if (controllerLeft != null)
             {
                 leftController = new BlendControllerPanel(this, new Rect(controllerLeft.windowPosition, controllerLeft.windowSize), controllerLeft);
@@ -56,7 +56,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(leftController);
             }
 
-            BlendGridController controllerRight = BlenderShapesManager.CreateBlendGridCtrl("l_brow_move_facialControl", panelSize, panelSize, 20, 10);
+            BlendGridController controllerRight = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl("l_brow_move_facialControl", panelSize, panelSize, 20, 10);
             if (controllerRight != null)
             {
                 rightController = new BlendControllerPanel(this, new Rect(controllerRight.windowPosition, controllerRight.windowSize), controllerRight);
@@ -64,7 +64,7 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(rightController);
             }
 
-            BlendYController controllerLeft1 = BlenderShapesManager.CreateBlendYCtrl("r_out_brow_facialControl");
+            BlendYController controllerLeft1 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl("r_out_brow_facialControl");
             if (controllerLeft1 != null)
             {
                 leftSlider1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft1);
@@ -72,14 +72,14 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(leftSlider1);
             }
             
-            BlendYController controllerLeft2 = BlenderShapesManager.CreateBlendYCtrl("r_mid_brow_facialControl");
+            BlendYController controllerLeft2 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl("r_mid_brow_facialControl");
             if (controllerLeft2 != null)
             {
                 leftSlider2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft2);
                 leftSlider2.Init();
                 FaceEditorMainWin.window.InserPanelList(leftSlider2);
             }
-            BlendYController controllerLeft3 = BlenderShapesManager.CreateBlendYCtrl("r_in_brow_facialControl");
+            BlendYController controllerLeft3 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl("r_in_brow_facialControl");
             if (controllerLeft3 != null)
             {
                 leftSlider3 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerLeft3);
@@ -87,21 +87,21 @@ namespace FaceCapEditor
                 FaceEditorMainWin.window.InserPanelList(leftSlider3);
             }
             
-            BlendYController controllerRight1 = BlenderShapesManager.CreateBlendYCtrl("l_in_brow_facialControl");
+            BlendYController controllerRight1 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl("l_in_brow_facialControl");
             if (controllerRight1 != null)
             {
                 rightSlider1 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerRight1);
                 rightSlider1.Init();
                 FaceEditorMainWin.window.InserPanelList(rightSlider1);
             }
-            BlendYController controllerRight2 = BlenderShapesManager.CreateBlendYCtrl("l_mid_brow_facialControl");
+            BlendYController controllerRight2 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl("l_mid_brow_facialControl");
             if (controllerRight2 != null)
             {
                 rightSlider2 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerRight2);
                 rightSlider2.Init();
                 FaceEditorMainWin.window.InserPanelList(rightSlider2);
             }
-            BlendYController controllerRight3 = BlenderShapesManager.CreateBlendYCtrl("l_out_brow_facialControl");
+            BlendYController controllerRight3 = FaceEditorMainWin.window.currentHandler.CreateBlendYCtrl("l_out_brow_facialControl");
             if (controllerRight3 != null)
             {
                 rightSlider3 = new BlendSlideControllerPanel(this, Rect.zero, null, controllerRight3);
@@ -143,8 +143,8 @@ namespace FaceCapEditor
         }
 
         public override void Update(bool focus)
-        {
-            if (BlenderShapesManager.controllerList.Count <= 0)
+        {  
+            if (FaceEditorMainWin.window!= null && FaceEditorMainWin.window.currentHandler != null&& FaceEditorMainWin.window.currentHandler.controllerList.Count <= 0)
             {
                 return;
             }
@@ -194,12 +194,13 @@ namespace FaceCapEditor
                 }
             }
             GUILayout.EndArea();
-            newRect = new Rect(panelRect.x + 160, panelRect.y, panelRect.width, panelRect.height);
+            newRect = new Rect(panelRect.x + 160, panelRect.y, 100, panelRect.height);
             GUILayout.BeginArea(newRect);         
-            {
+            {        
+              
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(15);
-                if(leftSlider1 != null)
+                if (leftSlider1 != null)   
                     leftSlider1.OnDraw(new Vector2(10, panelRect.height - 36));
                 GUILayout.Space(15);
                 if (leftSlider2 != null)
@@ -208,12 +209,14 @@ namespace FaceCapEditor
                 if (leftSlider3 != null)
                     leftSlider3.OnDraw(new Vector2(10, panelRect.height - 36));
                 GUILayout.EndHorizontal();
+                
             }
             GUILayout.EndArea();
 
-            newRect = new Rect(panelRect.width - 230, panelRect.y, panelRect.width, panelRect.height);
+            newRect = new Rect(panelRect.width - 230, panelRect.y, 100, panelRect.height);
             GUILayout.BeginArea(newRect);
             {
+               
                 GUILayout.BeginHorizontal();
 
                 GUILayout.Space(15);

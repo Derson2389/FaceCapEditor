@@ -38,42 +38,42 @@ namespace FaceCapEditor
         {
             base.OnPanelEnable();
 
-            BlendGridController controllerTeethUp = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.upper_teeth_facialControl], panelSize, panelSize, 80, 22);           
+            BlendGridController controllerTeethUp = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.upper_teeth_facialControl], panelSize, panelSize, 80, 22);           
             if (controllerTeethUp != null)
             {
                 teethControllerUp = new BlendControllerPanel(this, new Rect(controllerTeethUp.windowPosition, controllerTeethUp.windowSize), controllerTeethUp);
                 teethControllerUp.Init();
             }
 
-            BlendGridController controllerTeethDown = BlenderShapesManager.CreateBlendGridCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.lower_teeth_facialControl], panelSize, panelSize, 80, 128);            
+            BlendGridController controllerTeethDown = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.lower_teeth_facialControl], panelSize, panelSize, 80, 128);            
             if (controllerTeethDown != null)
             {
                 teethControllerDown = new BlendControllerPanel(this, new Rect(controllerTeethDown.windowPosition, controllerTeethDown.windowSize), controllerTeethDown);
                 teethControllerDown.Init();
             }
 
-            BlendXController controllerAdd1 = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.add_facialControl]);
+            BlendXController controllerAdd1 = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.add_facialControl]);
             if (controllerAdd1 != null)
             {
                 controllerPanelAdd1 = new BlendSlideControllerPanel(this, Rect.zero, controllerAdd1, null);
                 controllerPanelAdd1.Init();
             }
 
-            BlendXController controllerAdd2 = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.add01_facialControl]);
+            BlendXController controllerAdd2 = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.add01_facialControl]);
             if (controllerAdd2 != null)
             {
                 controllerPanelAdd2 = new BlendSlideControllerPanel(this, Rect.zero, controllerAdd2, null);
                 controllerPanelAdd2.Init();
             }
 
-            BlendXController controllerAdd3 = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.add02_facialControl]);
+            BlendXController controllerAdd3 = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.add02_facialControl]);
             if (controllerAdd3 != null)
             {
                 controllerPanelAdd3 = new BlendSlideControllerPanel(this, Rect.zero, controllerAdd3, null);
                 controllerPanelAdd3.Init();
             }
 
-            BlendXController controllerAdd4 = BlenderShapesManager.CreateBlendXCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.add03_facialControl]);
+            BlendXController controllerAdd4 = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.OtherCtrlName[(int)FaceEditHelper.OtherCtrl.add03_facialControl]);
             if (controllerAdd4 != null)
             {
                 controllerPanelAdd4 = new BlendSlideControllerPanel(this, Rect.zero, controllerAdd4, null);

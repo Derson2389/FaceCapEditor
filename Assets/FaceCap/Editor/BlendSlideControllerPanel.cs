@@ -240,15 +240,39 @@ namespace FaceCapEditor
 
         public void OnDraw(Vector2 size)
         {
+            Color _buttonColor = new Color(0, 183 / 255f, 238 / 255f);
+            if (blendControllerY != null)
+            {
+                GUILayout.BeginVertical();
+                if (blendControllerY != null)
+                {
+                    VerticalSliderValue = GUILayout.VerticalSlider(VerticalSliderValue, _upValue, _downValue, GUILayout.Width(size.x), GUILayout.Height(size.y));
+                }
+                bool b = blendControllerY.GetIsSelect;
+                GUI.color = blendControllerY.GetIsSelect ? _buttonColor : Color.white;
+                bool newNeedRecord = GUILayout.Toggle(b, b ? "选中" : "", GUILayout.Width(10));
+                if (newNeedRecord != b)
+                {
+                    blendControllerY.GetIsSelect = newNeedRecord;
+                    FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendControllerY.GetControllerName(), !blendControllerY.GetIsSelect);
+                }
+                GUI.color = Color.white;
+                GUILayout.EndVertical();
 
+            }
             if (blendControllerX != null)
-            {                
+            {               
                 HorizontalSliderValue = GUILayout.HorizontalSlider(HorizontalSliderValue, _leftValue, _rightValue, GUILayout.Width(size.x), GUILayout.Height(size.y));
-            }     
-            
-            if(blendControllerY != null)
-            {              
-                VerticalSliderValue = GUILayout.VerticalSlider(VerticalSliderValue, _upValue, _downValue, GUILayout.Width(size.x), GUILayout.Height(size.y));
+                
+                bool b = blendControllerX.GetIsSelect;
+                GUI.color = blendControllerX.GetIsSelect ? _buttonColor : Color.white;
+                bool newNeedRecord = GUILayout.Toggle(b, b ? "选中" : "", GUILayout.Width(10));
+                if (newNeedRecord != b)
+                {
+                    blendControllerX.GetIsSelect = newNeedRecord;
+                    FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendControllerX.GetControllerName(), !blendControllerX.GetIsSelect);
+                }
+                GUI.color = Color.white;
             }
 
             //draw selected rect
@@ -265,19 +289,20 @@ namespace FaceCapEditor
                 ProcessMouseEvent(selXRect);
             }
 
-            if (blendControllerY != null&& blendControllerY.GetIsSelect)
-            {               
-                GUI.color = highlighColor;
-                GUI.DrawTexture(selRect, Slate.Styles.whiteTexture);
-                GUI.color = Color.white;                                     
-            }
-            if (blendControllerX != null && blendControllerX.GetIsSelect)
-            {          
-                GUI.color = highlighColor;
-                GUI.DrawTexture(selXRect, Slate.Styles.whiteTexture);
-                GUI.color = Color.white;
-                EditorGUIUtility.AddCursorRect(selXRect, MouseCursor.Link);
-            }
+            //if (blendControllerY != null&& blendControllerY.GetIsSelect)
+            //{               
+            //    GUI.color = highlighColor;
+            //    GUI.DrawTexture(selRect, Slate.Styles.whiteTexture);
+            //    GUI.color = Color.white;                                     
+            //}
+            //if (blendControllerX != null && blendControllerX.GetIsSelect)
+            //{          
+            //    GUI.color = highlighColor;
+            //    GUI.DrawTexture(selXRect, Slate.Styles.whiteTexture);
+            //    GUI.color = Color.white;
+            //    EditorGUIUtility.AddCursorRect(selXRect, MouseCursor.Link);
+            //}
+
             ProcessResizeEvent();
             ProcessDragEvents();
         }
@@ -285,22 +310,22 @@ namespace FaceCapEditor
         void ProcessMouseEvent(Rect rect)
         {
             EditorGUIUtility.AddCursorRect(rect, MouseCursor.Link);
-            if (Event.current.type == EventType.MouseDown)
-            {
-                if (rect.Contains(Event.current.mousePosition)&& blendControllerX!= null)
-                {
+            //if (Event.current.type == EventType.MouseDown)
+            //{
+            //    if (rect.Contains(Event.current.mousePosition)&& blendControllerX!= null)
+            //    {
                     
-                    blendControllerX.GetIsSelect = !blendControllerX.GetIsSelect;
-                    FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendControllerX.GetControllerName(), !blendControllerX.GetIsSelect);
-                    Event.current.Use();                   
-                }
-                if (rect.Contains(Event.current.mousePosition) && blendControllerY != null)
-                {                   
-                    blendControllerY.GetIsSelect = !blendControllerY.GetIsSelect;
-                    FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendControllerY.GetControllerName(), !blendControllerY.GetIsSelect);
-                    Event.current.Use();                   
-                }
-            }
+            //        blendControllerX.GetIsSelect = !blendControllerX.GetIsSelect;
+            //        FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendControllerX.GetControllerName(), !blendControllerX.GetIsSelect);
+            //        Event.current.Use();                   
+            //    }
+            //    if (rect.Contains(Event.current.mousePosition) && blendControllerY != null)
+            //    {                   
+            //        blendControllerY.GetIsSelect = !blendControllerY.GetIsSelect;
+            //        FaceEditorMainWin.window.editKey.ChangeAnimParamState(blendControllerY.GetControllerName(), !blendControllerY.GetIsSelect);
+            //        Event.current.Use();                   
+            //    }
+            //}
         }
 
 
@@ -507,48 +532,65 @@ namespace FaceCapEditor
         void PreviewBlendController()
         {
             float sliderValue = GetSliderValueFromWindow();
-            CalculateBlendShapeValue(sliderValue);
 
-            if (blendControllerX != null)
+            if (FaceEditorMainWin.window.currentHandler != null)
             {
-                for (int i = 0; i < blendControllerX.blendShapeIndexs.Count; i++)
+                if (blendControllerX!= null)
                 {
-                    int blendShapeIndex = blendControllerX.blendShapeIndexs[i];
-                    if (blendShapeIndex != -1)
-                    {
-                        // 使用BlendController面板映射的值
-                        float weight = _weights[i];
-
-                        //// 对于PositiveInfinity值，使用原始shape里面的weight
-                        if (float.IsPositiveInfinity(weight))
-                            weight = 0;
-
-                        if (FaceEditorMainWin.window.FaceCtrlComp != null)
-                            FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(blendShapeIndex, weight);
-
-                    }
+                    Vector2 vec = new Vector2(sliderValue, 0);
+                    FaceEditorMainWin.window.currentHandler.SetBlenderShapeByCtrlName(blendControllerX.controllerName, vec);
                 }
+
+                if (blendControllerY != null)
+                {
+                    Vector2 vec = new Vector2( 0, sliderValue);
+                    FaceEditorMainWin.window.currentHandler.SetBlenderShapeByCtrlName(blendControllerY.controllerName, vec);
+                }
+
             }
 
-            if (blendControllerY != null)
-            {
-                for (int i = 0; i < blendControllerY.blendShapeIndexs.Count; i++)
-                {
-                    int blendShapeIndex = blendControllerY.blendShapeIndexs[i];
-                    if (blendShapeIndex != -1)
-                    {
-                        // 使用BlendController面板映射的值
-                        float weight = _weights[i];
+            //CalculateBlendShapeValue(sliderValue);
 
-                        //// 对于PositiveInfinity值，使用原始shape里面的weight
-                        if (float.IsPositiveInfinity(weight))
-                            weight = 0;
+            //if (blendControllerX != null)
+            //{
+            //    for (int i = 0; i < blendControllerX.blendShapeIndexs.Count; i++)
+            //    {
+            //        int blendShapeIndex = blendControllerX.blendShapeIndexs[i];
+            //        if (blendShapeIndex != -1)
+            //        {
+            //            // 使用BlendController面板映射的值
+            //            float weight = _weights[i];
 
-                        if (FaceEditorMainWin.window.FaceCtrlComp != null )
-                            FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(blendShapeIndex, weight);
-                    }
-                }
-            }
+            //            //// 对于PositiveInfinity值，使用原始shape里面的weight
+            //            if (float.IsPositiveInfinity(weight))
+            //                weight = 0;
+
+            //            if (FaceEditorMainWin.window.FaceCtrlComp != null)
+            //                FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(blendShapeIndex, weight);
+
+            //        }
+            //    }
+            //}
+
+            //if (blendControllerY != null)
+            //{
+            //    for (int i = 0; i < blendControllerY.blendShapeIndexs.Count; i++)
+            //    {
+            //        int blendShapeIndex = blendControllerY.blendShapeIndexs[i];
+            //        if (blendShapeIndex != -1)
+            //        {
+            //            // 使用BlendController面板映射的值
+            //            float weight = _weights[i];
+
+            //            //// 对于PositiveInfinity值，使用原始shape里面的weight
+            //            if (float.IsPositiveInfinity(weight))
+            //                weight = 0;
+
+            //            if (FaceEditorMainWin.window.FaceCtrlComp != null )
+            //                FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(blendShapeIndex, weight);
+            //        }
+            //    }
+            //}
         }
 
         public void Reset()
