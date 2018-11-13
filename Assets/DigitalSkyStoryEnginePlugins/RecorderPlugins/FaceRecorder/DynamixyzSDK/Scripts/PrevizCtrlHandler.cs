@@ -231,7 +231,7 @@ public class PrevizCtrlHandler
                 float valueX = vec.x;
                 var left = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendXIdx.left].blendableIndex;
                 var right = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendXIdx.right].blendableIndex;
-                float[] _weights = new float[ctrl.ctrlBlendShapes.Count];
+            
                 if (ctrl.leftValue == ctrl.rightValue)
                 {
                     if (ctrl.leftValue > 0)
@@ -445,5 +445,65 @@ public class PrevizCtrlHandler
         return ad;
     }
 
+    #region Panel
+
+
+    public  BlendXController CreateBlendXCtrl( string name)
+    {
+        BlendXController dummy = new BlendXController();
+        dummy.controllerName = name;
+
+        BlenderShapeCtrl crl = getControllerByName(dummy.controllerName);
+        if (crl != null)
+        {
+            dummy.left = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendXIdx.left].blendableIndex;
+            dummy.right = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendXIdx.right].blendableIndex;
+            dummy.leftSliderValue = crl.leftValue;
+            dummy.rightSliderValue = crl.rightValue;
+            return dummy;
+        }
+
+        return null;
+    }
+
+    public  BlendYController CreateBlendYCtrl(string name)
+    {
+        BlendYController dummy = new BlendYController();
+        dummy.controllerName = name;
+
+        BlenderShapeCtrl crl = getControllerByName(dummy.controllerName);
+        if (crl != null)
+        {
+            dummy.top = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendYIdx.top].blendableIndex;
+            dummy.bottom = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendYIdx.down].blendableIndex;
+            dummy.upSliderValue = crl.upValue;
+            dummy.downSliderValue = crl.downValue;
+            return dummy;
+        }
+
+        return null;
+    }
+
+
+    public  BlendGridController CreateBlendGridCtrl(string name, int width, int height, int posX, int posY)
+    {
+        BlendGridController dummy = new BlendGridController();
+        dummy.windowPosition = new Vector2(posX, posY);
+        dummy.windowSize = new Vector2(width, width);
+        dummy.controllerName = name;
+
+        BlenderShapeCtrl crl = getControllerByName(dummy.controllerName);
+        if (crl != null)
+        {
+            dummy.top = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.top].blendableIndex;
+            dummy.bottom = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.down].blendableIndex;
+            dummy.left = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.left].blendableIndex;
+            dummy.right = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.right].blendableIndex;
+            return dummy;
+        }
+        return null;
+    }
+
+    #endregion
 
 }
