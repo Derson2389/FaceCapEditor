@@ -543,6 +543,25 @@ namespace DigitalSky.Tracker
                     group.name = obj.targetSource.name;
                 }
 
+                ///save in blendShapeCtrl
+                Slate.ActorActionTrack blendShapeCtrl = null;
+                if (blendShapeCtrl == null)
+                {
+                    blendShapeCtrl = group.AddTrack<Slate.ActorActionTrack>();
+                    blendShapeCtrl.name = "FaceController " + DateTime.Now.ToString("MMddHHmmssfff");
+                    blendShapeCtrl.RecordIdx = recordIdx;
+
+                }
+                if (obj.recorder is BoneTrackRecorder)
+                {
+                    var _boneTrack = obj.recorder as BoneTrackRecorder;
+                    BlendShapeCtrlClip faceCtrlClip = blendShapeCtrl.AddAction<BlendShapeCtrlClip>(startTime);
+                    faceCtrlClip = _boneTrack._ctrlShape;
+                    faceCtrlClip.length = endTime - startTime;
+                }
+
+                ///end save blendShapeCtrl
+
                 Slate.AnimationTrack animationTrack = null/*group.tracks.Find(t => t is Slate.AnimationTrack && t.name == "Mopher") as Slate.AnimationTrack*/;
                 Animation animComponent = obj.targetSource.GetComponent<Animation>();
                 if (animComponent == null)

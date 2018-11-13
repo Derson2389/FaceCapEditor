@@ -96,6 +96,8 @@ namespace DigitalSky.Tracker
     {
         // 保存blendshape值的动画曲线集合
         private List<BoneAnimation> _animationCurves = null;
+        private Dictionary<string, TrackBindingTarget> _animateNames = null;
+        public BlendShapeCtrlClip _ctrlShape = null;
 
         // Use this for initialization
         void Start()
@@ -133,6 +135,21 @@ namespace DigitalSky.Tracker
                 _animationCurves.Add(new BoneAnimation(_retargeter.trackBindings[i].target));
             }
 
+            _ctrlShape = new BlendShapeCtrlClip();
+            _animateNames = new Dictionary<string, TrackBindingTarget>();
+            if (_retargeter is dxyz.PrevizTrackRetargeter)
+            {
+                var previzTrack = _retargeter as dxyz.PrevizTrackRetargeter;
+                _ctrlShape.CtrlConfigDataFile = previzTrack.controllerConfiguration;
+                _ctrlShape.EditKeyable(0);
+                for (int i = 0; i < _retargeter.trackBindings.Count; i++)
+                {
+                    if (_retargeter.trackBindings[i].target == null)
+                        continue;                 
+                    _animateNames.Add(_retargeter.trackBindings[i].bindName, _retargeter.trackBindings[i].target);
+                }
+            }
+           
             _init = true;
         }
 
@@ -145,6 +162,15 @@ namespace DigitalSky.Tracker
             for (int i = 0; i < _animationCurves.Count; i++)
             {
                 _animationCurves[i].AddKey(time);
+            }
+            if (_ctrlShape != null&& _ctrlShape.editKey != null)
+            {
+                foreach (string name in _animateNames.Keys)
+                {
+                    Vector3 pos = _animateNames[name].GetLocalPosition();
+                    Vector2 vec = new Vector2(pos.x, pos.z);
+                    _ctrlShape.editKey.Addkey(name, vec, time);
+                }               
             }
         }
 
