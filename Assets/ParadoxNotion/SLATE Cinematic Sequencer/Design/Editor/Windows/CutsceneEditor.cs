@@ -5421,7 +5421,6 @@ namespace Slate{
             {
                 if (clip.FaceCtr != null)
                 {
-
                     FaceCapEditor.FaceEditorMainWin.OpenEditorMainWin(clip, clip.editKey);
                 }
                 else 
