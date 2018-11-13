@@ -306,8 +306,6 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
         {
             AnimatedParameter param ;
            
-
-
             if (controllerParams.TryGetValue(controllerName.ToLower(), out param))
             {
                 return (Vector2)param.GetCurrentValue();
@@ -365,6 +363,16 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
                 return true;
 
             return false;
+        }
+
+        public void Addkey(string name, Vector2 vec, float time)
+        {
+            AnimatedParameter animParam;
+            if (controllerParams.TryGetValue(name.ToLower(), out animParam))
+            {                
+                var index0 = animParam.curves[0].AddKey(time, vec.x);
+                var index1 = animParam.curves[1].AddKey(time, vec.y);
+            }
         }
 
         public void Save()

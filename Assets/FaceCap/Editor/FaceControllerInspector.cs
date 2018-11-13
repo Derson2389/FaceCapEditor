@@ -33,22 +33,23 @@ public class FaceControllerInspector : Editor
         //}
 
 
-        if (GUILayout.Button("加载配置"))
+        //if (GUILayout.Button("加载配置"))
+        //{
+        //    BlenderShapesManager.LoadConfig((FaceControllerComponent)target);
+        //    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        //}
+
+        if (GUILayout.Button("Bake To Animation"))
         {
-            BlenderShapesManager.LoadConfig((FaceControllerComponent)target);
-            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+
+            Debug.LogWarning("Bake To Animation To Impl Later");
+            
         }
 
-        if (GUILayout.Button("保存配置"))
-        {
-
-            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        }
-
-        if (GUILayout.Button("增加控制器"))
-        {
-            EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        }
+        //if (GUILayout.Button("增加控制器"))
+        //{
+        //    EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        //}
 
         GUILayout.EndHorizontal();   
     }
