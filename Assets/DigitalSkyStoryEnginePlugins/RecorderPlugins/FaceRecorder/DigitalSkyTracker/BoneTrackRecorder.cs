@@ -92,25 +92,42 @@ namespace DigitalSky.Tracker
 #endif
     }
 
+    public class BlendShapeRecord
+    {
+        public string ctrlName = string.Empty;
+        public Dictionary<float, Vector2> timeKeyFrame = new Dictionary<float, Vector2>();
+        private TrackBindingTarget _bindTarget = null;
+        public BlendShapeRecord(string name, TrackBindingTarget bindTarget)
+        {
+            ctrlName = name;
+            _bindTarget = bindTarget;
+        }
+
+        public void  AddKeyFrame(float time)
+        {
+            Vector3 pos = _bindTarget.GetLocalPosition();
+            Vector2 vec = new Vector2(pos.x, pos.y);
+            timeKeyFrame[time] = vec;
+        }
+
+    }
+
+
+
+
+
     public class BoneTrackRecorder : TrackRecorder
     {
         // 保存blendshape值的动画曲线集合
         private List<BoneAnimation> _animationCurves = null;
         private Dictionary<string, TrackBindingTarget> _animateNames = null;
+
+        public List<BlendShapeRecord> _blendShapeRecord = null;
+        
         public BlendShapeCtrlClip _ctrlShape = null;
+        public TextAsset configAsset = null;
 
-        // Use this for initialization
-        void Start()
-        {
-
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
+       
         public override void Init(TrackRetargeter retargeter)
         {
             // 如果retargeter重定向失败，则不能录制
@@ -121,32 +138,32 @@ namespace DigitalSky.Tracker
                 return;
             }
 
-            // 通过trackBinding数据生成动画曲线信息
-            _animationCurves = new List<BoneAnimation>();
-            for (int i = 0; i < _retargeter.trackBindings.Count; i++)
-            {
-                if (_retargeter.trackBindings[i].target == null)
-                    continue;
+            //// 通过trackBinding数据生成动画曲线信息
+            //_animationCurves = new List<BoneAnimation>();
+            //for (int i = 0; i < _retargeter.trackBindings.Count; i++)
+            //{
+            //    if (_retargeter.trackBindings[i].target == null)
+            //        continue;
 
-                /*TrackBindingTarget trackTarget = _retargeter.trackBindings[i].target;
-                if (trackTarget.boneTransform == null)
-                    continue;*/
+            //    /*TrackBindingTarget trackTarget = _retargeter.trackBindings[i].target;
+            //    if (trackTarget.boneTransform == null)
+            //        continue;*/
 
-                _animationCurves.Add(new BoneAnimation(_retargeter.trackBindings[i].target));
-            }
+            //    _animationCurves.Add(new BoneAnimation(_retargeter.trackBindings[i].target));
+            //}
 
-            _ctrlShape = new BlendShapeCtrlClip();
-            _animateNames = new Dictionary<string, TrackBindingTarget>();
+            //_ctrlShape = new BlendShapeCtrlClip();
+            ///_animateNames = new Dictionary<string, TrackBindingTarget>();
+            _blendShapeRecord = new List<BlendShapeRecord>();
             if (_retargeter is dxyz.PrevizTrackRetargeter)
             {
                 var previzTrack = _retargeter as dxyz.PrevizTrackRetargeter;
-                _ctrlShape.CtrlConfigDataFile = previzTrack.controllerConfiguration;
-                _ctrlShape.EditKeyable(0);
+                configAsset = previzTrack.controllerConfiguration;
                 for (int i = 0; i < _retargeter.trackBindings.Count; i++)
                 {
                     if (_retargeter.trackBindings[i].target == null)
-                        continue;                 
-                    _animateNames.Add(_retargeter.trackBindings[i].bindName, _retargeter.trackBindings[i].target);
+                        continue;
+                    _blendShapeRecord.Add(new BlendShapeRecord(_retargeter.trackBindings[i].bindName, _retargeter.trackBindings[i].target));
                 }
             }
            
@@ -158,20 +175,11 @@ namespace DigitalSky.Tracker
             if (!_init)
                 return;
 
-            // 根据trackBinding数据在动画曲线上添加关键帧
-            for (int i = 0; i < _animationCurves.Count; i++)
+            for (int i = 0; i < _blendShapeRecord.Count; i++)
             {
-                _animationCurves[i].AddKey(time);
+                _blendShapeRecord[i].AddKeyFrame(time);
             }
-            if (_ctrlShape != null&& _ctrlShape.editKey != null)
-            {
-                foreach (string name in _animateNames.Keys)
-                {
-                    Vector3 pos = _animateNames[name].GetLocalPosition();
-                    Vector2 vec = new Vector2(pos.x, pos.z);
-                    _ctrlShape.editKey.Addkey(name, vec, time);
-                }               
-            }
+
         }
 
 #if UNITY_EDITOR

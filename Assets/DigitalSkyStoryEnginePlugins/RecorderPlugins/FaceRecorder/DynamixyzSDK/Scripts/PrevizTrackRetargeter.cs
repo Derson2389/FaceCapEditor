@@ -299,7 +299,7 @@ namespace dxyz
                         r.z = x;
                     }
 
-                    data.boneLocalRot = t * Scale;
+                    data.boneLocalTrans = t;
                     data.boneLocalRot = r;
                 }
 
@@ -542,6 +542,10 @@ namespace dxyz
                     if (binding.type != PrevizTrackBinding.Type.INVALID)
                     {
                         //mEntities.Add(vCurrEntity);
+                        if (CtrHandler != null)
+                        {
+                            binding._ctrlHander = CtrHandler;
+                        }
                         bindings.Add(binding);
                     }
                 }
@@ -550,11 +554,8 @@ namespace dxyz
                     // NOTA: this code is not used currently, but might be in
                     // future.
                     // Parsing default position for bones.
-                    if (CtrHandler != null)
-                    {
-                        binding._ctrlHander = CtrHandler;
-                    }
-                    bindings.Add(binding);
+                    
+                   // bindings.Add(binding);
                 }
             }
 

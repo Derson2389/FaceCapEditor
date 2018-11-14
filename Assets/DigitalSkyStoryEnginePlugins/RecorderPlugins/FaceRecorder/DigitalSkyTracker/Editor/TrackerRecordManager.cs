@@ -556,38 +556,48 @@ namespace DigitalSky.Tracker
                 {
                     var _boneTrack = obj.recorder as BoneTrackRecorder;
                     BlendShapeCtrlClip faceCtrlClip = blendShapeCtrl.AddAction<BlendShapeCtrlClip>(startTime);
-                    faceCtrlClip = _boneTrack._ctrlShape;
+                    faceCtrlClip.CtrlConfigDataFile = _boneTrack.configAsset;
+                    faceCtrlClip.EditKeyable(0);
+                    for (int i = 0; i < _boneTrack._blendShapeRecord.Count; i++)
+                    {
+                        var blendCtrl = _boneTrack._blendShapeRecord[i];
+                        foreach (var time in blendCtrl.timeKeyFrame.Keys)
+                        {
+                            faceCtrlClip.editKey.Addkey(blendCtrl.ctrlName, blendCtrl.timeKeyFrame[time], time);
+                        }
+                    }
                     faceCtrlClip.length = endTime - startTime;
+
                 }
 
                 ///end save blendShapeCtrl
 
-                Slate.AnimationTrack animationTrack = null/*group.tracks.Find(t => t is Slate.AnimationTrack && t.name == "Mopher") as Slate.AnimationTrack*/;
-                Animation animComponent = obj.targetSource.GetComponent<Animation>();
-                if (animComponent == null)
-                    animComponent = obj.targetSource.AddComponent<Animation>();
+                //Slate.AnimationTrack animationTrack = null/*group.tracks.Find(t => t is Slate.AnimationTrack && t.name == "Mopher") as Slate.AnimationTrack*/;
+                //Animation animComponent = obj.targetSource.GetComponent<Animation>();
+                //if (animComponent == null)
+                //    animComponent = obj.targetSource.AddComponent<Animation>();
 
-                if (animationTrack == null)
-                {
-                    animationTrack = group.AddTrack<Slate.AnimationTrack>();
-                    animationTrack.name = "Mopher " + DateTime.Now.ToString("MMddHHmmssfff");
-                    animationTrack.RecordIdx = recordIdx;
-                }
+                //if (animationTrack == null)
+                //{
+                //    animationTrack = group.AddTrack<Slate.AnimationTrack>();
+                //    animationTrack.name = "Mopher " + DateTime.Now.ToString("MMddHHmmssfff");
+                //    animationTrack.RecordIdx = recordIdx;
+                //}
 
-                AnimationClip clip = obj.recorder.CreateAnimationClip();
+                //AnimationClip clip = obj.recorder.CreateAnimationClip();
 
-                string fileName = DateTime.Now.ToString("MMddHHmmssfff");
-                string dirPath = "Assets/" + TrackerRecordManager.Instance.GetRecordSavePath() + obj.targetSource.name;
-                // create Directory if not exist
-                if (!Directory.Exists(dirPath))
-                    Directory.CreateDirectory(dirPath);
+                //string fileName = DateTime.Now.ToString("MMddHHmmssfff");
+                //string dirPath = "Assets/" + TrackerRecordManager.Instance.GetRecordSavePath() + obj.targetSource.name;
+                //// create Directory if not exist
+                //if (!Directory.Exists(dirPath))
+                //    Directory.CreateDirectory(dirPath);
 
-                string path = dirPath + "/" + "face_" + fileName + ".anim";
-                TrackerRecordManager.SaveAnimationClip(clip, path);
+                //string path = dirPath + "/" + "face_" + fileName + ".anim";
+                //TrackerRecordManager.SaveAnimationClip(clip, path);
 
-                Slate.ActionClips.PlayAnimationClip playAnimationClip = animationTrack.AddAction<Slate.ActionClips.PlayAnimationClip>(startTime);
-                playAnimationClip.animationClip = clip;
-                playAnimationClip.length = playAnimationClip.animationClip.length / playAnimationClip.playbackSpeed;
+                //Slate.ActionClips.PlayAnimationClip playAnimationClip = animationTrack.AddAction<Slate.ActionClips.PlayAnimationClip>(startTime);
+                //playAnimationClip.animationClip = clip;
+                //playAnimationClip.length = playAnimationClip.animationClip.length / playAnimationClip.playbackSpeed;
             }
         }
 

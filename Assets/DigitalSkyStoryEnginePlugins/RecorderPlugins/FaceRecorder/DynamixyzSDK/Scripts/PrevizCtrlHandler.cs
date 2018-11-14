@@ -274,7 +274,8 @@ public class PrevizCtrlHandler
                 }
             }
             else if (ctrl.ctrlType == 2)//XY Ctrl
-            {           
+            {
+                Vector2 xy = new Vector2(vec.x, -vec.y);
                 var top = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.top].blendableIndex;
                 var bottom = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.down].blendableIndex;
                 var left = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.left].blendableIndex;
@@ -282,22 +283,22 @@ public class PrevizCtrlHandler
                 
                 if (top != -1)
                 {
-                    _weights[(int)ControllerDirectionXY.Top] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Top, vec);
+                    _weights[(int)ControllerDirectionXY.Top] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Top, xy);
                 }
                 
                 if (left != -1)
                 {
-                    _weights[(int)ControllerDirectionXY.Left] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Left, vec);
+                    _weights[(int)ControllerDirectionXY.Left] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Left, xy);
                 }
 
                 if (bottom != -1)
                 {
-                    _weights[(int)ControllerDirectionXY.Bottom] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Bottom, vec);
+                    _weights[(int)ControllerDirectionXY.Bottom] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Bottom, xy);
                 }
 
                 if (right != -1)
                 {
-                    _weights[(int)ControllerDirectionXY.Right] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Right, vec);
+                    _weights[(int)ControllerDirectionXY.Right] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Right, xy);
                 }
             }
 
