@@ -170,7 +170,7 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
             {
                 return null;
             }
-            return actor.GetComponent<FaceControllerComponent>();
+            return actor.GetComponentInChildren<FaceControllerComponent>();
         }
     }
 
