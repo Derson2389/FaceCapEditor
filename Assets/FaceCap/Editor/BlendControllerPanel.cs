@@ -458,16 +458,30 @@ namespace FaceCapEditor
 
         Vector2 GetWindowPosFromNormalizedPos(Vector2 normalizedPos)
         {
-            float x = _validDragRect.center.x + ((normalizedPos.x * _validDragRect.width) / 2);
-            float y = _validDragRect.center.y + ((normalizedPos.y * _validDragRect.height) / 2);
-            return new Vector2(x, y);
+            if (blendController.leftValue > blendController.rightValue)
+            {
+                float x = _validDragRect.center.x + ((-normalizedPos.x * _validDragRect.width) / 2);
+                float y = _validDragRect.center.y + (((-normalizedPos.y) * _validDragRect.height) / 2);
+                return new Vector2(x, y);
+            }
+            else
+            {
+                float x = _validDragRect.center.x + ((normalizedPos.x * _validDragRect.width) / 2);
+                float y = _validDragRect.center.y + (((-normalizedPos.y) * _validDragRect.height) / 2);
+                return new Vector2(x, y);
+            }
         }
 
         Vector2 GetNormalizedPosFromWindowPos(Rect dragRect)
         {
             float x = (dragRect.center.x - _validDragRect.center.x) / (_validDragRect.width / 2);
             float y = (dragRect.center.y - _validDragRect.center.y) / (_validDragRect.height / 2);
-            return new Vector2(x, y);
+            if (blendController.leftValue > blendController.rightValue)
+            {
+                return new Vector2(-x, -y);
+            }
+
+            return new Vector2(x, -y);
         }
 
         void PreviewBlendController()

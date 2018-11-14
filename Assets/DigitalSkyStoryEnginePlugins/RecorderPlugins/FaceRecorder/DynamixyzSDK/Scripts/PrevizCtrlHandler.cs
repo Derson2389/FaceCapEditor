@@ -124,28 +124,28 @@ public class PrevizCtrlHandler
                 addDummy.ctrlName = ctrName;
                 addDummy.ctrlType = intType;
                 string[] bs1 = parseStr[2].Split('|');
-                addDummy.rightValue = float.Parse(bs1[1]);
+                addDummy.upValue = float.Parse(bs1[1]);
                 BlendShape newBs1 = new BlendShape();
                 newBs1.blendableName = bs1[0];
                 newBs1.blendableIndex = faceCtrlComponent.GetMeshRenderIdxByName(newBs1.blendableName);
                 addDummy.ctrlBlendShapes.Add(newBs1);
 
                 string[] bs2 = parseStr[3].Split('|');
-                addDummy.leftValue = float.Parse(bs2[1]);
+                addDummy.downValue = float.Parse(bs2[1]);
                 BlendShape newBs2 = new BlendShape();
                 newBs2.blendableName = bs2[0];
                 newBs2.blendableIndex = faceCtrlComponent.GetMeshRenderIdxByName(newBs2.blendableName);
                 addDummy.ctrlBlendShapes.Add(newBs2);
 
                 string[] bs3 = parseStr[4].Split('|');
-                addDummy.upValue = float.Parse(bs3[1]);
+                addDummy.rightValue = float.Parse(bs3[1]);
                 BlendShape newBs3 = new BlendShape();
                 newBs3.blendableName = bs3[0];
                 newBs3.blendableIndex = faceCtrlComponent.GetMeshRenderIdxByName(newBs3.blendableName);
                 addDummy.ctrlBlendShapes.Add(newBs3);
 
                 string[] bs4 = parseStr[5].Split('|');
-                addDummy.downValue = float.Parse(bs4[1]);
+                addDummy.leftValue = float.Parse(bs4[1]);
                 BlendShape newBs4 = new BlendShape();
                 newBs4.blendableName = bs4[0];
                 newBs4.blendableIndex = faceCtrlComponent.GetMeshRenderIdxByName(newBs4.blendableName);
@@ -224,7 +224,6 @@ public class PrevizCtrlHandler
                     }
                 }
 
-
             }
             else if (ctrl.ctrlType == 0)// X Ctrl
             {
@@ -258,9 +257,9 @@ public class PrevizCtrlHandler
                         }
                     }
                 }
-                else
+                else if(ctrl.leftValue > ctrl.rightValue)
                 {
-                    
+                   
                     if (left != -1)
                     {
                         _weights[(int)ControllerDirectionX.Left] = GetXtypeWeightFromCtrlValue(ControllerDirectionX.Left, valueX);
@@ -272,33 +271,72 @@ public class PrevizCtrlHandler
                         _weights[(int)ControllerDirectionX.Right] = GetXtypeWeightFromCtrlValue(ControllerDirectionX.Right, valueX);
                     }
                 }
+                else 
+                {
+
+                    if (left != -1)
+                    {
+                        _weights[(int)ControllerDirectionX.Left] = GetXtypeWeightFromCtrlValue(ControllerDirectionX.Left, valueX, true);
+                    }
+
+                    // set drag value for right controller
+                    if (right != -1)
+                    {
+                        _weights[(int)ControllerDirectionX.Right] = GetXtypeWeightFromCtrlValue(ControllerDirectionX.Right, valueX, true);
+                    }
+                }
             }
             else if (ctrl.ctrlType == 2)//XY Ctrl
             {
-                Vector2 xy = new Vector2(vec.x, -vec.y);
+                Vector2 xy = new Vector2(vec.x, vec.y);
                 var top = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.top].blendableIndex;
                 var bottom = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.down].blendableIndex;
                 var left = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.left].blendableIndex;
                 var right = ctrl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.right].blendableIndex;
-                
-                if (top != -1)
-                {
-                    _weights[(int)ControllerDirectionXY.Top] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Top, xy);
-                }
-                
-                if (left != -1)
-                {
-                    _weights[(int)ControllerDirectionXY.Left] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Left, xy);
-                }
 
-                if (bottom != -1)
+                if (ctrl.leftValue > ctrl.rightValue)
                 {
-                    _weights[(int)ControllerDirectionXY.Bottom] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Bottom, xy);
-                }
+                    if (top != -1)
+                    {
+                        _weights[(int)ControllerDirectionXY.Top] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Top, xy, true);
+                    }
 
-                if (right != -1)
+                    if (left != -1)
+                    {
+                        _weights[(int)ControllerDirectionXY.Left] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Left, xy, true);
+                    }
+
+                    if (bottom != -1)
+                    {
+                        _weights[(int)ControllerDirectionXY.Bottom] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Bottom, xy, true);
+                    }
+
+                    if (right != -1)
+                    {
+                        _weights[(int)ControllerDirectionXY.Right] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Right, xy, true);
+                    }
+                }
+                else
                 {
-                    _weights[(int)ControllerDirectionXY.Right] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Right, xy);
+                    if (top != -1)
+                    {
+                        _weights[(int)ControllerDirectionXY.Top] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Top, xy);
+                    }
+
+                    if (left != -1)
+                    {
+                        _weights[(int)ControllerDirectionXY.Left] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Left, xy);
+                    }
+
+                    if (bottom != -1)
+                    {
+                        _weights[(int)ControllerDirectionXY.Bottom] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Bottom, xy);
+                    }
+
+                    if (right != -1)
+                    {
+                        _weights[(int)ControllerDirectionXY.Right] = GetXYtypeWeightFromPosition(ControllerDirectionXY.Right, xy);
+                    }
                 }
             }
 
@@ -345,25 +383,47 @@ public class PrevizCtrlHandler
     }
 
 
-    public float GetXtypeWeightFromCtrlValue(ControllerDirectionX dir, float ctrlValue)
+    public float GetXtypeWeightFromCtrlValue(ControllerDirectionX dir, float ctrlValue, bool isRMax = false)
     {
         float value = 0f;
 
-        switch (dir)
+        if (isRMax)
         {
-            case ControllerDirectionX.Left:
-                if (ctrlValue > 0f)
-                    value = float.PositiveInfinity;
-                else
-                    value = Mathf.Abs(ctrlValue) * 100;
-                break;
+            switch (dir)
+            {
+                case ControllerDirectionX.Left:
+                    if (ctrlValue < 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(ctrlValue) * 100;
+                    break;
 
-            case ControllerDirectionX.Right:
-                if (ctrlValue < 0f)
-                    value = float.PositiveInfinity;
-                else
-                    value = Mathf.Abs(ctrlValue) * 100;
-                break;
+                case ControllerDirectionX.Right:
+                    if (ctrlValue > 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(ctrlValue) * 100;
+                    break;
+            }
+        }
+        else
+        {
+            switch (dir)
+            {
+                case ControllerDirectionX.Left:
+                    if (ctrlValue > 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(ctrlValue) * 100;
+                    break;
+
+                case ControllerDirectionX.Right:
+                    if (ctrlValue < 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(ctrlValue) * 100;
+                    break;
+            }
         }
         return value;
     }
@@ -393,41 +453,75 @@ public class PrevizCtrlHandler
     }
 
 
-    public  float GetXYtypeWeightFromPosition(ControllerDirectionXY dir, Vector2 pos)
+    public  float GetXYtypeWeightFromPosition(ControllerDirectionXY dir, Vector2 pos, bool isLMax = false)
     {
         float value = 0f;
-
-        switch (dir)
+        if (isLMax)
         {
-            case ControllerDirectionXY.Top:
-                if (pos.y > 0f)
-                    value = float.PositiveInfinity;
-                else
-                    value = Mathf.Abs(pos.y) * 100;
-                break;
+            switch (dir)
+            {
+                case ControllerDirectionXY.Top:
+                    if (pos.y < 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(pos.y) * 100;
+                    break;
 
-            case ControllerDirectionXY.Bottom:
-                if (pos.y < 0f)
-                    value = float.PositiveInfinity;
-                else
-                    value = Mathf.Abs(pos.y) * 100;
-                break;
+                case ControllerDirectionXY.Bottom:
+                    if (pos.y > 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(pos.y) * 100;
+                    break;
 
-            case ControllerDirectionXY.Left:
-                if (pos.x > 0f)
-                    value = float.PositiveInfinity;
-                else
-                    value = Mathf.Abs(pos.x) * 100;
-                break;
+                case ControllerDirectionXY.Left:
+                    if (pos.x < 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(pos.x) * 100;
+                    break;
 
-            case ControllerDirectionXY.Right:
-                if (pos.x < 0f)
-                    value = float.PositiveInfinity;
-                else
-                    value = Mathf.Abs(pos.x) * 100;
-                break;
+                case ControllerDirectionXY.Right:
+                    if (pos.x > 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(pos.x) * 100;
+                    break;
+            }
         }
+        else
+        {
+            switch (dir)
+            {
+                case ControllerDirectionXY.Top:
+                    if (pos.y < 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(pos.y) * 100;
+                    break;
 
+                case ControllerDirectionXY.Bottom:
+                    if (pos.y > 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(pos.y) * 100;
+                    break;
+
+                case ControllerDirectionXY.Left:
+                    if (pos.x > 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(pos.x) * 100;
+                    break;
+
+                case ControllerDirectionXY.Right:
+                    if (pos.x < 0f)
+                        value = float.PositiveInfinity;
+                    else
+                        value = Mathf.Abs(pos.x) * 100;
+                    break;
+            }
+        }
         return value;
     }
 
@@ -500,6 +594,10 @@ public class PrevizCtrlHandler
             dummy.bottom = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.down].blendableIndex;
             dummy.left = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.left].blendableIndex;
             dummy.right = crl.ctrlBlendShapes[(int)BlenderShapeCtrl.blendIdx.right].blendableIndex;
+            dummy.leftValue = crl.leftValue;
+            dummy.rightValue = crl.rightValue;
+            dummy.upValue = crl.upValue;
+            dummy.downValue = crl.downValue;
             return dummy;
         }
         return null;

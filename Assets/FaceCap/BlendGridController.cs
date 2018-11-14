@@ -28,6 +28,11 @@ public class BlendGridController: IController
     [SerializeField]
     public int controllerIndex = -1;
 
+    public float upValue = -1.0f;
+    public float downValue = 1.0f;
+    public float leftValue = -1.0f;
+    public float rightValue = 1.0f;
+
     /// <summary>
     /// the panel position in blend controller window
     /// </summary>

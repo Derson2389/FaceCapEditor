@@ -261,7 +261,8 @@ namespace FaceCapEditor
 
             }
             if (blendControllerX != null)
-            {               
+            {
+
                 HorizontalSliderValue = GUILayout.HorizontalSlider(HorizontalSliderValue, _leftValue, _rightValue, GUILayout.Width(size.x), GUILayout.Height(size.y));
                 
                 bool b = blendControllerX.GetIsSelect;
