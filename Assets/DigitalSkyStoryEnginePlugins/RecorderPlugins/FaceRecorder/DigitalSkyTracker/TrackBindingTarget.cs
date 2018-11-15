@@ -151,12 +151,6 @@ namespace DigitalSky.Tracker
                 /// to set blend shape by Controller pos x or pos y
                 if (ctrlHandler != null)
                 {
-                    if (_boneTransform.gameObject.name == "r_mid_brow_facialControl")
-                    {
-                        int i = 0;
-                        i++;
-                    }
-
                     ctrlHandler.SetBlenderShapeByCtrlName(_boneTransform.gameObject.name, new Vector2(_boneTransform.localPosition.x, _boneTransform.localPosition.y));
                 }
             }

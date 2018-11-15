@@ -554,8 +554,19 @@ namespace dxyz
                     // NOTA: this code is not used currently, but might be in
                     // future.
                     // Parsing default position for bones.
-                    
-                   // bindings.Add(binding);
+
+                    // bindings.Add(binding);
+
+                    if (!bindings.Contains(binding))
+                    {
+                        if (CtrHandler != null)
+                        {
+                            binding._ctrlHander = CtrHandler;
+                        }
+                        bindings.Add(binding);
+                    }
+
+
                 }
             }
 
