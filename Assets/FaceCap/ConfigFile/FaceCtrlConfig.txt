@@ -19,7 +19,7 @@ r_eyeHightLight_move_facialControl,XY,r_eyeHightLight_up|1,r_eyeHightLight_dn|-1
 l_eyeHightLight_move_facialControl,XY,l_eyeHightLight_up|1,l_eyeHightLight_dn|-1,l_eyeHightLight_out|1,l_eyeHightLight_in|-1
 r_eyeHightLight_scale_facialControl,Y,r_eyeHightLight_big|1,r_eyeHightLight_small|-1
 l_eyeHightLight_scale_facialControl,Y,l_eyeHightLight_big|1,l_eyeHightLight_small|-1
-r_eyelid_blink_facialControl,Y,r_eyelid_blink|-1,l_eyelid_blink|-1
+r_eyelid_blink_facialControl,Y,r_eyelid_blink|-1,r_eyelid_blink|-1
 l_eyelid_blink_facialControl,Y,l_eyelid_blink|-1,l_eyelid_blink|-1
 
 r_cheek_facialControl,X,r_cheek_in|-1,r_cheek_out|1

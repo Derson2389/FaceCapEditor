@@ -44,7 +44,7 @@ public class FaceControllerComponent : MonoBehaviour {
     }
 
     public void SetFaceController(int idx, float weight)
-    {
+    {       
         SkinMesh = this.GetComponent<SkinnedMeshRenderer>();
         if (SkinMesh != null)
         {
