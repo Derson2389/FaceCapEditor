@@ -154,6 +154,7 @@ namespace DigitalSky.Tracker
                     ctrlHandler.SetBlenderShapeByCtrlName(_boneTransform.gameObject.name, new Vector2(_boneTransform.localPosition.x, _boneTransform.localPosition.y));
                 }
             }
+            
         }
 
     }
