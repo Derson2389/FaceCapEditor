@@ -253,7 +253,6 @@ namespace FaceCapEditor
                 {
                     GUILayout.BeginVertical();
                     GUILayout.BeginHorizontal();
-                    GUILayout.FlexibleSpace();
                     GUIStyle myStyle = new GUIStyle();
                     myStyle.fontSize = 22;
                     myStyle.normal.textColor = Color.white;
@@ -303,7 +302,6 @@ namespace FaceCapEditor
                 {
                     GUILayout.BeginHorizontal();                   
                     GUILayout.FlexibleSpace();
-                    GUILayout.Space(68);
 ;                   GUILayout.BeginVertical();
                     GUILayout.Space(18);
                     GUIStyle myStyle = new GUIStyle();

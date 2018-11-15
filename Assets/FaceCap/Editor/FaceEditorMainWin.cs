@@ -162,10 +162,10 @@ namespace FaceCapEditor
             get { return (WindowMouthPanel)_mouthPanel; }
         }
         [MenuItem("剧情工具/表情编辑", false, 1)]
-        public static void OpenEditorMainWin(BlendShapeCtrlClip clip, BlendShapeCtrlClip.BSEditKey newEditKey)
+        public static void OpenEditorMainWin(BlendShapeCtrlClip clip, BlendShapeCtrlClip.BSEditKey newEditKey)  
         {
-            _window = EditorWindow.GetWindow<FaceEditorMainWin>(false, "表情编辑器", true);
-            _window.minSize = new Vector2(760 , 680);
+            _window = EditorWindow.GetWindow<FaceEditorMainWin>(false, "表情编辑器", true);   
+            _window.minSize = new Vector2(850 , 680);   
             _window.Show();
             // OnInit is called after OnPanelEnable
             //BlenderShapesManager.ConfigTxt = clip.CtrlConfigDataFile;
@@ -350,7 +350,14 @@ namespace FaceCapEditor
         }
 
         private void OnGUI()
-        { 
+        {
+            //avoid edit when compiling
+            if (EditorApplication.isCompiling)
+            {
+                ShowNotification(new GUIContent("Compiling\n...Please wait..."));
+                return;
+            }
+
             if (FaceCtrlComp!= null && FaceEditorMainWin.window != null && FaceEditorMainWin.window.currentHandler != null && FaceEditorMainWin.window.currentHandler.controllerList.Count>0)
             {
                 topbarPanel.panelRect = new Rect(0, 0, position.width, topBarHeight);
@@ -505,15 +512,12 @@ namespace FaceCapEditor
             }
             
         }
-
+         
     
-       
+         
         public void Update()
         {
-            if (EditorApplication.isCompiling)
-            {
-               this.Close();
-            }
+            
             if (editKey != null)
             {
                 // 如果Timeline未进入当前编辑clip, 则不进行更新
