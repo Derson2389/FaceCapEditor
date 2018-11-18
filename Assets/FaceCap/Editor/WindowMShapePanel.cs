@@ -32,7 +32,9 @@ namespace FaceCapEditor
         public override void OnPanelEnable()
         {
             base.OnPanelEnable();
-
+            if (FaceEditorMainWin.window.currentHandler == null)
+                return;
+             
             BlendXController controllerA = FaceEditorMainWin.window.currentHandler.CreateBlendXCtrl(FaceEditHelper.MouthShapeCtrlName[(int)FaceEditHelper.MouthShape.A_facialControl]);
             if (controllerA != null)
             {

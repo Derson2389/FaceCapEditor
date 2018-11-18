@@ -39,6 +39,9 @@ namespace FaceCapEditor
         {
             base.OnPanelEnable();
 
+            if (FaceEditorMainWin.window.currentHandler == null)
+                return;
+
             Texture2D unsetIcon = (Texture2D)AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/FaceCap/Png/default_icon.png");
             Texture2D setIcon = (Texture2D)AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/FaceCap/Png/white.png");
 

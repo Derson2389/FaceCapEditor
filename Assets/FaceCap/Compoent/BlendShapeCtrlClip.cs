@@ -375,7 +375,7 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
             }
         }
 
-        public void Save()
+        public void Save(bool keyAll = false)
         {
             // 判断时间是否在范围中
             if (!HasEnterEditClip())
@@ -390,7 +390,7 @@ public class BlendShapeCtrlClip : ActionClip, ICrossBlendable
                 AnimatedParameter animParam = item.Value;
                 //var hasAnyKey = animParam.HasAnyKey();
 
-                if(animParam.hideChecked)
+                if(animParam.hideChecked && !keyAll)
                 {
                     continue;
                 }

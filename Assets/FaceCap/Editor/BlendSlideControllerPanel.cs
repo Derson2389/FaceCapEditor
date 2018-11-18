@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace FaceCapEditor
@@ -41,6 +42,7 @@ namespace FaceCapEditor
         private bool _dragButtonPressed = false;
         public bool dragButtonPressed
         {
+            set { _dragButtonPressed = value; }
             get { return _dragButtonPressed; }
         }
 
@@ -283,11 +285,13 @@ namespace FaceCapEditor
             if (blendControllerY != null)
             {
                 ProcessMouseEvent(selRect);
+                ProcessMenuEvent(selRect, 1);
             }
 
             if (blendControllerX != null)
             {
                 ProcessMouseEvent(selXRect);
+                ProcessMenuEvent(selXRect, 2);
             }
 
             //if (blendControllerY != null&& blendControllerY.GetIsSelect)
@@ -307,6 +311,69 @@ namespace FaceCapEditor
             ProcessResizeEvent();
             ProcessDragEvents();
         }
+
+
+        void ProcessMenuEvent(Rect rect, int type)
+        {
+
+            if (Event.current.type == EventType.ContextClick && rect.Contains(Event.current.mousePosition))
+            {
+                // panel 右击鼠标弹出菜单
+                var menu = new UnityEditor.GenericMenu();
+                if (type == 1)
+                {
+                    menu.AddItem(new GUIContent("设置上"), false, OnSetPanelMenu, new List<int> { 0 });
+
+                    menu.AddItem(new GUIContent("设置下"), false, OnSetPanelMenu, new List<int> { 1 });
+                }
+
+                if (type == 2)
+                {
+                    menu.AddItem(new GUIContent("设置左"), false, OnSetPanelMenu, new List<int> { 3 });
+                    menu.AddItem(new GUIContent("设置右"), false, OnSetPanelMenu, new List<int> { 4 });
+                }
+
+                           
+                menu.AddItem(new GUIContent("还原"), false, OnSetPanelMenu, new List<int> { 5 });
+                menu.ShowAsContext();
+
+                Event.current.Use();
+            }
+
+        }
+
+
+        void OnSetPanelMenu(object userData)
+        {
+            List<int> menuOption = (List<int>)userData;
+            int value = menuOption[0];
+            switch (value)
+            {
+               
+                case 0:
+                    VerticalSliderValue = _upValue;
+                    break;
+
+                case 1:
+                    VerticalSliderValue = _downValue;
+                    break;
+
+                case 2:
+                    HorizontalSliderValue = _leftValue;
+                    break;
+
+                case 3:
+                    HorizontalSliderValue = _rightValue;
+                    break;
+
+                case 4:
+                case 5:
+                    HorizontalSliderValue = 0;
+                    VerticalSliderValue = 0;
+                    break;
+            }
+        }
+
 
         void ProcessMouseEvent(Rect rect)
         {

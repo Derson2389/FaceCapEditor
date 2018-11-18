@@ -32,6 +32,8 @@ namespace FaceCapEditor
         public override void OnPanelEnable()
         {
             base.OnPanelEnable();
+            if (FaceEditorMainWin.window.currentHandler == null)
+                return;
             //Nose
             BlendGridController _noseController = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.CheekListCtrlName[(int)FaceEditHelper.CheekListCtrl.nose_facialControl], panelSizeMax, panelSizeMax, 10, 10);
             if (_noseController != null)

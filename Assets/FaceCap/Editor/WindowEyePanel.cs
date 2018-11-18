@@ -47,6 +47,9 @@ namespace FaceCapEditor
         public override void OnPanelEnable()
         {
             base.OnPanelEnable();
+            if (FaceEditorMainWin.window.currentHandler == null)
+                return;
+
             //Eyelid
             BlendGridController controllerLeft = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.EyeListCtrlName[(int)FaceEditHelper.EyeListCtrl.r_upper_eyelid_facialControl], panelSizeMax, panelSizeMax, 0, 10);
             if (controllerLeft != null)

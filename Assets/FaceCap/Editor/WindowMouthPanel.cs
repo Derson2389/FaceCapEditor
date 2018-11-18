@@ -55,6 +55,8 @@ namespace FaceCapEditor
         public override void OnPanelEnable()
         {
             base.OnPanelEnable();
+            if (FaceEditorMainWin.window.currentHandler == null)
+                return;
 
             BlendGridController controllerTogue = FaceEditorMainWin.window.currentHandler.CreateBlendGridCtrl(FaceEditHelper.MouthCtrlName[(int)FaceEditHelper.MouthCtrl.tongue_facialControl], panelSize, panelSize, 10, 22);
 

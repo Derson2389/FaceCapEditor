@@ -403,16 +403,50 @@ namespace FaceCapEditor
         }
 
 
+        
+
+
         void ProcessShortKey()
         {
             var e = Event.current;
-            if (e.type == EventType.KeyDown)
+            if (e.type == EventType.KeyDown && !e.shift)
             {
 
                 if (e.keyCode == KeyCode.S)
                 {
                     AddKeyframe();
                     e.Use();
+                }
+            }
+
+            if (e.type == EventType.KeyDown )
+            {
+                if (e.keyCode == KeyCode.A)
+                {
+                    AddKeyframe(true);
+                    e.Use();
+                }
+            }
+            
+        }
+
+
+        public void resetDragPressed()
+        {
+            for (int i = 0; i < _panelList.Count; i++)
+            {
+
+                if (_panelList[i] is BlendControllerPanel)
+                {
+                    var panel = _panelList[i] as BlendControllerPanel;
+                    panel.dragButtonPressed = false;
+
+
+                }
+                if (_panelList[i] is BlendSlideControllerPanel)
+                {
+                    var panel = _panelList[i] as BlendSlideControllerPanel;
+                    panel.dragButtonPressed = false;
                 }
             }
         }
@@ -474,7 +508,7 @@ namespace FaceCapEditor
         /// <summary>
         /// 保存编辑后的关键帧数据
         /// </summary>
-        public void AddKeyframe()
+        public void AddKeyframe(bool all = false)
         {
             // 编辑模板模式下不能保存关键帧数据
             if (editKey == null)
@@ -484,13 +518,13 @@ namespace FaceCapEditor
             for (int i = 0; i < _panelList.Count; i++)
             {
                 // 保存动画关键帧blendControllerKey数据
-                if (_panelList[i].GetIsSelect && _panelList[i] is BlendControllerPanel)
+                if ((_panelList[i].GetIsSelect || all) && _panelList[i] is BlendControllerPanel)
                 {
                     var panel = _panelList[i] as BlendControllerPanel;
                     Vector2 normalizedPos = panel.GetNormalizedPos();
                     editKey.SetControllerParamValue(panel.GetPanelControllerName(), normalizedPos);
                 }
-                if (_panelList[i].GetIsSelect && _panelList[i] is BlendSlideControllerPanel)
+                if ((_panelList[i].GetIsSelect|| all) && _panelList[i] is BlendSlideControllerPanel)
                 {
                     var panel = _panelList[i] as BlendSlideControllerPanel;
                     Vector2 normalizedPos = panel.GetNormalizedPos();
@@ -498,7 +532,7 @@ namespace FaceCapEditor
                 }
             }
 
-            editKey.Save();
+            editKey.Save(all);
 
         }
 

@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace FaceCapEditor
@@ -53,6 +54,7 @@ namespace FaceCapEditor
         private bool _dragButtonPressed = false;
         public bool dragButtonPressed
         {
+            set { _dragButtonPressed = value; }
             get { return _dragButtonPressed; }
         }
 
@@ -161,18 +163,20 @@ namespace FaceCapEditor
 
      
             DrawDragButton();
-            DrawSelectionBtns();
+            
 
 
             //draw selected rect
             
             ProcessMouseEvent(_selRect);
+            ProcessMenuEvent(_selRect);
             if (blendController.GetIsSelect)
             {                     
                 GUI.color = highlighColor;
                 GUI.DrawTexture(_selRect, Slate.Styles.whiteTexture);
                 GUI.color = Color.white;                
             }
+
 
             GUILayout.EndArea();
            
@@ -181,9 +185,61 @@ namespace FaceCapEditor
 
         }
 
+
+        void ProcessMenuEvent(Rect rect)
+        {
+        
+            if (Event.current.type == EventType.ContextClick && rect.Contains(Event.current.mousePosition))
+            {
+                // panel 右击鼠标弹出菜单
+                var menu = new UnityEditor.GenericMenu();
+
+                menu.AddItem(new GUIContent("设置上"), false, OnSetPanelMenu, new List<int> { 0 });
+                menu.AddItem(new GUIContent("设置左"), false, OnSetPanelMenu, new List<int> { 1 });
+                menu.AddItem(new GUIContent("设置下"), false, OnSetPanelMenu, new List<int> { 2 });
+                menu.AddItem(new GUIContent("设置右"), false, OnSetPanelMenu, new List<int> { 3 });
+                menu.AddItem(new GUIContent("还原"), false, OnSetPanelMenu, new List<int> { 4 });
+                menu.ShowAsContext();
+
+                Event.current.Use();
+            }
+            
+        }
+
+
+        void OnSetPanelMenu(object userData)
+        {
+            List<int> menuOption = (List<int>)userData;
+            int value = menuOption[0];
+
+            switch (value)
+            {
+                case 0:
+                    SetNormalizedPos(new Vector2(0, blendController.upValue));
+                    break;
+
+                case 1:
+                    SetNormalizedPos(new Vector2(blendController.leftValue,0));
+                    break;
+
+                case 2:
+                    SetNormalizedPos(new Vector2(0, blendController.downValue));
+                    break;
+
+                case 3:
+                    SetNormalizedPos(new Vector2(blendController.rightValue, 0));
+                    break;
+
+                case 4:
+                    SetNormalizedPos(new Vector2(0, 0));
+                    break;
+            }
+        }
+
+
         void ProcessMouseEvent(Rect rect)
         {
-            if (Event.current.type == EventType.MouseDown)
+            if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
             {
                 if (rect.Contains(Event.current.mousePosition))
                 {
@@ -287,6 +343,11 @@ namespace FaceCapEditor
                     if (Event.current.button == 0 && _dragButtonRect.Contains(Event.current.mousePosition))
                     {
                         //Debug.Log("mousue down: " + Event.current.mousePosition);
+                        if (FaceEditorMainWin.window!= null)
+                        {
+                            FaceEditorMainWin.window.resetDragPressed();
+                        }
+
                         _dragButtonPressed = true;
                         _resizeHorPressed = false;
                         _resizeVerPressed = false;
@@ -369,66 +430,7 @@ namespace FaceCapEditor
             _dragButtonRect.center = centerDragPos;
         }
 
-        void DrawSelectionBtns()
-        {
-            //for (int i = (int)BlendGridController.ControllerDirection.Top; i <= (int)BlendGridController.ControllerDirection.Right; i++)
-            //{
-            //    GUIStyle btnStyle = parent.unsetStyle;
-            //    string btnName = "";
-
-            //    if (blendController.blendShapeIndexs[i] != -1)
-            //    {
-            //        btnStyle = parent.setStyle;
-            //        btnName = blendController.blendShapeIndexs[i].ToString();
-            //    }
-
-            //    if (GUI.Button(_controlBtnRect[i], btnName, btnStyle))
-            //    {
-            //        GenericMenu markerMenu = new GenericMenu();
-
-            //        for (int b = 0; b < parent.shape.blendShapes.Count; b++)
-            //        {
-            //            // 如果当前是编辑模板模式，才能绑定blendshape
-            //            if (parent.editKey == null)
-            //            {
-            //                // i是blendshape在BlendController里面的index, b是blendshape在shape里面的index 
-            //                if (blendController.blendShapeIndexs[i] == b)
-            //                    markerMenu.AddItem(new GUIContent(parent.shape.blendShapes[b].blendableName), true, OnBindBlendShapeMenu, new List<int> { i, b });
-            //                else
-            //                    markerMenu.AddItem(new GUIContent(parent.shape.blendShapes[b].blendableName), false, OnBindBlendShapeMenu, new List<int> { i, b });
-            //            }
-            //            else
-            //            {
-            //                markerMenu.AddDisabledItem(new GUIContent(parent.shape.blendShapes[b].blendableName));
-            //            }
-            //        }
-
-            //        markerMenu.ShowAsContext();
-            //    }
-            //}
-        }
-
-        /// <summary>
-        /// callback for GenericMenu selection
-        /// </summary>
-        /// <param name="userData">the userData is ControllerOption instance</param>
-        void OnBindBlendShapeMenu(object userData)
-        {
-            //List<int> menuOption = (List<int>)userData;
-            //int index = menuOption[0];
-            //int value = menuOption[1];
-
-            //Undo.RecordObject(parent.lipSync, "Change LipSync");
-
-            //if (blendController.blendShapeIndexs[index] == value)
-            //    blendController.blendShapeIndexs[index] = -1;
-            //else
-            //    blendController.blendShapeIndexs[index] = value;
-
-            //// 保存模板
-            //EditorUtility.SetDirty(parent.lipSync);
-        }
-
+    
         void CalculateBlendShapeValue(Vector2 normalizedPos)
         {
             // set drag value for top controller
@@ -494,26 +496,8 @@ namespace FaceCapEditor
                     FaceEditorMainWin.window.currentHandler.SetBlenderShapeByCtrlName(blendController.controllerName, normalizedPos);
                 }
             }
-
-                //CalculateBlendShapeValue(normalizedPos);
-
-                //for (int i = 0; i < blendController.blendShapeIndexs.Count; i++)
-                //{
-                //    int blendShapeIndex = blendController.blendShapeIndexs[i];
-                //    if (blendShapeIndex != -1)
-                //    {
-                //        // 使用BlendController面板映射的值
-                //        float weight = _weights[i];
-
-                //        //// 对于PositiveInfinity值，使用原始shape里面的weight
-                //        if (float.IsPositiveInfinity(_weights[i]))
-                //            weight = 0;
-
-                //        if (FaceEditorMainWin.window.FaceCtrlComp != null )
-                //            FaceEditorMainWin.window.FaceCtrlComp.SetFaceController(blendShapeIndex, weight);
-                //    }
-                //}
-            }
+            
+        }
 
         public void Reset()
         {
